@@ -2898,6 +2898,12 @@ msgstr "Créer un Grand Prix"
 msgid "Create a channel"
 msgstr "Créer un canal"
 
+msgid "Create a channel for this menu"
+msgstr "Créer un canal pour ce menu"
+
+msgid "Create a channel for this rotator"
+msgstr "Créer un canal pour cet écran rotatif"
+
 msgid "Create a channel for this screen"
 msgstr "Créer un canal pour cet écran"
 
@@ -3135,10 +3141,6 @@ msgstr "Version actuelle"
 
 msgid "Currently showing nothing."
 msgstr "N'affiche rien actuellement."
-
-#, python-brace-format
-msgid "This channel is currently showing {name}."
-msgstr "Ce canal affiche actuellement {name}."
 
 msgid "Custom"
 msgstr "Personnalisés"
@@ -3634,6 +3636,12 @@ msgstr "Voulez-vous installer la mise à jour maintenant ?"
 #, python-brace-format
 msgid "Do you want to move the data to [{folder}]? The current folder is deleted once the copy has been checked, and {service} removes the copy it keeps in turn."
 msgstr "Voulez-vous déplacer les données vers [{folder}] ? Le dossier actuel est supprimé une fois la copie vérifiée, et {service} supprime à son tour la copie qu'il conserve."
+
+msgid "Do you want to set up a channel for this menu?"
+msgstr "Voulez-vous préparer un canal pour ce menu ?"
+
+msgid "Do you want to set up a channel for this rotator?"
+msgstr "Voulez-vous préparer un canal pour cet écran rotatif ?"
 
 msgid "Do you want to set up a channel for this screen?"
 msgstr "Voulez-vous préparer un canal pour cet écran ?"
@@ -6814,6 +6822,12 @@ msgstr "Aucun canal"
 
 msgid "No channel set for the event."
 msgstr "Aucun canal défini pour l'évènement."
+
+msgid "No channel — just create the menu"
+msgstr "Aucun canal — créer simplement le menu"
+
+msgid "No channel — just create the rotator"
+msgstr "Aucun canal — créer simplement l'écran rotatif"
 
 msgid "No channel — just create the screen"
 msgstr "Aucun canal — créer simplement l'écran"
@@ -11671,6 +11685,12 @@ msgstr "Les membres ne sont séparé·es que si aucune règle d'appariement (cou
 msgid "The members are never paired together."
 msgstr "Les membres ne sont jamais apparié·es entre eux·elles."
 
+msgid "The menu is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
+msgstr "Le menu est marqué comme conçu pour le canal choisi. Vous choisissez ce qu'un canal affiche, à tout moment, depuis l'onglet Canaux."
+
+msgid "The menu is marked as designed for this new channel, which shows it."
+msgstr "Le menu est marqué comme conçu pour ce nouveau canal, qui l'affiche."
+
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
 msgstr "Le message affiché sur le bandeau déroulant en bas de l'écran."
 
@@ -12049,6 +12069,12 @@ msgstr "L'effectif a %(count)d joueur·euses, plus que le maximum de %(max)d."
 msgid "The rotating delay between two screens."
 msgstr "Le délai de rotation entre deux écrans."
 
+msgid "The rotator is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
+msgstr "L'écran rotatif est marqué comme conçu pour le canal choisi. Vous choisissez ce qu'un canal affiche, à tout moment, depuis l'onglet Canaux."
+
+msgid "The rotator is marked as designed for this new channel, which shows it."
+msgstr "L'écran rotatif est marqué comme conçu pour ce nouveau canal, qui l'affiche."
+
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
 msgstr "La ronde après laquelle le classement est affiché (si vide, la dernière ronde terminée)."
 
@@ -12397,6 +12423,10 @@ msgstr "Cette sauvegarde a été effectuée par une autre version de l'applicati
 
 msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
 msgstr "Cet échiquier est marqué comme absent (forfait) dans la composition. Utilisez la liste déroulante de composition pour remettre unÏe joueur·euse à cette place."
+
+#, python-brace-format
+msgid "This channel is currently showing {name}."
+msgstr "Ce canal affiche actuellement {name}."
 
 msgid "This channel is private (not visible by the spectators)."
 msgstr "Ce canal est privé (non visible des spectateur·ices)."
@@ -13853,6 +13883,12 @@ msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il 
 msgid "Where"
 msgstr "Où"
 
+msgid "Which channel is this menu designed for?"
+msgstr "Pour quel canal ce menu est-il conçu ?"
+
+msgid "Which channel is this rotator designed for?"
+msgstr "Pour quel canal cet écran rotatif est-il conçu ?"
+
 msgid "Which channel is this screen designed for?"
 msgstr "Pour quel canal cet écran est-il conçu ?"
 
@@ -14175,6 +14211,12 @@ msgstr "Vous devez créer un tournoi avant de créer un groupe non cumulable."
 
 msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
+
+msgid "You will need to select the menu on your display."
+msgstr "Vous devrez sélectionner le menu sur votre affichage."
+
+msgid "You will need to select the rotator on your display."
+msgstr "Vous devrez sélectionner l'écran rotatif sur votre affichage."
 
 msgid "You will need to select the screen on your display."
 msgstr "Vous devrez sélectionner l'écran sur votre affichage."

@@ -9,6 +9,7 @@ Each goal leads into the questions of its screen type
 questions built here. The answers are read back with ``data.wizard.Wizard``
 and turned into stored objects by ``create_from_assistant()``."""
 
+from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
 
@@ -314,11 +315,73 @@ def _channel_switch_question(
     )
 
 
+def _channel_texts(kind: str) -> dict[str, str]:
+    """The texts of the channel question naming what is created, of the
+    *kind* given by ``assistant_created_kind()``: the menu or the rotator
+    is what is designed for the channel when there is one (see
+    ``_AssistantWriter._write_channel()``), the screen otherwise."""
+    return {
+        'menu': {
+            'question': _('Which channel is this menu designed for?'),
+            'help': _(
+                'The menu is marked as designed for the channel you pick. You '
+                'choose what a channel shows, at any time, from the Channels tab.'
+            ),
+            'new_help': _(
+                'The menu is marked as designed for this new channel, which shows it.'
+            ),
+            'none_help': _('You will need to select the menu on your display.'),
+            'first_question': _('Do you want to set up a channel for this menu?'),
+            'first_new': _('Create a channel for this menu'),
+            'first_none': _('No channel — just create the menu'),
+        },
+        'rotator': {
+            'question': _('Which channel is this rotator designed for?'),
+            'help': _(
+                'The rotator is marked as designed for the channel you pick. '
+                'You choose what a channel shows, at any time, from the '
+                'Channels tab.'
+            ),
+            'new_help': _(
+                'The rotator is marked as designed for this new channel, which '
+                'shows it.'
+            ),
+            'none_help': _('You will need to select the rotator on your display.'),
+            'first_question': _('Do you want to set up a channel for this rotator?'),
+            'first_new': _('Create a channel for this rotator'),
+            'first_none': _('No channel — just create the rotator'),
+        },
+        'screen': {
+            'question': _('Which channel is this screen designed for?'),
+            'help': _(
+                'The screen is marked as designed for the channel you pick. You '
+                'choose what a channel shows, at any time, from the Channels tab.'
+            ),
+            'new_help': _(
+                'The screen is marked as designed for this new channel, which shows it.'
+            ),
+            'none_help': _('You will need to select the screen on your display.'),
+            'first_question': _('Do you want to set up a channel for this screen?'),
+            'first_new': _('Create a channel for this screen'),
+            'first_none': _('No channel — just create the screen'),
+        },
+    }[kind]
+
+
 def _channel_questions(event: Event, goal: AssistantGoal) -> dict[str, WizardQuestion]:
     """The questions ending every assistant chain: the channel the screen is
     for ('channel'), whether an existing channel picked is switched to what
     is created (see channel_switch_question_id()), and the name of a
-    channel created on the way ('channel_name')."""
+    channel created on the way ('channel_name'). The channel question names
+    the menu, the rotator or the screen created, once the answers before
+    are known (the screen until then)."""
+
+    def texts(key: str) -> Callable[[dict[str, Any]], str]:
+        return lambda answers: _channel_texts(
+            assistant_created_kind(event, goal, answers)
+        )[key]
+
+    screen_texts = _channel_texts('screen')
     channels = event.sorted_display_controllers
     options: list[WizardOption] = []
     if channels:
@@ -341,10 +404,8 @@ def _channel_questions(event: Event, goal: AssistantGoal) -> dict[str, WizardQue
             WizardOption(
                 value='new',
                 text=_('A new channel'),
-                help=_(
-                    'The screen is marked as designed for this new channel, '
-                    'which shows it.'
-                ),
+                help=screen_texts['new_help'],
+                help_for_answers=texts('new_help'),
                 next='channel_name',
             )
         )
@@ -352,43 +413,48 @@ def _channel_questions(event: Event, goal: AssistantGoal) -> dict[str, WizardQue
             WizardOption(
                 value=None,
                 text=_('No channel'),
-                help=_('You will need to select the screen on your display.'),
+                help=screen_texts['none_help'],
+                help_for_answers=texts('none_help'),
             )
         )
-        text = _('Which channel is this screen designed for?')
-        help_text = _(
-            'The screen is marked as designed for the channel you pick. You '
-            'choose what a channel shows, at any time, from the Channels tab.'
-        )
+        text = screen_texts['question']
+        text_for_answers = texts('question')
+        help_text = screen_texts['help']
+        help_for_answers: Callable[[dict[str, Any]], str] | None = texts('help')
     else:
         options = [
             WizardOption(
                 value='new',
-                text=_('Create a channel for this screen'),
-                help=_(
-                    'The screen is marked as designed for this new channel, '
-                    'which shows it.'
-                ),
+                text=screen_texts['first_new'],
+                text_for_answers=texts('first_new'),
+                help=screen_texts['new_help'],
+                help_for_answers=texts('new_help'),
                 next='channel_name',
             ),
             WizardOption(
                 value=None,
-                text=_('No channel — just create the screen'),
-                help=_('You will need to select the screen on your display.'),
+                text=screen_texts['first_none'],
+                text_for_answers=texts('first_none'),
+                help=screen_texts['none_help'],
+                help_for_answers=texts('none_help'),
             ),
         ]
-        text = _('Do you want to set up a channel for this screen?')
+        text = screen_texts['first_question']
+        text_for_answers = texts('first_question')
         help_text = _(
             'A channel is an address you open once on a display — a '
             'projector, a TV, a tablet. From then on, you choose what the '
             'display shows from Sharly Chess, without going back to the '
             'display.'
         )
+        help_for_answers = None
     return {
         'channel': WizardRadioQuestion(
             stage='channel',
             text=text,
+            text_for_answers=text_for_answers,
             help=help_text,
+            help_for_answers=help_for_answers,
             options=options,
             default_value=None,
         ),

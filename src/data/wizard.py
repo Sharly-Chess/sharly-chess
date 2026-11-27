@@ -34,6 +34,9 @@ class WizardOption:
     # page asks the server for it when the question is shown, ``text``
     # standing until then
     text_for_answers: Callable[[dict[str, Any]], str] | None = None
+    # The help text from the answers given before, likewise (``help``
+    # standing until then)
+    help_for_answers: Callable[[dict[str, Any]], str] | None = None
 
 
 @dataclass
@@ -60,6 +63,9 @@ class WizardQuestion(ABC):
     # The text from the answers given before, when it depends on them (see
     # WizardOption.text_for_answers)
     text_for_answers: Callable[[dict[str, Any]], str] | None = None
+    # The help text from the answers given before, likewise (see
+    # WizardOption.help_for_answers)
+    help_for_answers: Callable[[dict[str, Any]], str] | None = None
 
     @abstractmethod
     def _read_answer(self, raw: str) -> tuple[Any, str | None]:

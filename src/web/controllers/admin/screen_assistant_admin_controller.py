@@ -274,10 +274,12 @@ class ScreenAssistantAdminController(BaseEventAdminController):
         ],
         question: FromQuery[str],
         option: FromQuery[int | None] = None,
+        part: FromQuery[str] = 'text',
     ) -> Response[str]:
-        """The text of the question *question* (or of its option *option*)
-        worded after the answers given so far (see
-        ``WizardOption.text_for_answers``)."""
+        """The text (or the help text when *part* is ``help``) of the
+        question *question* (or of its option *option*) worded after the
+        answers given so far (see ``WizardOption.text_for_answers`` and
+        ``WizardOption.help_for_answers``)."""
         form_data = WebContext.flatten_list_data(data)
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -298,9 +300,16 @@ class ScreenAssistantAdminController(BaseEventAdminController):
         # The questions after the one shown may not be answered yet: the
         # text only depends on those before.
         answers, _path, _errors = wizard.read_answers(form_data)
-        text = (
-            item.text_for_answers(answers)
-            if item.text_for_answers is not None
-            else item.text
-        )
+        if part == 'help':
+            text = (
+                item.help_for_answers(answers)
+                if item.help_for_answers is not None
+                else item.help or ''
+            )
+        else:
+            text = (
+                item.text_for_answers(answers)
+                if item.text_for_answers is not None
+                else item.text
+            )
         return Response(html.escape(text), media_type=MediaType.HTML)

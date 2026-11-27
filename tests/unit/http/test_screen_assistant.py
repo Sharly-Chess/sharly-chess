@@ -554,6 +554,49 @@ def test_the_assistant_offers_the_existing_channels(
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize(
+    ('nav', 'item'),
+    [(PAGES_MENU, 'menu'), (PAGES_ROTATE, 'rotator'), (None, 'screen')],
+)
+def test_the_channel_question_names_what_is_designed_for_the_channel(
+    http: TestClient, tournament: StoredTournament, nav: str | None, item: str
+):
+    other = TestUtils.create_tournament(
+        EVENT_ID, f'{TOURNAMENT_NAME}-2', json_file='test-screens'
+    )
+    with EventDatabase(EVENT_ID, write=True) as database:
+        database.add_stored_display_controller(
+            StoredDisplayController(id=None, name='Projector')
+        )
+    reload_event()
+    data = {'goal': 'boards', 'answer_columns': '0'} | (
+        {'answer_layout': ONE_PAGE, 'answer_tournaments': str(tournament.id)}
+        if nav is None
+        else {
+            'answer_layout': PAGE_PER_TOURNAMENT,
+            'answer_split_tournaments': f'{tournament.id};{other.id}',
+            'answer_split_nav': nav,
+        }
+    )
+    # The question, asked of the server once shown, names the menu or the
+    # rotator when one is created (what the channel is designed for)...
+    url = f'/screen-assistant-text/{EVENT_ID}?question=channel'
+    assert http.post(url, data=data).text == (
+        f'Which channel is this {item} designed for?'
+    )
+    assert http.post(f'{url}&part=help', data=data).text.startswith(
+        f'The {item} is marked as designed for the channel you pick.'
+    )
+    # ... and so do the helps of the new channel and no channel answers.
+    assert http.post(f'{url}&option=1&part=help', data=data).text == (
+        f'The {item} is marked as designed for this new channel, which shows it.'
+    )
+    assert http.post(f'{url}&option=2&part=help', data=data).text == (
+        f'You will need to select the {item} on your display.'
+    )
+
+
+@pytest.mark.unit
 def test_an_existing_channel_is_not_switched_to_the_new_screen(
     http: TestClient, tournament: StoredTournament
 ):
