@@ -533,7 +533,7 @@ def test_the_assistant_offers_the_existing_channels(
     response = http.get(f'/screen-assistant/{EVENT_ID}?goal=boards')
     assert response.status_code == 200
     assert 'Main hall' in response.text
-    assert 'Currently showing' in response.text
+    assert 'This channel is currently showing' in response.text
     # The same name is refused for another channel.
     response = http.post(
         f'/screen-assistant-create/{EVENT_ID}',
