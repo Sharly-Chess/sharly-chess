@@ -1012,8 +1012,9 @@
     }
 
     // The page with what was typed in its fields, without its scripts and the
-    // toolbar, its links resolved against its address.
-    function pageHtml() {
+    // toolbar. For the PDF, its links are resolved against its address; for a
+    // standalone web page, what the toolbar adds to the page is removed too.
+    function pageHtml({standalone = false} = {}) {
         const copy = document.documentElement.cloneNode(true);
         const fields = document.querySelectorAll('input, textarea, select');
         const copiedFields = copy.querySelectorAll('input, textarea, select');
@@ -1032,10 +1033,39 @@
             }
         });
         copy.querySelectorAll('script, .document-export-toolbar').forEach(element => element.remove());
-        const base = document.createElement('base');
-        base.href = location.href;
-        copy.querySelector('head').prepend(base);
+        if (standalone) {
+            copy.querySelectorAll('[data-document-export]').forEach(element => element.remove());
+            copy.style.removeProperty('--document-export-toolbar-height');
+            if (!copy.getAttribute('style')) {
+                copy.removeAttribute('style');
+            }
+        } else {
+            const base = document.createElement('base');
+            base.href = location.href;
+            copy.querySelector('head').prepend(base);
+        }
         return `<!DOCTYPE html>\n${copy.outerHTML}`;
+    }
+
+    // The style of the document and the content of its page, to insert into
+    // a page of a website.
+    function pageCode() {
+        const styles = [...document.head.querySelectorAll('style:not([data-document-export])')]
+            .map(style => style.outerHTML);
+        const content = document.querySelector('.page-content').cloneNode(true);
+        content.querySelectorAll('script').forEach(element => element.remove());
+        return [...styles, content.innerHTML.trim(), ''].join('\n');
+    }
+
+    // Download ``blob`` as ``name``.
+    function download(blob, name) {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(link.href), 10000);
     }
 
     function filename(response, fallback) {
@@ -1064,14 +1094,7 @@
             if (!(response.headers.get('Content-Type') || '').startsWith(mediaType)) {
                 throw new Error(response.headers.get('Content-Type'));
             }
-            const blob = await response.blob();
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename(response, `${body.title}.${extension}`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+            download(await response.blob(), filename(response, `${body.title}.${extension}`));
         } catch (error) {
             alert(`${button.dataset.errorMessage}\n${error.message}`);
         } finally {
@@ -1117,6 +1140,24 @@
                 wordButton, wordUrl, wordLayout,
                 'docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ));
+        }
+        // The documents to publish, which have no fields to fill in, can be
+        // saved as a complete web page without the toolbar, or as the HTML
+        // code to insert into a page of a website.
+        if (!hasFields) {
+            const title = document.title || 'document';
+            const saveHtml = (html, name) => download(
+                new Blob([html], {type: 'text/html;charset=utf-8'}), name,
+            );
+            toolbar.querySelector('[data-export="html"]').hidden = false;
+            toolbar.querySelector('[data-export="html-page"]').addEventListener(
+                'click', () => saveHtml(pageHtml({standalone: true}), `${title}.html`),
+            );
+            toolbar.querySelector('[data-export="html-code"]').addEventListener(
+                // The code has no meta tag giving its encoding: the UTF-8 byte
+                // order mark tells it to the browsers opening the file.
+                'click', () => saveHtml(`\uFEFF${pageCode()}`, `${title} - code.html`),
+            );
         }
     }
 
