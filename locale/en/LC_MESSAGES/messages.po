@@ -689,18 +689,6 @@ msgstr ""
 msgid "A menu"
 msgstr ""
 
-#, python-brace-format
-msgid "A menu named “{name}” for the players to pick their tournament."
-msgstr ""
-
-#, python-brace-format
-msgid "A menu named “{name}” to pick the grid."
-msgstr ""
-
-#, python-brace-format
-msgid "A menu named “{name}” to pick the page."
-msgstr ""
-
 msgid "A menu puts a bar of buttons at the top of a device, such as a tablet, so that people can tap between its screens. It can hold chosen screens, or all the screens of a type."
 msgstr ""
 
@@ -708,10 +696,6 @@ msgid "A minimum and a maximum rating are expected."
 msgstr ""
 
 msgid "A new channel"
-msgstr ""
-
-#, python-brace-format
-msgid "A new channel named “{name}”."
 msgstr ""
 
 msgid "A new timer"
@@ -786,10 +770,6 @@ msgstr ""
 msgid "A rotator"
 msgstr ""
 
-#, python-brace-format
-msgid "A rotator named “{name}” showing them in turn."
-msgstr ""
-
 msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
 msgstr ""
 
@@ -848,14 +828,6 @@ msgid "A value is expected."
 msgstr ""
 
 msgid "A whole percentage between 0 and 100 is expected."
-msgstr ""
-
-#, python-brace-format
-msgid "A “{name}” screen covering {tournaments}."
-msgstr ""
-
-#, python-brace-format
-msgid "A “{name}” screen for {tournament}, over several pages."
 msgstr ""
 
 msgid "ADM"
@@ -2413,6 +2385,18 @@ msgid "Channel [{channel_name}] has been created."
 msgstr ""
 
 #, python-brace-format
+msgid "Channel [{channel_name}] now shows the new menu."
+msgstr ""
+
+#, python-brace-format
+msgid "Channel [{channel_name}] now shows the new rotator."
+msgstr ""
+
+#, python-brace-format
+msgid "Channel [{channel_name}] now shows the new screen."
+msgstr ""
+
+#, python-brace-format
 msgid "Channel [{display_controller}] has been created."
 msgstr ""
 
@@ -2923,13 +2907,33 @@ msgstr ""
 msgid "Create a menu"
 msgstr ""
 
+#, python-brace-format
+msgid "Create a menu named “{name}” for the players to pick their tournament."
+msgstr ""
+
+#, python-brace-format
+msgid "Create a menu named “{name}” to pick the grid."
+msgstr ""
+
+#, python-brace-format
+msgid "Create a menu named “{name}” to pick the page."
+msgstr ""
+
 msgid "Create a menu now to get started."
+msgstr ""
+
+#, python-brace-format
+msgid "Create a new channel named “{name}”."
 msgstr ""
 
 msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
 msgstr ""
 
 msgid "Create a rotator"
+msgstr ""
+
+#, python-brace-format
+msgid "Create a rotator named “{name}” showing them in turn."
 msgstr ""
 
 msgid "Create a rotator now to get started."
@@ -2954,6 +2958,14 @@ msgid "Create a timer now to get started."
 msgstr ""
 
 msgid "Create a tournament"
+msgstr ""
+
+#, python-brace-format
+msgid "Create a “{name}” screen for tournaments {tournaments}."
+msgstr ""
+
+#, python-brace-format
+msgid "Create a “{name}” screen for {tournament}, over several pages."
 msgstr ""
 
 msgid "Create account"
@@ -2990,6 +3002,10 @@ msgid "Create hour"
 msgstr ""
 
 msgid "Create menu"
+msgstr ""
+
+#, python-brace-format
+msgid "Create one “{name}” screen per tournament: {tournaments}."
 msgstr ""
 
 msgid "Create permission"
@@ -3590,6 +3606,18 @@ msgid "Do not use this order as ranking."
 msgstr ""
 
 msgid "Do you like Sharly Chess? Help us keep it free and improving!"
+msgstr ""
+
+#, python-brace-format
+msgid "Do you want the channel “{channel}” to show the new menu?"
+msgstr ""
+
+#, python-brace-format
+msgid "Do you want the channel “{channel}” to show the new rotator?"
+msgstr ""
+
+#, python-brace-format
+msgid "Do you want the channel “{channel}” to show the new screen?"
 msgstr ""
 
 msgid "Do you want to add this folder to the Microsoft Defender exception list?"
@@ -7163,6 +7191,13 @@ msgstr ""
 msgid "No virtual points are given."
 msgstr ""
 
+msgid "No, keep showing nothing"
+msgstr ""
+
+#, python-brace-format
+msgid "No, keep showing “{shown}”"
+msgstr ""
+
 msgctxt "NB column header"
 msgid "No."
 msgstr ""
@@ -7316,6 +7351,9 @@ msgid "Not paired yet ({rounds}): blank entries are read as players still to be 
 msgstr ""
 
 msgid "Not ranked"
+msgstr ""
+
+msgid "Not shown on the channel"
 msgstr ""
 
 msgid "Not specified"
@@ -7542,10 +7580,6 @@ msgid "One tournament over several pages"
 msgstr ""
 
 msgid "One tournament, over several pages"
-msgstr ""
-
-#, python-brace-format
-msgid "One “{name}” screen per tournament: {tournaments}."
 msgstr ""
 
 msgid "Ongoing"
@@ -8173,6 +8207,9 @@ msgid "Per-rule checks"
 msgstr ""
 
 msgid "Perfect tournament performance"
+msgstr ""
+
+msgid "Perform the following actions:"
 msgstr ""
 
 msgid "Performance"
@@ -9237,9 +9274,6 @@ msgid "Read the documentation"
 msgstr ""
 
 msgid "Ready"
-msgstr ""
-
-msgid "Ready to create"
 msgstr ""
 
 msgid "Reason"
@@ -10493,6 +10527,30 @@ msgstr ""
 msgid "Show the members of each team"
 msgstr ""
 
+#, python-brace-format
+msgid "Show the new menu on the channel “{channel}” instead of “{shown}”."
+msgstr ""
+
+#, python-brace-format
+msgid "Show the new menu on the channel “{channel}”."
+msgstr ""
+
+#, python-brace-format
+msgid "Show the new rotator on the channel “{channel}” instead of “{shown}”."
+msgstr ""
+
+#, python-brace-format
+msgid "Show the new rotator on the channel “{channel}”."
+msgstr ""
+
+#, python-brace-format
+msgid "Show the new screen on the channel “{channel}” instead of “{shown}”."
+msgstr ""
+
+#, python-brace-format
+msgid "Show the new screen on the channel “{channel}”."
+msgstr ""
+
 msgid "Show the pairings by board"
 msgstr ""
 
@@ -10540,6 +10598,9 @@ msgid "Showing now"
 msgstr ""
 
 msgid "Shown on"
+msgstr ""
+
+msgid "Shown on the channel"
 msgstr ""
 
 msgid "Shown on the screens"
@@ -11343,6 +11404,14 @@ msgstr ""
 msgid "The change will be recorded in the TRF of the tournament."
 msgstr ""
 
+#, python-brace-format
+msgid "The channel “{channel}” currently shows nothing."
+msgstr ""
+
+#, python-brace-format
+msgid "The channel “{channel}” currently shows “{shown}”."
+msgstr ""
+
 msgid "The channels this is designed for. It is offered first when choosing what they show. Nothing is sent to them."
 msgstr ""
 
@@ -12051,7 +12120,7 @@ msgstr ""
 msgid "The screen is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
 msgstr ""
 
-msgid "The screen is marked as designed for this new channel."
+msgid "The screen is marked as designed for this new channel, which shows it."
 msgstr ""
 
 #, python-brace-format
@@ -13939,6 +14008,15 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
+msgid "Yes, show the new menu on this channel"
+msgstr ""
+
+msgid "Yes, show the new rotator on this channel"
+msgstr ""
+
+msgid "Yes, show the new screen on this channel"
+msgstr ""
+
 msgid "Yesterday"
 msgstr ""
 
@@ -15019,7 +15097,7 @@ msgid "{first} — Pairing-Allocated Bye"
 msgstr ""
 
 #, python-brace-format
-msgid "{item} and marked as designed for the channel “{name}”."
+msgid "{item} and mark it as designed for the channel “{name}”."
 msgstr ""
 
 #, python-brace-format, python-format

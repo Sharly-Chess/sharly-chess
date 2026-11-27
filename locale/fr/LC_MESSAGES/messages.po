@@ -689,18 +689,6 @@ msgstr "Un demi-point à un seul des deux camps, ou rien à aucun."
 msgid "A menu"
 msgstr "Un menu"
 
-#, python-brace-format
-msgid "A menu named “{name}” for the players to pick their tournament."
-msgstr "Un menu nommé « {name} » pour que les joueur·euses choisissent leur tournoi."
-
-#, python-brace-format
-msgid "A menu named “{name}” to pick the grid."
-msgstr "Un menu nommé « {name} » pour choisir la grille."
-
-#, python-brace-format
-msgid "A menu named “{name}” to pick the page."
-msgstr "Un menu nommé « {name} » pour choisir la page."
-
 msgid "A menu puts a bar of buttons at the top of a device, such as a tablet, so that people can tap between its screens. It can hold chosen screens, or all the screens of a type."
 msgstr "Un menu place une barre de boutons en haut d'un appareil, comme une tablette, pour passer d'un de ses écrans à l'autre en touchant. Il peut contenir des écrans choisis, ou tous les écrans d'un type."
 
@@ -709,10 +697,6 @@ msgstr "Un Elo minimum et maximum sont attendus."
 
 msgid "A new channel"
 msgstr "Un nouveau canal"
-
-#, python-brace-format
-msgid "A new channel named “{name}”."
-msgstr "Un nouveau canal nommé « {name} »."
 
 msgid "A new timer"
 msgstr "Un nouveau chronomètre"
@@ -786,10 +770,6 @@ msgstr "Un classement de 0 à {max} est attendu."
 msgid "A rotator"
 msgstr "Un écran rotatif"
 
-#, python-brace-format
-msgid "A rotator named “{name}” showing them in turn."
-msgstr "Un écran rotatif nommé « {name} » qui les affiche à tour de rôle."
-
 msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
 msgstr "Un écran rotatif affiche plusieurs écrans à tour de rôle sur un même appareil, en passant automatiquement au suivant. Il peut contenir tout écran, sauf les écrans de pointage et de saisie des résultats."
 
@@ -849,14 +829,6 @@ msgstr "Une valeur est attendue."
 
 msgid "A whole percentage between 0 and 100 is expected."
 msgstr "Un pourcentage entier entre 0 et 100 est attendu."
-
-#, python-brace-format
-msgid "A “{name}” screen covering {tournaments}."
-msgstr "Un écran « {name} » couvrant {tournaments}."
-
-#, python-brace-format
-msgid "A “{name}” screen for {tournament}, over several pages."
-msgstr "Un écran « {name} » pour {tournament}, sur plusieurs pages."
 
 msgid "ADM"
 msgstr "ADM"
@@ -2413,6 +2385,18 @@ msgid "Channel [{channel_name}] has been created."
 msgstr "Le canal [{channel_name}] a été créé."
 
 #, python-brace-format
+msgid "Channel [{channel_name}] now shows the new menu."
+msgstr "Le canal [{channel_name}] affiche maintenant le nouveau menu."
+
+#, python-brace-format
+msgid "Channel [{channel_name}] now shows the new rotator."
+msgstr "Le canal [{channel_name}] affiche maintenant le nouvel écran rotatif."
+
+#, python-brace-format
+msgid "Channel [{channel_name}] now shows the new screen."
+msgstr "Le canal [{channel_name}] affiche maintenant le nouvel écran."
+
+#, python-brace-format
 msgid "Channel [{display_controller}] has been created."
 msgstr "Le canal [{display_controller}] a été créé."
 
@@ -2923,14 +2907,34 @@ msgstr "Créez un canal maintenant pour commencer."
 msgid "Create a menu"
 msgstr "Créer un menu"
 
+#, python-brace-format
+msgid "Create a menu named “{name}” for the players to pick their tournament."
+msgstr "Créer un menu nommé « {name} » pour que les joueur·euses choisissent leur tournoi."
+
+#, python-brace-format
+msgid "Create a menu named “{name}” to pick the grid."
+msgstr "Créer un menu nommé « {name} » pour choisir la grille."
+
+#, python-brace-format
+msgid "Create a menu named “{name}” to pick the page."
+msgstr "Créer un menu nommé « {name} » pour choisir la page."
+
 msgid "Create a menu now to get started."
 msgstr "Créez un menu pour commencer."
+
+#, python-brace-format
+msgid "Create a new channel named “{name}”."
+msgstr "Créer un nouveau canal nommé « {name} »."
 
 msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
 msgstr "Créer un Groupe de prix non cumulables dans lequel vous pourrez ensuite créer des catégories, puis des prix."
 
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
+
+#, python-brace-format
+msgid "Create a rotator named “{name}” showing them in turn."
+msgstr "Créer un écran rotatif nommé « {name} » qui les affiche à tour de rôle."
 
 msgid "Create a rotator now to get started."
 msgstr "Créer un écran rotatif pour commencer."
@@ -2955,6 +2959,14 @@ msgstr "Créer un chronomètre pour commencer. "
 
 msgid "Create a tournament"
 msgstr "Créer un tournoi"
+
+#, python-brace-format
+msgid "Create a “{name}” screen for tournaments {tournaments}."
+msgstr "Créer un écran « {name} » pour les tournois {tournaments}."
+
+#, python-brace-format
+msgid "Create a “{name}” screen for {tournament}, over several pages."
+msgstr "Créer un écran « {name} » pour {tournament}, sur plusieurs pages."
 
 msgid "Create account"
 msgstr "Créer un compte"
@@ -2991,6 +3003,10 @@ msgstr "Créer un horaire"
 
 msgid "Create menu"
 msgstr "Créer un menu"
+
+#, python-brace-format
+msgid "Create one “{name}” screen per tournament: {tournaments}."
+msgstr "Créer un écran « {name} » par tournoi : {tournaments}."
 
 msgid "Create permission"
 msgstr "Créer une permission"
@@ -3591,6 +3607,18 @@ msgstr "Ne pas utiliser cet ordre comme classement."
 
 msgid "Do you like Sharly Chess? Help us keep it free and improving!"
 msgstr "Vous aimez Sharly Chess ? Aidez-nous à le maintenir gratuit et à l'améliorer !"
+
+#, python-brace-format
+msgid "Do you want the channel “{channel}” to show the new menu?"
+msgstr "Voulez-vous que le canal « {channel} » affiche le nouveau menu ?"
+
+#, python-brace-format
+msgid "Do you want the channel “{channel}” to show the new rotator?"
+msgstr "Voulez-vous que le canal « {channel} » affiche le nouvel écran rotatif ?"
+
+#, python-brace-format
+msgid "Do you want the channel “{channel}” to show the new screen?"
+msgstr "Voulez-vous que le canal « {channel} » affiche le nouvel écran ?"
 
 msgid "Do you want to add this folder to the Microsoft Defender exception list?"
 msgid_plural "Do you want to add these folders to the Microsoft Defender exception list?"
@@ -7163,6 +7191,13 @@ msgstr "Aucun point virtuel n'est attribué lors des deux dernières rondes."
 msgid "No virtual points are given."
 msgstr "Aucun point virtuel n'est attribué."
 
+msgid "No, keep showing nothing"
+msgstr "Non, laisser le canal sans rien afficher"
+
+#, python-brace-format
+msgid "No, keep showing “{shown}”"
+msgstr "Non, continuer à afficher « {shown} »"
+
 msgctxt "NB column header"
 msgid "No."
 msgstr "N°"
@@ -7317,6 +7352,9 @@ msgstr "Pas encore apparié ({rounds}) : les cases vides sont lues comme des jo
 
 msgid "Not ranked"
 msgstr "Non classé·es"
+
+msgid "Not shown on the channel"
+msgstr "Non affiché sur le canal"
 
 msgid "Not specified"
 msgstr "Non spécifié"
@@ -7545,10 +7583,6 @@ msgstr "Un tournoi sur plusieurs pages"
 
 msgid "One tournament, over several pages"
 msgstr "Un seul tournoi, sur plusieurs pages"
-
-#, python-brace-format
-msgid "One “{name}” screen per tournament: {tournaments}."
-msgstr "Un écran « {name} » par tournoi : {tournaments}."
 
 msgid "Ongoing"
 msgstr "En cours"
@@ -8176,6 +8210,9 @@ msgstr "Vérifications par règle"
 
 msgid "Perfect tournament performance"
 msgstr "Performance parfaite"
+
+msgid "Perform the following actions:"
+msgstr "Réaliser les actions suivantes :"
 
 msgid "Performance"
 msgstr "Performance"
@@ -9240,9 +9277,6 @@ msgstr "Consulter la documentation"
 
 msgid "Ready"
 msgstr "Prêt"
-
-msgid "Ready to create"
-msgstr "Prêt à créer"
 
 msgid "Reason"
 msgstr "Motif"
@@ -10495,6 +10529,30 @@ msgstr "Afficher l'état du pointage"
 msgid "Show the members of each team"
 msgstr "Afficher les membres de chaque équipe"
 
+#, python-brace-format
+msgid "Show the new menu on the channel “{channel}” instead of “{shown}”."
+msgstr "Afficher le nouveau menu sur le canal « {channel} » à la place de « {shown} »."
+
+#, python-brace-format
+msgid "Show the new menu on the channel “{channel}”."
+msgstr "Afficher le nouveau menu sur le canal « {channel} »."
+
+#, python-brace-format
+msgid "Show the new rotator on the channel “{channel}” instead of “{shown}”."
+msgstr "Afficher le nouvel écran rotatif sur le canal « {channel} » à la place de « {shown} »."
+
+#, python-brace-format
+msgid "Show the new rotator on the channel “{channel}”."
+msgstr "Afficher le nouvel écran rotatif sur le canal « {channel} »."
+
+#, python-brace-format
+msgid "Show the new screen on the channel “{channel}” instead of “{shown}”."
+msgstr "Afficher le nouvel écran sur le canal « {channel} » à la place de « {shown} »."
+
+#, python-brace-format
+msgid "Show the new screen on the channel “{channel}”."
+msgstr "Afficher le nouvel écran sur le canal « {channel} »."
+
 msgid "Show the pairings by board"
 msgstr "Afficher les appariements par échiquier"
 
@@ -10543,6 +10601,9 @@ msgstr "Affichage en cours"
 
 msgid "Shown on"
 msgstr "Affiché sur"
+
+msgid "Shown on the channel"
+msgstr "Affiché sur le canal"
 
 msgid "Shown on the screens"
 msgstr "Affiché sur les écrans"
@@ -11345,6 +11406,14 @@ msgstr "La catégorie a été renommée."
 msgid "The change will be recorded in the TRF of the tournament."
 msgstr "La modification sera consignée dans le TRF du tournoi."
 
+#, python-brace-format
+msgid "The channel “{channel}” currently shows nothing."
+msgstr "Le canal « {channel} » n'affiche rien actuellement."
+
+#, python-brace-format
+msgid "The channel “{channel}” currently shows “{shown}”."
+msgstr "Le canal « {channel} » affiche actuellement « {shown} »."
+
 msgid "The channels this is designed for. It is offered first when choosing what they show. Nothing is sent to them."
 msgstr "Les canaux pour lesquels ceci est conçu. Il est proposé en premier quand on choisit ce qu'ils affichent. Rien ne leur est envoyé."
 
@@ -12053,8 +12122,8 @@ msgstr "L'écran"
 msgid "The screen is marked as designed for the channel you pick. You choose what a channel shows, at any time, from the Channels tab."
 msgstr "L'écran est marqué comme conçu pour le canal choisi. Vous choisissez ce qu'un canal affiche, à tout moment, depuis l'onglet Canaux."
 
-msgid "The screen is marked as designed for this new channel."
-msgstr "L'écran est marqué comme conçu pour ce nouveau canal."
+msgid "The screen is marked as designed for this new channel, which shows it."
+msgstr "L'écran est marqué comme conçu pour ce nouveau canal, qui l'affiche."
 
 #, python-brace-format
 msgid "The screens of timer [{timer}] have been updated."
@@ -13941,6 +14010,15 @@ msgstr "Yémen"
 msgid "Yes"
 msgstr "Oui"
 
+msgid "Yes, show the new menu on this channel"
+msgstr "Oui, afficher le nouveau menu sur ce canal"
+
+msgid "Yes, show the new rotator on this channel"
+msgstr "Oui, afficher le nouvel écran rotatif sur ce canal"
+
+msgid "Yes, show the new screen on this channel"
+msgstr "Oui, afficher le nouvel écran sur ce canal"
+
 msgid "Yesterday"
 msgstr "Hier"
 
@@ -15021,8 +15099,8 @@ msgid "{first} — Pairing-Allocated Bye"
 msgstr "{first} — Exemption attribuée par l'appariement"
 
 #, python-brace-format
-msgid "{item} and marked as designed for the channel “{name}”."
-msgstr "{item} et marqué comme conçu pour le canal « {name} »."
+msgid "{item} and mark it as designed for the channel “{name}”."
+msgstr "{item} et le marquer comme conçu pour le canal « {name} »."
 
 #, python-brace-format, python-format
 msgid "{label} (%%s ago)"

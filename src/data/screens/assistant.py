@@ -8,7 +8,7 @@ Each goal leads into the questions of its screen type
 questions built here. The answers are read back with ``data.wizard.Wizard``
 and turned into stored objects by ``create_from_assistant()``."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any
 
 from common.i18n import _
@@ -33,6 +33,7 @@ from utils import Utils
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.screens.display_controller import DisplayController
     from data.screens.screen_types import ScreenType
 
 
@@ -198,10 +199,109 @@ def assistant_goal(event: Event, goal_id: str) -> AssistantGoal | None:
     return None
 
 
-def _channel_questions(event: Event) -> dict[str, WizardQuestion]:
+def channel_switch_question_id(channel_id: int) -> str:
+    """The ID of the question asking whether the existing channel
+    *channel_id* is switched to what is created."""
+    return f'channel_switch_{channel_id}'
+
+
+def assistant_created_kind(
+    event: Event, goal: AssistantGoal, answers: dict[str, Any]
+) -> str:
+    """What a channel switched to what is created shows (see
+    ``_AssistantWriter._show_on()``): ``menu`` when a menu is created,
+    ``rotator`` when a rotator is, ``screen`` otherwise (a screen or a paged
+    screen)."""
+    if goal.accepts_input:
+        tournament_ids: list[int] = answers.get('tournaments') or [
+            tournament.id
+            for tournament in goal.screen_type.assistant_tournaments(event)
+        ]
+        if answers.get('paged') == 'menu':
+            return 'menu'
+        if answers.get('nav') == 'single' or len(tournament_ids) == 1:
+            return 'screen'
+        return 'menu'
+    if split := _grid_split(goal, answers):
+        return 'rotator' if split == 'rotate' else 'menu'
+    if answers.get('paged') and answers.get('paged_nav') == 'menu':
+        return 'menu'
+    return 'screen'
+
+
+def channel_switch_yes_text(kind: str) -> str:
+    """The answer switching an existing channel to what is created, of the
+    *kind* given by ``assistant_created_kind()``."""
+    return {
+        'menu': _('Yes, show the new menu on this channel'),
+        'rotator': _('Yes, show the new rotator on this channel'),
+        'screen': _('Yes, show the new screen on this channel'),
+    }[kind]
+
+
+def channel_switch_question_text(channel_name: str, kind: str) -> str:
+    """The question asking whether the existing channel *channel_name* is
+    switched to what is created, of the *kind* given by
+    ``assistant_created_kind()``."""
+    return {
+        'menu': _('Do you want the channel “{channel}” to show the new menu?'),
+        'rotator': _('Do you want the channel “{channel}” to show the new rotator?'),
+        'screen': _('Do you want the channel “{channel}” to show the new screen?'),
+    }[kind].format(channel=channel_name)
+
+
+def _channel_switch_question(
+    event: Event, goal: AssistantGoal, channel: DisplayController
+) -> WizardRadioQuestion:
+    """Whether the existing *channel*, picked for the screen, is switched to
+    what is created, saying what it shows now. Switched by default only when
+    it shows nothing (not to take a display away from what it shows). The
+    question and the answer switching it name the menu, the rotator or the
+    screen created, once the answers before are known."""
+
+    def kind(answers: dict[str, Any]) -> str:
+        return assistant_created_kind(event, goal, answers)
+
+    shown_name = channel.assigned_name if channel.assigned_object is not None else None
+    if shown_name is not None:
+        help_text = _('The channel “{channel}” currently shows “{shown}”.').format(
+            channel=channel.name, shown=shown_name
+        )
+        keep_text = _('No, keep showing “{shown}”').format(shown=shown_name)
+    else:
+        help_text = _('The channel “{channel}” currently shows nothing.').format(
+            channel=channel.name
+        )
+        keep_text = _('No, keep showing nothing')
+    return WizardRadioQuestion(
+        stage='channel',
+        text=channel_switch_question_text(channel.name, 'screen'),
+        text_for_answers=lambda answers: channel_switch_question_text(
+            channel.name, kind(answers)
+        ),
+        help=help_text,
+        options=[
+            WizardOption(
+                value=True,
+                text=channel_switch_yes_text('screen'),
+                text_for_answers=lambda answers: channel_switch_yes_text(kind(answers)),
+                summary=_('Shown on the channel'),
+            ),
+            WizardOption(
+                value=False,
+                text=keep_text,
+                summary=_('Not shown on the channel'),
+            ),
+        ],
+        default_value=shown_name is None,
+    )
+
+
+def _channel_questions(event: Event, goal: AssistantGoal) -> dict[str, WizardQuestion]:
     """The questions ending every assistant chain: the channel the screen is
-    for ('channel'), and the name of a channel created on the way
-    ('channel_name')."""
+    for ('channel'), whether an existing channel picked is switched to what
+    is created (see channel_switch_question_id()), and the name of a
+    channel created on the way ('channel_name')."""
     channels = event.sorted_display_controllers
     options: list[WizardOption] = []
     if channels:
@@ -214,6 +314,7 @@ def _channel_questions(event: Event) -> dict[str, WizardQuestion]:
                     if channel.assigned_object is not None
                     else _('Currently showing nothing.')
                 ),
+                next=channel_switch_question_id(channel.id),
             )
             for channel in channels
         )
@@ -221,6 +322,10 @@ def _channel_questions(event: Event) -> dict[str, WizardQuestion]:
             WizardOption(
                 value='new',
                 text=_('A new channel'),
+                help=_(
+                    'The screen is marked as designed for this new channel, '
+                    'which shows it.'
+                ),
                 next='channel_name',
             )
         )
@@ -241,7 +346,10 @@ def _channel_questions(event: Event) -> dict[str, WizardQuestion]:
             WizardOption(
                 value='new',
                 text=_('Create a channel for this screen'),
-                help=_('The screen is marked as designed for this new channel.'),
+                help=_(
+                    'The screen is marked as designed for this new channel, '
+                    'which shows it.'
+                ),
                 next='channel_name',
             ),
             WizardOption(
@@ -274,6 +382,11 @@ def _channel_questions(event: Event) -> dict[str, WizardQuestion]:
             ),
             used_names=set(event.display_controllers_by_name),
         ),
+    } | {
+        channel_switch_question_id(channel.id): _channel_switch_question(
+            event, goal, channel
+        )
+        for channel in channels
     }
 
 
@@ -284,7 +397,7 @@ def assistant_wizard(event: Event, goal: AssistantGoal) -> Wizard:
     assert questions is not None
     return Wizard(
         title=goal.title,
-        questions={**questions, **_channel_questions(event)},
+        questions={**questions, **_channel_questions(event, goal)},
     )
 
 
@@ -314,6 +427,9 @@ class AssistantCreation:
     channel_name: str | None = None
     # Whether the channel was created by the assistant
     channel_created: bool = False
+    # The ID of the existing channel switched to what was created, if any
+    # (its display is told to show it)
+    channel_switched_id: int | None = None
 
 
 def _assistant_menu_name(
@@ -568,14 +684,26 @@ class _AssistantWriter:
         channel_answer = self.answers.get('channel')
         stored_channel: StoredDisplayController | None = None
         if channel_answer == 'new':
-            stored_channel = self.database.add_stored_display_controller(
-                StoredDisplayController(id=None, name=self.answers['channel_name'])
+            # A new channel shows what was created right away (see
+            # _show_on()); an existing channel only when asked.
+            stored_channel = StoredDisplayController(
+                id=None, name=self.answers['channel_name']
             )
+            self._show_on(stored_channel)
+            stored_channel = self.database.add_stored_display_controller(stored_channel)
             self.creation.channel_created = True
         elif isinstance(channel_answer, int):
             stored_channel = self.event.display_controllers_by_id[
                 channel_answer
             ].stored_display_controller
+            if self.answers.get(channel_switch_question_id(channel_answer)):
+                # Asked for, an existing channel shows what was created too.
+                stored_channel = replace(stored_channel)
+                self._show_on(stored_channel)
+                stored_channel = self.database.update_stored_display_controller(
+                    stored_channel
+                )
+                self.creation.channel_switched_id = channel_answer
         if stored_channel is None:
             return
         assert stored_channel.id is not None
@@ -602,6 +730,25 @@ class _AssistantWriter:
                 screen_id, [stored_channel.id]
             )
 
+    def _show_on(self, stored_channel: StoredDisplayController) -> None:
+        """Set *stored_channel* to show what was created: the menu or the
+        rotator when there is one, else the paged screen or the screen
+        created (the assistant creates only one of them when there is no
+        menu nor rotator)."""
+        stored_channel.screen_id = None
+        stored_channel.rotator_id = None
+        stored_channel.family_id = None
+        stored_channel.family_page = None
+        stored_channel.menu_id = None
+        if self._menu_id is not None:
+            stored_channel.menu_id = self._menu_id
+        elif self._rotator_id is not None:
+            stored_channel.rotator_id = self._rotator_id
+        elif self._family_ids:
+            stored_channel.family_id = self._family_ids[0]
+        elif self._screen_ids:
+            stored_channel.screen_id = self._screen_ids[0]
+
 
 def create_from_assistant(
     event: Event,
@@ -609,9 +756,9 @@ def create_from_assistant(
     answers: dict[str, Any],
 ) -> AssistantCreation:
     """Create the screens, the paged screens, the menu and the channel the
-    assistant *answers* describe, in one database write. A channel picked
-    or created is not switched to what was created: it only marks it as
-    designed for the channel."""
+    assistant *answers* describe, in one database write. What was created is
+    marked as designed for the channel picked or created; a channel created
+    also shows it, a channel picked only when the answers ask for it."""
     with EventDatabase(event.uniq_id, write=True) as database:
         return _AssistantWriter(event, goal, answers, database).write()
 
@@ -621,8 +768,8 @@ def assistant_summary(
     goal: AssistantGoal,
     answers: dict[str, Any],
 ) -> list[str]:
-    """What the assistant is about to create, one line each, shown before
-    the Create button (mirrors ``create_from_assistant()``)."""
+    """The actions the assistant is about to perform, one line each, shown
+    before the Create button (mirrors ``create_from_assistant()``)."""
     # The standings goal names what it shows: the ranking, the cross-table
     # or the round-robin grid.
     item_name = {
@@ -651,44 +798,46 @@ def assistant_summary(
         ]
         if answers.get('paged') == 'menu':
             lines.append(
-                _('A “{name}” screen for {tournament}, over several pages.').format(
+                _(
+                    'Create a “{name}” screen for {tournament}, over several pages.'
+                ).format(
                     name=goal.short_name,
                     tournament=tournament_names(tournament_ids[:1]),
                 )
             )
-            menu_line = _('A menu named “{name}” to pick the page.')
+            menu_line = _('Create a menu named “{name}” to pick the page.')
         elif answers.get('nav') == 'single' or len(tournament_ids) == 1:
             lines.append(
-                _('A “{name}” screen covering {tournaments}.').format(
+                _('Create a “{name}” screen for tournaments {tournaments}.').format(
                     name=goal.short_name,
                     tournaments=tournament_names(tournament_ids),
                 )
             )
         else:
             lines.append(
-                _('One “{name}” screen per tournament: {tournaments}.').format(
+                _('Create one “{name}” screen per tournament: {tournaments}.').format(
                     name=goal.short_name,
                     tournaments=tournament_names(tournament_ids),
                 )
             )
             menu_line = _(
-                'A menu named “{name}” for the players to pick their tournament.'
+                'Create a menu named “{name}” for the players to pick their tournament.'
             )
     elif split := _grid_split(goal, answers):
         lines.append(
-            _('One “{name}” screen per tournament: {tournaments}.').format(
+            _('Create one “{name}” screen per tournament: {tournaments}.').format(
                 name=item_name,
                 tournaments=tournament_names(answers['grid_tournaments']),
             )
         )
         if split == 'rotate':
             lines.append(
-                _('A rotator named “{name}” showing them in turn.').format(
+                _('Create a rotator named “{name}” showing them in turn.').format(
                     name=_assistant_rotator_name(event, _('Round-robin grids'))
                 )
             )
         else:
-            menu_line = _('A menu named “{name}” to pick the grid.')
+            menu_line = _('Create a menu named “{name}” to pick the grid.')
             menu_base_name = _('Round-robin grids')
     elif answers.get('paged'):
         tournament_id: int = (
@@ -696,16 +845,16 @@ def assistant_summary(
             or screen_type.assistant_tournaments(event)[0].id
         )
         lines.append(
-            _('A “{name}” screen for {tournament}, over several pages.').format(
+            _('Create a “{name}” screen for {tournament}, over several pages.').format(
                 name=item_name,
                 tournament=tournament_names([tournament_id]),
             )
         )
         if answers.get('paged_nav') == 'menu':
-            menu_line = _('A menu named “{name}” to pick the page.')
+            menu_line = _('Create a menu named “{name}” to pick the page.')
     else:
         lines.append(
-            _('A “{name}” screen covering {tournaments}.').format(
+            _('Create a “{name}” screen for tournaments {tournaments}.').format(
                 name=item_name,
                 tournaments=tournament_names(
                     answers.get('grid_tournaments')
@@ -730,11 +879,45 @@ def assistant_summary(
     if channel_name is not None:
         # The last line is what the channel is designed for: the menu or the
         # rotator when there is one, else the screen.
-        lines[-1] = _('{item} and marked as designed for the channel “{name}”.').format(
-            item=lines[-1].rstrip('.'), name=channel_name
-        )
+        lines[-1] = _(
+            '{item} and mark it as designed for the channel “{name}”.'
+        ).format(item=lines[-1].rstrip('.'), name=channel_name)
+        # What the channel shows when it is switched to what is created.
+        shown_kind = assistant_created_kind(event, goal, answers)
         if channel_answer == 'new':
             lines.insert(
-                0, _('A new channel named “{name}”.').format(name=channel_name)
+                0, _('Create a new channel named “{name}”.').format(name=channel_name)
             )
+            shown_name: str | None = None
+        elif isinstance(channel_answer, int) and answers.get(
+            channel_switch_question_id(channel_answer)
+        ):
+            channel = event.display_controllers_by_id[channel_answer]
+            shown_name = (
+                channel.assigned_name if channel.assigned_object is not None else None
+            )
+        else:
+            return lines
+        # The channel is switched to what is created: a line of its own.
+        if shown_name is None:
+            show_line = {
+                'menu': _('Show the new menu on the channel “{channel}”.'),
+                'rotator': _('Show the new rotator on the channel “{channel}”.'),
+                'screen': _('Show the new screen on the channel “{channel}”.'),
+            }[shown_kind]
+        else:
+            show_line = {
+                'menu': _(
+                    'Show the new menu on the channel “{channel}” instead of “{shown}”.'
+                ),
+                'rotator': _(
+                    'Show the new rotator on the channel “{channel}” instead of '
+                    '“{shown}”.'
+                ),
+                'screen': _(
+                    'Show the new screen on the channel “{channel}” instead of '
+                    '“{shown}”.'
+                ),
+            }[shown_kind]
+        lines.append(show_line.format(channel=channel_name, shown=shown_name))
     return lines
