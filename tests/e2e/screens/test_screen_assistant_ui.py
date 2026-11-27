@@ -160,7 +160,7 @@ class TestScreenAssistant:
         channels = list(event.display_controllers_by_id.values())
         assert len(channels) == 1
         assert channels[0].name == 'Main hall'
-        assert channels[0].family_id is None
+        assert channels[0].family_id == families[0].id
         assert channels[0].stored_display_controller.item_family_ids == [families[0].id]
 
     def test_the_tournament_lists_open_on_the_page(

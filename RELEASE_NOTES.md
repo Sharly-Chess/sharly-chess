@@ -39,6 +39,7 @@
 - The background of image screens can use a colour extracted from the image in one click or be filled by a blurred version of the image (5.3.0)
 - The screens never take a theme: whatever the theme of the application or the appearance of the system showing them, they keep their light colours, and they tell the browser so, which keeps a device that darkens web pages on its own from turning them white-on-black; they also stay readable in a browser too old to read the colours of the theme (5.3.0)
 - A pairings-by-board or result-entry screen of a team tournament paired on fixed tables no longer fails with an error on the rounds where a team fielding fewer players than there are boards leaves an empty seat on the white side of a board: the seat is shown empty, as it already was on the black side (5.3.0)
+- The screen setup assistant now has the channel show what it creates: a new channel shows the new menu, rotator or screen at once, and when an existing channel is picked, the assistant tells what it currently shows (or that it shows nothing) and asks whether to switch it to the new menu, rotator or screen, its display following straight away. Its last step, now titled "Perform the following actions:", lists what will be done as actions, ending with the screen shown on the channel (5.3.1)
 
 ## Documents
 
