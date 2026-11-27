@@ -66,6 +66,23 @@ class CategoryFormatTestCase(TestCase):
         self.assertIn('secondary_score_for_colours', rule_set.managed_fields)
         self.assertEqual(rule_set.form_defaults()['secondary_score_for_colours'], 'on')
 
+    def test_match_points_rank_before_the_tie_breaks(self) -> None:
+        rule_set = ChampionnatScolaireRuleSet({})
+        for pairing_id in ('TEAM_SWISS', 'TEAM_ROUND_ROBIN'):
+            criteria = [
+                criterion
+                for criterion, _ in rule_set.tie_breaks_for_pairing(pairing_id)
+            ]
+            self.assertEqual(
+                criteria,
+                [
+                    'POINTS',
+                    'TEAM_EDE',
+                    'fra_schools-BOARD-ORDER-WINS',
+                    'ffe-GP-DIFFERENTIAL',
+                ],
+            )
+
 
 @pytest.mark.unit
 class GenderBalanceTestCase(TestCase):
