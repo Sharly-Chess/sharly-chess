@@ -910,9 +910,8 @@ def test_create_and_edit_opens_the_form_of_what_was_created(
     http: TestClient, tournament: StoredTournament
 ):
     """Create and edit leads to the edit form of the screen when a single
-    one is created, even behind a page menu. It is not offered when a screen
-    per tournament is created behind a menu or a rotator, which then opens
-    with no form."""
+    one is created, even behind a page menu, and to the edit of all the
+    screens created when a screen per tournament is created behind a menu."""
 
     def create(data: dict[str, str]) -> str:
         response = http.post(
@@ -943,8 +942,6 @@ def test_create_and_edit_opens_the_form_of_what_was_created(
         'answer_columns': '0',
         'answer_channel': NO_CHANNEL,
     }
-    paged_summary = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=paged_data)
-    assert 'data-editable="true"' in paged_summary.text
     redirect = create(paged_data | {'edit_after': '1'})
     event = reload_event()
     family = event.families_by_screen_type[ScreenType.BOARDS.value][0]
@@ -960,12 +957,19 @@ def test_create_and_edit_opens_the_form_of_what_was_created(
         'answer_columns': '0',
         'answer_channel': NO_CHANNEL,
     }
-    summary = http.post(f'/screen-assistant-summary/{EVENT_ID}', data=data).text
-    assert 'data-editable="false"' in summary
     redirect = create(data | {'edit_after': '1'})
     event = reload_event()
-    menu = next(menu for menu in event.menus_by_id.values() if menu.name == 'Check-in')
-    assert redirect == f'/event/{EVENT_ID}/menus?scroll_to={menu.id}'
+    # The two screens of the check-in input, created after the first one.
+    first, second = sorted(
+        screen.id
+        for screen in event.sorted_basic_screens_by_screen_type[
+            ScreenType.CHECK_IN.value
+        ]
+    )[-2:]
+    assert redirect == (
+        f'/event/{EVENT_ID}/screens?scroll_to={first}&edit=1'
+        f'&selected={first}&selected={second}'
+    )
 
     # The tabs then open the edit form.
     response = http.get(f'/event/{EVENT_ID}/screens?scroll_to={screen.id}&edit=1')
@@ -974,6 +978,14 @@ def test_create_and_edit_opens_the_form_of_what_was_created(
         f'/event/{EVENT_ID}/screens?scroll_to=family-{family.id}&edit=1'
     )
     assert f'/family-modal/update/{EVENT_ID}/{family.id}' in response.text
+    response = http.get(
+        f'/event/{EVENT_ID}/screens?scroll_to={first}&edit=1'
+        f'&selected={first}&selected={second}'
+    )
+    assert (
+        f'/screens-bulk-modal/update/{EVENT_ID}/{ScreenType.CHECK_IN.value}'
+        f'?item_ids={first}\\u0026item_ids={second}'
+    ) in response.text
 
 
 @pytest.mark.unit

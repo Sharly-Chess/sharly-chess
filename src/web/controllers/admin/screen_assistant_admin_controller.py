@@ -15,7 +15,6 @@ from data.access_levels.actions import AuthAction
 from data.screens.assistant import (
     AssistantGoal,
     assistant_created_kind,
-    assistant_creates_single_screen,
     assistant_goal,
     assistant_goals,
     assistant_other_type_names,
@@ -189,24 +188,27 @@ class ScreenAssistantAdminController(BaseEventAdminController):
             Message.success(
                 request, switched_message.format(channel_name=creation.channel_name)
             )
-        # Asked to edit what was created, the tab opens the form of the
-        # screen or paged screen, when a single one was created.
-        single_item = len(creation.screen_ids) + len(creation.family_ids) == 1
-        edit = '&edit=1' if form_data.get('edit_after') and single_item else ''
-        # On to the rotator or the menu created, or to the screens.
-        if creation.rotator_id is not None:
+        item_ids = [str(screen_id) for screen_id in creation.screen_ids] + [
+            f'family-{family_id}' for family_id in creation.family_ids
+        ]
+        # Asked to edit what was created, the screens tab opens the form of
+        # the screen or paged screen, or the edit of all the screens created
+        # when there are several.
+        edit = bool(form_data.get('edit_after') and item_ids)
+        # Else on to the rotator or the menu created, or to the screens.
+        if creation.rotator_id is not None and not edit:
             return ClientRedirect(
                 redirect_to=request.app.route_reverse(
                     'admin-event-rotators-tab', event_uniq_id=event.uniq_id
                 )
-                + f'?scroll_to={creation.rotator_id}{edit}'
+                + f'?scroll_to={creation.rotator_id}'
             )
         if creation.menu_id is not None and not edit:
             return ClientRedirect(
                 redirect_to=request.app.route_reverse(
                     'admin-event-menus-tab', event_uniq_id=event.uniq_id
                 )
-                + f'?scroll_to={creation.menu_id}{edit}'
+                + f'?scroll_to={creation.menu_id}'
             )
         # A filter on another type would hide what was just created; the
         # filter is otherwise left alone, and the page scrolls to the
@@ -214,11 +216,11 @@ class ScreenAssistantAdminController(BaseEventAdminController):
         type_filter = SessionScreensTypeFilter(request)
         if type_filter.get() not in ('', *creation.screen_type_ids):
             type_filter.set('')
-        scroll_to = ''
-        if creation.screen_ids:
-            scroll_to = f'?scroll_to={creation.screen_ids[0]}{edit}'
-        elif creation.family_ids:
-            scroll_to = f'?scroll_to=family-{creation.family_ids[0]}{edit}'
+        scroll_to = f'?scroll_to={item_ids[0]}' if item_ids else ''
+        if edit:
+            scroll_to += '&edit=1'
+            if len(item_ids) > 1:
+                scroll_to += ''.join(f'&selected={item_id}' for item_id in item_ids)
         return ClientRedirect(
             redirect_to=request.app.route_reverse(
                 'admin-event-screens-tab', event_uniq_id=event.uniq_id
@@ -253,11 +255,7 @@ class ScreenAssistantAdminController(BaseEventAdminController):
         summary_lines = [] if errors else assistant_summary(event, goal, answers)
         return HTMXTemplate(
             template_name='admin/screens/assistant_summary.html',
-            context={
-                'summary_lines': summary_lines,
-                'editable': not errors
-                and assistant_creates_single_screen(event, goal, answers),
-            },
+            context={'summary_lines': summary_lines},
         )
 
     @post(

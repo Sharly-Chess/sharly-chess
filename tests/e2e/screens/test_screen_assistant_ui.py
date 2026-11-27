@@ -218,8 +218,8 @@ class TestScreenAssistant:
         self, page: Page, api_request_context: APIRequestContext
     ):
         """A page per tournament is offered first, before the tournaments
-        are picked, and needs at least two of them. Gathered by a rotator,
-        the screens are not offered to be edited once created."""
+        are picked, and needs at least two of them. Create and edit then
+        opens the edit of the screens created, a screen per tournament."""
         TestUtils.create_tournament(
             EVENT_ID,
             f'{TOURNAMENT_NAME} 2',
@@ -253,7 +253,6 @@ class TestScreenAssistant:
         question = page.get_by_test_id('screen-assistant-question-split_nav')
         expect(question).to_be_visible()
         expect(question.get_by_label('The pages turn by themselves')).to_be_checked()
-        # A screen per tournament gathered by a rotator: nothing to edit.
         next_.click()
         expect(page.get_by_test_id('screen-assistant-question-columns')).to_be_visible()
         next_.click()
@@ -263,4 +262,11 @@ class TestScreenAssistant:
             'Create a rotator named'
         )
         expect(page.get_by_test_id('screen-assistant-create')).to_be_visible()
-        expect(page.get_by_test_id('screen-assistant-create-edit')).to_be_hidden()
+        create_edit = page.get_by_test_id('screen-assistant-create-edit')
+        expect(create_edit).to_be_visible()
+        with page.expect_navigation():
+            create_edit.click()
+        expect(page.locator('#modal-wrapper.show #modal-form')).to_be_visible()
+        expect(page.get_by_test_id('screens-bulk-names').locator('li')).to_have_count(2)
+        section = page.locator(f'#admin-screens-section-{ScreenType.BOARDS.value}')
+        expect(section.locator('.screens-bulk-select:checked')).to_have_count(2)

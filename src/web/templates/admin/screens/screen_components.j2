@@ -57,6 +57,17 @@
     {%- if item.is_paged %}feed-preview-paged{% endif -%}
 {%- endmacro %}
 
+{% macro select(item, view, placement) %}
+    <input
+        type="checkbox"
+        class="form-check-input m-0 screens-bulk-select"
+        name="item_ids"
+        value="{{ item.collection_item_id }}"
+        aria-label="{{ _('Select %(name)s', name=item.display_name if item.is_paged else item.name) }}"
+        data-testid="screens-bulk-select"
+    />
+{% endmacro %}
+
 {% macro identity(item, view, placement) %}
 {% if item.is_paged %}{{ paged.identity(item, view, placement) }}{% else %}
     <span class="collection-identity">

@@ -225,6 +225,18 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d screen has been deleted."
+msgid_plural "%(num)d screens have been deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d screen has been updated."
+msgid_plural "%(num)d screens have been updated."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d second per page"
 msgid_plural "%(num)d seconds per page"
 msgstr[0] ""
@@ -287,6 +299,12 @@ msgstr[1] ""
 #, python-format
 msgid "%(num)d unknown column (ignored)"
 msgid_plural "%(num)d unknown columns (ignored)"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)s selected"
+msgid_plural "%(num)s selected"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -2558,6 +2576,9 @@ msgstr ""
 msgid "Clear the schedule"
 msgstr ""
 
+msgid "Clear the selection"
+msgstr ""
+
 msgid "Clear the tag filter."
 msgstr ""
 
@@ -3332,6 +3353,12 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+#, python-format
+msgid "Delete %(num)d screen"
+msgid_plural "Delete %(num)d screens"
+msgstr[0] ""
+msgstr[1] ""
+
 #, python-brace-format
 msgid "Delete <b>{value}</b>"
 msgstr ""
@@ -4000,6 +4027,12 @@ msgstr ""
 
 msgid "Edit"
 msgstr ""
+
+#, python-format
+msgid "Edit %(num)d screen"
+msgid_plural "Edit %(num)d screens"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Edit Player"
 msgstr ""
@@ -6476,6 +6509,9 @@ msgstr ""
 msgid "Missing women"
 msgstr ""
 
+msgid "Mixed"
+msgstr ""
+
 msgctxt "monday"
 msgid "Mo"
 msgstr ""
@@ -7624,6 +7660,9 @@ msgid "Only custom templates can be edited."
 msgstr ""
 
 msgid "Only required for users that need to connect to the server."
+msgstr ""
+
+msgid "Only the fields you change are applied to the selected screens; the others keep their own values."
 msgstr ""
 
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
@@ -9028,6 +9067,9 @@ msgstr ""
 msgid "Public screen"
 msgstr ""
 
+msgid "Public screens"
+msgstr ""
+
 msgid "Publish"
 msgstr ""
 
@@ -10250,6 +10292,10 @@ msgstr ""
 msgid "Select %(competitor)s"
 msgstr ""
 
+#, python-format
+msgid "Select %(name)s"
+msgstr ""
+
 msgid "Select All"
 msgstr ""
 
@@ -10266,6 +10312,10 @@ msgid "Select a tournament stage…"
 msgstr ""
 
 msgid "Select all"
+msgstr ""
+
+#, python-format
+msgid "Select all the screens of the type %(type)s"
 msgstr ""
 
 msgid "Select an account"
@@ -12161,6 +12211,9 @@ msgid "The screens shown on a channel are controlled by the screen managers."
 msgstr ""
 
 msgid "The screens, paged screens, rotators and menus designed for this channel. They appear first when choosing what it shows, and anything else can still be sent to it."
+msgstr ""
+
+msgid "The selected screens differ."
 msgstr ""
 
 #, python-brace-format
