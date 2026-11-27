@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     from data.screens.screen_set import ScreenSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredFamily, StoredScreen
+    from plugins.utils import PluginData
 
 
 def tournaments_screen_name(
@@ -782,11 +783,23 @@ class ScreenType(IdentifiableEntity, ABC):
         modal); a plugin type points this at its own form partial."""
         return None
 
+    @property
+    def multiple_edit_form_template(self) -> str | None:
+        """The extra fields of this type in the modal editing several screens
+        at once, ``None`` to leave them out."""
+        return self.form_template
+
     def read_form_data(
         self, data: dict[str, str], errors: dict[str, str], event: Event
     ) -> dict:
         """Extract this type's ``StoredScreen`` fields from the submitted form
         *data*, adding any validation messages to *errors*."""
+        return {}
+
+    @property
+    def plugin_data_classes(self) -> dict[str, type[PluginData]]:
+        """The plugin data stored on the screens of this type
+        (``StoredScreen.plugin_data``), by plugin id."""
         return {}
 
     def default_form_data(self, screen: Screen) -> dict:
@@ -3151,6 +3164,12 @@ class ImageScreenType(ScreenType):
     @override
     def form_template(self) -> str | None:
         return '/admin/screens/forms/image_form.html'
+
+    @property
+    @override
+    def multiple_edit_form_template(self) -> str | None:
+        # The image of each screen is its own.
+        return None
 
     @property
     @override

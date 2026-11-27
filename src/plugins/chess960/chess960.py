@@ -15,7 +15,7 @@ from plugins.chess960.chess960_document import Chess960PrintDocument
 from plugins.chess960.screen_type import Chess960ScreenType
 from plugins.chess960.utils import Chess960ScreenPluginData
 from plugins.hookspec import hookimpl
-from plugins.utils import Plugin, PluginData
+from plugins.utils import Plugin
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
@@ -92,10 +92,6 @@ class Chess960Plugin(Plugin):
     # ---------------------------------------------------------------------------------
     # Screens
     # ---------------------------------------------------------------------------------
-
-    @hookimpl
-    def get_screen_plugin_data_class(self) -> tuple[str, type[PluginData]]:
-        return self.id, Chess960ScreenPluginData
 
     @hookimpl
     def insert_screen_types(self, screen_types: list[type[ScreenType]]) -> None:

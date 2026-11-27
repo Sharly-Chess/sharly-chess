@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from data.event import Event
     from data.screens.screen import Screen
     from plugins.chess960.utils import Chess960ScreenPluginData
+    from plugins.utils import PluginData
 
 
 class Chess960ScreenType(ScreenType):
@@ -58,6 +59,13 @@ class Chess960ScreenType(ScreenType):
     @override
     def form_template(self) -> str | None:
         return '/chess960_screen_form.html'
+
+    @property
+    @override
+    def plugin_data_classes(self) -> dict[str, type[PluginData]]:
+        from plugins.chess960.utils import Chess960ScreenPluginData
+
+        return {PLUGIN_NAME: Chess960ScreenPluginData}
 
     @staticmethod
     def _plugin_data(screen: Screen) -> Chess960ScreenPluginData:

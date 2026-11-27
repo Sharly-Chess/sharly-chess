@@ -259,6 +259,32 @@ class FamilyAdminController(BaseEventAdminController):
             **type_values,
         )
 
+    @staticmethod
+    def family_form_values(family: Family) -> dict[str, Any]:
+        """The stored values of *family*, as the values of its edit form."""
+        stored_family = family.stored_family
+        return {
+            'public': stored_family.public,
+            'name': stored_family.name,
+            'tournament_id': stored_family.tournament_id,
+            'columns': stored_family.columns,
+            'font_size': stored_family.font_size,
+            'menu_text': stored_family.menu_text,
+            'timer_id': stored_family.timer_id,
+            'first': stored_family.first,
+            'last': stored_family.last,
+            'parts': stored_family.parts,
+            'number': stored_family.number,
+            'page_delay': stored_family.page_delay,
+            'fixed_board_order': stored_family.fixed_board_order,
+            'message_text_checkbox': stored_family.message_default,
+            'message_text': stored_family.message_text,
+            'display_controller_ids': [
+                display_controller.id
+                for display_controller in family.display_controllers
+            ],
+        } | family.screen_type.default_family_form_data(family)
+
     @classmethod
     def _admin_event_families_render(
         cls,
@@ -289,97 +315,41 @@ class FamilyAdminController(BaseEventAdminController):
         match modal:
             case 'family':
                 if data is None:
-                    name: str | None = None
-                    public: bool | None = None
-                    menu_text: str | None = None
-                    columns: int | None = None
-                    font_size: int | None = None
-                    timer_id: int | None = None
-                    tournament_id: int | None = None
-                    first: int | None = None
-                    last: int | None = None
-                    parts: int | None = None
-                    number: int | None = None
-                    page_delay: int | None = None
-                    fixed_board_order: str | None = None
-                    message_default: bool = True
-                    message_text: str | None = None
-                    # Type-specific form values, provided by the screen type.
-                    type_values: dict[str, Any] = {}
+                    form_values: dict[str, Any]
                     match action:
                         case 'update':
-                            name = web_context.get_admin_family().stored_family.name
+                            form_values = cls.family_form_values(
+                                web_context.get_admin_family()
+                            )
+                        case 'clone':
+                            family = web_context.get_admin_family()
+                            form_values = cls.family_form_values(family)
+                            form_values['name'] = (
+                                event.get_unused_family_name(
+                                    family_type=family.screen_type,
+                                    base_name=form_values['name'],
+                                )
+                                if form_values['name']
+                                else None
+                            )
                         case 'create':
                             # No default name: an unnamed multi-screen is named
                             # automatically (as for single screens).
-                            pass
-                        case 'clone':
-                            family = web_context.get_admin_family()
-                            if family.stored_family.name:
-                                name = event.get_unused_family_name(
-                                    family_type=family.screen_type,
-                                    base_name=family.stored_family.name,
-                                )
-                        case 'delete':
-                            pass
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    match action:
-                        case 'update' | 'clone':
-                            family = web_context.get_admin_family()
-                            stored_family = family.stored_family
-                            public = stored_family.public
-                            tournament_id = stored_family.tournament_id
-                            columns = stored_family.columns
-                            font_size = stored_family.font_size
-                            menu_text = stored_family.menu_text
-                            timer_id = stored_family.timer_id
-                            first = stored_family.first
-                            last = stored_family.last
-                            type_values = family.screen_type.default_family_form_data(
-                                family
-                            )
-                            parts = stored_family.parts
-                            number = stored_family.number
-                            page_delay = stored_family.page_delay
-                            fixed_board_order = stored_family.fixed_board_order
-                            message_default = stored_family.message_default
-                            message_text = stored_family.message_text
-                        case 'create':
-                            public = True
-                            message_default = True
-                            tournament_id = next(iter(event.tournaments_by_id.keys()))
                             create_type = web_context.family_type
                             assert create_type is not None
                             type_values = create_type.create_form_data(event)
-                            columns = type_values.pop('columns', None)
+                            form_values = {
+                                'public': True,
+                                'tournament_id': next(
+                                    iter(event.tournaments_by_id.keys())
+                                ),
+                                'columns': type_values.pop('columns', None),
+                                'message_text_checkbox': True,
+                            } | type_values
                         case 'delete':
-                            pass
+                            form_values = {}
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    form_values: dict[str, Any] = {
-                        'public': public,
-                        'name': name,
-                        'tournament_id': tournament_id,
-                        'columns': columns,
-                        'font_size': font_size,
-                        'menu_text': menu_text,
-                        'timer_id': timer_id,
-                        'first': first,
-                        'last': last,
-                        'parts': parts,
-                        'number': number,
-                        'page_delay': page_delay,
-                        'fixed_board_order': fixed_board_order,
-                        'message_text_checkbox': message_default,
-                        'message_text': message_text,
-                    }
-                    form_values.update(type_values)
-                    if action in ('update', 'clone'):
-                        form_values['display_controller_ids'] = [
-                            display_controller.id
-                            for display_controller in web_context.get_admin_family().display_controllers
-                        ]
                     data = WebContext.values_dict_to_form_data(form_values)
                     stored_family = cls._admin_validate_family_update_data(
                         action, web_context, data

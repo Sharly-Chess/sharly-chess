@@ -1,4 +1,3 @@
-import builtins
 import weakref
 from collections.abc import Collection
 from datetime import datetime
@@ -11,7 +10,6 @@ from common.i18n import _
 from common.logger import get_logger
 from data.screens.screen_set import ScreenSet, format_range
 from data.screens.timer import Timer
-from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 
 from database.sqlite.event.event_database import EventDatabase
@@ -415,10 +413,6 @@ class Screen:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.message_text
 
-    @staticmethod
-    def plugin_data_class_by_plugin_id() -> dict[str, builtins.type[PluginData]]:
-        return dict(plugin_manager.hook.get_screen_plugin_data_class())
-
     @cached_property
     def plugin_data(self) -> dict[str, PluginData]:
         stored_plugin_data = (
@@ -428,5 +422,5 @@ class Screen:
             plugin_id: plugin_data_class.from_stored_value(
                 stored_plugin_data.get(plugin_id, {})
             )
-            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+            for plugin_id, plugin_data_class in self.screen_type.plugin_data_classes.items()
         }

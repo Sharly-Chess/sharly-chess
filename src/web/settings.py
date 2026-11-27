@@ -60,6 +60,9 @@ from web.controllers.admin.component_gallery_admin_controller import (
 from web.controllers.admin.event_admin_controller import EventAdminController
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 from web.controllers.admin.family_admin_controller import FamilyAdminController
+from web.controllers.admin.screen_bulk_admin_controller import (
+    ScreenBulkAdminController,
+)
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.admin.championship_admin_controller import (
     ChampionshipAdminController,
@@ -136,6 +139,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     DisplayAdminController,
     ScreenAdminController,
     ScreenAssistantAdminController,
+    ScreenBulkAdminController,
     TimerAdminController,
     FamilyAdminController,
     RotatorAdminController,
