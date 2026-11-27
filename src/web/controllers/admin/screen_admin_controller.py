@@ -598,7 +598,7 @@ class ScreenAdminController(ScreenAdminRenderer):
                 for (
                     plugin_id,
                     plugin_data_class,
-                ) in Screen.plugin_data_class_by_plugin_id().items():
+                ) in screen_type.plugin_data_classes.items():
                     previous_object = (
                         web_context.admin_screen.plugin_data.get(plugin_id)
                         if web_context.admin_screen

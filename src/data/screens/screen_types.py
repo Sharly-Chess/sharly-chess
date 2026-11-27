@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     from data.screens.screen_set import ScreenSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredFamily, StoredScreen
+    from plugins.utils import PluginData
 
 
 def tournaments_screen_name(
@@ -787,6 +788,12 @@ class ScreenType(IdentifiableEntity, ABC):
     ) -> dict:
         """Extract this type's ``StoredScreen`` fields from the submitted form
         *data*, adding any validation messages to *errors*."""
+        return {}
+
+    @property
+    def plugin_data_classes(self) -> dict[str, type[PluginData]]:
+        """The plugin data stored on the screens of this type
+        (``StoredScreen.plugin_data``), by plugin id."""
         return {}
 
     def default_form_data(self, screen: Screen) -> dict:
