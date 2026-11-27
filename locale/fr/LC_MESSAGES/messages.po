@@ -6006,9 +6006,6 @@ msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
 msgid "List of players"
 msgstr "Liste des participant·es"
 
-msgid "List the players without prize tied with the last prize winner of each category"
-msgstr "Citer les ex-æquo non primé·es du·de la dernier·e primé·e de chaque catégorie"
-
 msgid "List view"
 msgstr "Affichage en liste"
 
@@ -10648,6 +10645,9 @@ msgstr "Afficher les étapes de %(competitor)s"
 
 msgid "Show the standings"
 msgstr "Afficher le classement"
+
+msgid "Show the tied players without prize"
+msgstr "Afficher les ex-æquo non primé·es"
 
 msgid "Show this round on the screens and send its results to the online services."
 msgstr "Afficher cette ronde sur les écrans et envoyer ses résultats aux services en ligne."

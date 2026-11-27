@@ -6006,9 +6006,6 @@ msgstr ""
 msgid "List of players"
 msgstr ""
 
-msgid "List the players without prize tied with the last prize winner of each category"
-msgstr ""
-
 msgid "List view"
 msgstr ""
 
@@ -10645,6 +10642,9 @@ msgid "Show the stages of %(competitor)s"
 msgstr ""
 
 msgid "Show the standings"
+msgstr ""
+
+msgid "Show the tied players without prize"
 msgstr ""
 
 msgid "Show this round on the screens and send its results to the online services."
