@@ -771,7 +771,7 @@ msgid "A rotator"
 msgstr "Un écran rotatif"
 
 msgid "A rotator is created to show the screens in turn, named after what they show."
-msgstr "Un écran rotatif est créé pour afficher les écrans à tour de rôle, nommé d'après ce qu'ils affichent."
+msgstr "Un écran rotatif est créé pour afficher les écrans à tour de rôle, il est nommé d'après ce que les écrans affichent."
 
 msgid "A rotator shows several screens in turn on one device, moving to the next one automatically. It can hold any screen except check-in and result entry screens."
 msgstr "Un écran rotatif affiche plusieurs écrans à tour de rôle sur un même appareil, en passant automatiquement au suivant. Il peut contenir tout écran, sauf les écrans de pointage et de saisie des résultats."
@@ -785,9 +785,6 @@ msgstr "Un écran"
 
 msgid "A screen or rotator shows one timer: checking it below replaces the timer it showed previously."
 msgstr "Un écran ou un écran rotatif affiche un seul chronomètre : le cocher ci-dessous remplace le chronomètre qu'il affichait précédemment."
-
-msgid "A screen per tournament: the screens turn by themselves, or people pick their tournament in a menu."
-msgstr "Un écran par tournoi : les écrans tournent tout seuls, ou chacun·e choisit son tournoi dans un menu."
 
 msgid "A screen shows pairings, rankings, results or check-in for one or more tournaments, on one page or over several pages that turn by themselves."
 msgstr "Un écran affiche les appariements, classements, résultats ou le pointage d'un ou plusieurs tournois, sur une page ou sur plusieurs qui défilent toutes seules."
@@ -4723,9 +4720,6 @@ msgstr "Police"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-msgid "For a long list: the pages turn by themselves, or people pick theirs in a menu."
-msgstr "Pour une longue liste : les pages tournent toutes seules, ou chacun·e choisit la sienne dans un menu."
-
 msgid "For best results, make the groups equal in size — ideally a power-of-two number of players each (2, 4, 8, 16…) — so the bracket needs no byes."
 msgstr "Pour un résultat optimal, faites des groupes de taille égale — idéalement une puissance de deux joueur·euses chacun (2, 4, 8, 16…) — pour que le tableau n'ait besoin d'aucun exempt."
 
@@ -7900,6 +7894,9 @@ msgstr "Écrans paginés : %(num)d"
 
 msgid "Pages"
 msgstr "Pages"
+
+msgid "Pages can be selected manually (via a clickable menu) or set to scroll automatically."
+msgstr "Les pages peuvent être choisies manuellement (grâce à un menu cliquable) ou défiler automatiquement."
 
 msgid "Paid"
 msgstr "Payé"
@@ -11778,7 +11775,7 @@ msgid "The organisation to which the team belongs (for example a club, league, o
 msgstr "L'organisation à laquelle l'équipe appartient (par exemple un club, une ligue ou une école). Les affiliations peuvent être utilisées par les règles d'appariement pour éviter d'apparier des équipes liées."
 
 msgid "The pages turn by themselves"
-msgstr "Les pages tournent toutes seules"
+msgstr "Les pages défilent automatiquement"
 
 #, python-format
 msgid "The pairing engine could not pair round %(round)d, so your pairings cannot be checked against its own."
@@ -13083,6 +13080,9 @@ msgstr "<u>T</u>ournois"
 msgid "Tournaments are finished, you can not add players any longer."
 msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
 
+msgid "Tournaments can be selected manually (via a clickable menu) or set to scroll automatically."
+msgstr "Les tournois peuvent être choisis manuellement (grâce à un menu cliquable) ou défiler automatiquement."
+
 msgid "Tournaments displayed:"
 msgstr "Tournois affichés :"
 
@@ -13910,13 +13910,13 @@ msgid "With a channel, the arbiter decides what devices show. A device follows t
 msgstr "Avec un canal, l'arbitre décide de ce qu'affichent les appareils. Un appareil suit le canal et affiche ce que l'arbitre y met depuis l'ordinateur de l'arbitre : un écran, un écran rotatif ou un menu. Autant d'appareils que voulu peuvent suivre le même canal."
 
 msgid "With a menu — people pick their page"
-msgstr "Avec un menu — chacun·e choisit sa page"
+msgstr "On choisit sa page manuellement grâce à un menu"
 
 msgid "With a menu — people pick their tournament"
-msgstr "Avec un menu — chacun·e choisit son tournoi"
+msgstr "On choisit son tournoi manuellement grâce à un menu"
 
 msgid "With a menu — the players pick their tournament first"
-msgstr "Avec un menu — les joueur·euses choisissent d'abord leur tournoi"
+msgstr "Les joueur·euses choisissent leur tournoi manuellement grâce à un menu"
 
 msgid "With less players than prizes, some prizes will not be attributed."
 msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être attribués."

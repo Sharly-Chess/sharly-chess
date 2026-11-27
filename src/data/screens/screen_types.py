@@ -991,8 +991,8 @@ class ScreenType(IdentifiableEntity, ABC):
                     if single
                     else _('One tournament, over several pages'),
                     help=_(
-                        'For a long list: the pages turn by themselves, or '
-                        'people pick theirs in a menu.'
+                        'Pages can be selected manually (via a clickable menu) '
+                        'or set to scroll automatically.'
                     ),
                     next=f'{prefix}paged_tournament',
                 )
@@ -1003,8 +1003,8 @@ class ScreenType(IdentifiableEntity, ABC):
                     value='split',
                     text=_('Several tournaments, one page each'),
                     help=_(
-                        'A screen per tournament: the screens turn by '
-                        'themselves, or people pick their tournament in a menu.'
+                        'Tournaments can be selected manually (via a clickable menu)'
+                        ' or set to scroll automatically.'
                     ),
                     next=f'{prefix}split_tournaments',
                 )

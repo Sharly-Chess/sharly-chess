@@ -786,9 +786,6 @@ msgstr ""
 msgid "A screen or rotator shows one timer: checking it below replaces the timer it showed previously."
 msgstr ""
 
-msgid "A screen per tournament: the screens turn by themselves, or people pick their tournament in a menu."
-msgstr ""
-
 msgid "A screen shows pairings, rankings, results or check-in for one or more tournaments, on one page or over several pages that turn by themselves."
 msgstr ""
 
@@ -4723,9 +4720,6 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
-msgid "For a long list: the pages turn by themselves, or people pick theirs in a menu."
-msgstr ""
-
 msgid "For best results, make the groups equal in size — ideally a power-of-two number of players each (2, 4, 8, 16…) — so the bracket needs no byes."
 msgstr ""
 
@@ -7897,6 +7891,9 @@ msgid "Paged screens: %(num)d"
 msgstr ""
 
 msgid "Pages"
+msgstr ""
+
+msgid "Pages can be selected manually (via a clickable menu) or set to scroll automatically."
 msgstr ""
 
 msgid "Paid"
@@ -13079,6 +13076,9 @@ msgid "Tournaments"
 msgstr "<u>T</u>ournaments"
 
 msgid "Tournaments are finished, you can not add players any longer."
+msgstr ""
+
+msgid "Tournaments can be selected manually (via a clickable menu) or set to scroll automatically."
 msgstr ""
 
 msgid "Tournaments displayed:"
