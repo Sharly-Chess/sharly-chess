@@ -6006,7 +6006,7 @@ msgstr ""
 msgid "List of players"
 msgstr ""
 
-msgid "List the players tied with the last main category prize winner"
+msgid "List the players without prize tied with the last prize winner of each category"
 msgstr ""
 
 msgid "List view"
@@ -12860,10 +12860,6 @@ msgstr ""
 msgid "Tie-break:"
 msgstr ""
 
-msgid "Tie-breaks"
-msgstr ""
-
-msgctxt "tie-breaks column header"
 msgid "Tie-breaks"
 msgstr ""
 

@@ -842,9 +842,10 @@ class ShowWarningsPrintOption(PrintOption[bool]):
 
 
 class ShowTiedPlayersPrintOption(PrintOption[bool]):
-    """On the prize assignment document: also list, in the main category, the
-    players without any prize who have the same number of points as the last
-    prize winner, with their tie-break values."""
+    """On the prize assignment document: also list, in each category, the
+    players without any prize who are tied with the last prize winner of the
+    category (same points, or same performance for a performance-based
+    category)."""
 
     @staticmethod
     def static_id() -> str:

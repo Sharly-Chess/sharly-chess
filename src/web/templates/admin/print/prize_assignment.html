@@ -11,20 +11,7 @@
     .prize-table tr.warning td { color: #B00000; white-space: normal; border-bottom: 0; }
     .prize-table tr.tied td { color: #444444; }
     .prize-table tr.tied td.no-prize { font-style: italic; }
-    .prize-table td.tie-breaks { white-space: nowrap; font-size: 8.5pt; }
-    .prize-table td.tie-breaks span + span { margin-left: 4pt; }
 {% endblock %}
-
-{% macro tie_breaks_cell(tournament_player, tied_value) %}
-    <td class="tie-breaks">
-        {% if tournament_player and tied_value is not none
-            and tournament_player.leading_tie_break_value.value|float == tied_value %}
-            {% for tie_break_value in tournament_player.tie_break_values[1:] %}
-                <span>{{ tie_break_value.tie_break.acronym }}&nbsp;{{ tie_break_value }}</span>
-            {% endfor %}
-        {% endif %}
-    </td>
-{% endmacro %}
 
 {% block content %}
     {% for tournament in tournaments %}
@@ -33,14 +20,12 @@
             {% for prize_group in tournament.sorted_prize_groups %}
                 {% set assigned_prizes_by_category_id = prize_group.get_assigned_prizes_by_category_id() %}
                 {% if show_tied_players %}
-                    {% set tied_players = prize_group.get_tied_players_without_prize(assigned_prizes_by_category_id) %}
+                    {% set tied_players_by_category_id = prize_group.get_tied_players_without_prize_by_category_id(assigned_prizes_by_category_id) %}
                 {% else %}
-                    {% set tied_players = [] %}
+                    {% set tied_players_by_category_id = {} %}
                 {% endif %}
-                {% set tied_value = tied_players[0].leading_tie_break_value.value|float if tied_players else none %}
                 {% for prize_category in prize_group.sorted_categories %}
-                    {% set category_tied_players = tied_players if prize_category.is_main else [] %}
-                    {% set show_tie_breaks = category_tied_players and tournament.tie_breaks|length > 1 %}
+                    {% set category_tied_players = tied_players_by_category_id.get(prize_category.id, []) %}
                     <div class="prize-category">
                         <div class="section-title">
                             {{ prize_category.name }}
@@ -66,9 +51,6 @@
                                         </th>
                                     {% endfor %}
                                     <th>{{ pgettext('prize column header', 'Prize') }}</th>
-                                    {% if show_tie_breaks %}
-                                        <th>{{ pgettext('tie-breaks column header', 'Tie-breaks') }}</th>
-                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,14 +72,11 @@
                                             <td colspan="{{ player_columns|length }}" class="not-assigned">{{ _('Not assigned') }}</td>
                                         {% endif %}
                                         <td class="prize">{{ assigned_prize.name }}</td>
-                                        {% if show_tie_breaks %}
-                                            {{ tie_breaks_cell(tournament_player, tied_value) }}
-                                        {% endif %}
                                     </tr>
                                     {% if show_warnings and assigned_prize.warning %}
                                         <tr class="warning">
                                             <td></td>
-                                            <td colspan="{{ player_columns|length + (2 if show_tie_breaks else 1) }}">
+                                            <td colspan="{{ player_columns|length + 1 }}">
                                                 {{ assigned_prize.warning|replace('. ', '.<br>', 1)|safe }}
                                             </td>
                                         </tr>
@@ -116,9 +95,6 @@
                                             </td>
                                         {% endfor %}
                                         <td class="no-prize">{{ _('No prize') }}</td>
-                                        {% if show_tie_breaks %}
-                                            {{ tie_breaks_cell(tournament_player, tied_value) }}
-                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>

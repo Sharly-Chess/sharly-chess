@@ -465,53 +465,73 @@ class PrizeGroup:
             )
         return assigned_prizes_by_category_id
 
-    def get_tied_players_without_prize(
+    def get_tied_players_without_prize_by_category_id(
         self,
         assigned_prizes_by_category_id: dict[int, list[AssignedPrize]],
-    ) -> list[TournamentPlayer]:
-        """Returns the players of the main category who won no prize at all but
-        have the same leading tie-break value (usually the number of points) as
-        the lowest-ranked prize winner of the main category, by rank.
-
-        Only meaningful for a main category ranked by final standing: an empty
-        list is returned otherwise, or if no main prize was assigned.
+    ) -> dict[int, list[TournamentPlayer]]:
+        """Returns, for each category, the players of the category who won no
+        prize at all but are tied with the last prize winner of the category on
+        the value the category ranks by (the leading tie-break, usually the
+        points, for a final-standing category, the performance otherwise),
+        ordered as in the category.
 
         ``assigned_prizes_by_category_id`` is the result of
         :meth:`get_assigned_prizes_by_category_id`, passed to avoid computing
         the prize assignment again."""
-        assigned_prizes = [
-            assigned_prize
-            for category_assigned_prizes in assigned_prizes_by_category_id.values()
-            for assigned_prize in category_assigned_prizes
-        ]
-        main_category = self.main_category
-        if main_category is None or not main_category.ranks_by_final_standing:
-            return []
-        main_winners = [
-            assigned_prize.assigned_to
-            for assigned_prize in assigned_prizes
-            if assigned_prize.assigned_to
-            and assigned_prize.prize.prize_category.id == main_category.id
-        ]
-        if not main_winners:
-            return []
-        last_winner = max(main_winners, key=lambda player: player.rank)
-        if not last_winner.tie_break_values:
-            return []
-        reference_value = float(last_winner.leading_tie_break_value.value)
         prize_winner_ids = {
             assigned_prize.assigned_to.id
-            for assigned_prize in assigned_prizes
+            for category_assigned_prizes in assigned_prizes_by_category_id.values()
+            for assigned_prize in category_assigned_prizes
             if assigned_prize.assigned_to
         }
-        return [
-            tournament_player
-            for tournament_player in main_category.sorted_tournament_players
-            if tournament_player.id not in prize_winner_ids
-            and tournament_player.tie_break_values
-            and float(tournament_player.leading_tie_break_value.value)
-            == reference_value
-        ]
+        tied_players_by_category_id: dict[int, list[TournamentPlayer]] = {}
+        for category in self.categories:
+            category_winner_ids = {
+                assigned_prize.assigned_to.id
+                for assigned_prize in assigned_prizes_by_category_id.get(
+                    category.id, []
+                )
+                if assigned_prize.assigned_to
+            }
+            category_players = category.sorted_tournament_players
+            last_winner = next(
+                (
+                    tournament_player
+                    for tournament_player in reversed(category_players)
+                    if tournament_player.id in category_winner_ids
+                ),
+                None,
+            )
+            reference_value = (
+                self._category_ranking_value(category, last_winner)
+                if last_winner
+                else None
+            )
+            tied_players_by_category_id[category.id] = (
+                []
+                if reference_value is None
+                else [
+                    tournament_player
+                    for tournament_player in category_players
+                    if tournament_player.id not in prize_winner_ids
+                    and self._category_ranking_value(category, tournament_player)
+                    == reference_value
+                ]
+            )
+        return tied_players_by_category_id
+
+    @staticmethod
+    def _category_ranking_value(
+        category: PrizeCategory, tournament_player: TournamentPlayer
+    ) -> float | None:
+        """The value a category ranks its players by: the leading tie-break
+        (usually the points) for a final-standing category, the performance
+        otherwise; ``None`` when the player has none."""
+        if category.ranks_by_final_standing:
+            if not tournament_player.tie_break_values:
+                return None
+            return float(tournament_player.leading_tie_break_value.value)
+        return category.ranking_metric(tournament_player)
 
     def get_prizes_assigned_to_players_by_category_id(
         self,

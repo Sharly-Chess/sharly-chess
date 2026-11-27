@@ -6006,8 +6006,8 @@ msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
 msgid "List of players"
 msgstr "Liste des participant·es"
 
-msgid "List the players tied with the last main category prize winner"
-msgstr "Citer les ex-æquo du·de la dernier·e primé·e du classement général"
+msgid "List the players without prize tied with the last prize winner of each category"
+msgstr "Citer les ex-æquo non primé·es du·de la dernier·e primé·e de chaque catégorie"
 
 msgid "List view"
 msgstr "Affichage en liste"
@@ -12862,10 +12862,6 @@ msgstr "Les ensembles de départages sont enregistrés depuis la fenêtre Dépar
 msgid "Tie-break:"
 msgstr "Départage :"
 
-msgid "Tie-breaks"
-msgstr "Départages"
-
-msgctxt "tie-breaks column header"
 msgid "Tie-breaks"
 msgstr "Départages"
 
