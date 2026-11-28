@@ -214,3 +214,23 @@ def test_the_edit_form_refuses_values_out_of_bounds(
     assert response.status_code == 200
     error = field_error(response.text, field.replace('_', '-'))
     assert error is not None and 'between' in error
+
+
+@pytest.mark.unit
+def test_the_image_fields_have_a_section_of_their_own(
+    http: TestClient, event: Fixtures
+):
+    """The fields of an image screen, from the URL of its background image
+    on, are in a section after the properties of the screen."""
+    screen = event.image_screen
+    assert screen.id is not None
+    modal = http.get(f'/screen-modal/update/{EVENT_ID}/{screen.id}')
+    assert modal.status_code == 200
+    headings = [
+        (match.start(), match.group(1).strip())
+        for match in re.finditer(
+            r'<h3 class="sc-section-heading[^"]*">([^<]*)</h3>', modal.text
+        )
+    ]
+    assert [text for _, text in headings] == ['Properties', 'Layout']
+    assert headings[1][0] < modal.text.index('name="background_image"')

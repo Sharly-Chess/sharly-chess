@@ -107,6 +107,12 @@
                         {% endif %}
                     {% endset %}
 
+                    {# The screens without the general configuration fields (the
+                       image screens) show their own fields in a section of
+                       their own. #}
+                    {% if not screen_type.has_config_fields %}
+                        {{ components.section_heading(_('Layout')) }}
+                    {% endif %}
                     {% if screen_type.form_template %}
                         {% include screen_type.form_template %}
                     {% endif %}
