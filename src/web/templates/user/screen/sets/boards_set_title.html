@@ -1,7 +1,7 @@
 {% set details %}
     {%- if tournament.current_round -%}
         {%- set current_round = tournament.current_round -%}
-        {%- set remaining = tournament.boards_without_result(current_round)|length -%}
+        {%- set remaining = tournament.games_without_result_count(current_round) -%}
         {{ _('Round %(round)d', round=current_round) }} ·
         {% if remaining -%}
             {{ ngettext('%(remaining)d game in progress', '%(remaining)d games in progress', remaining, remaining=remaining) }}

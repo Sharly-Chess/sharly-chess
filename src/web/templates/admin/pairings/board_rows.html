@@ -8,6 +8,11 @@
         <template>
             {% include '/admin/pairings/team_block_header.html' %}
         </template>
+        {% for extra_game in team_board.extra_games %}
+            <template>
+                {% include '/admin/pairings/team_block_extra_row.html' %}
+            </template>
+        {% endfor %}
     {% endwith %}
 {% else %}
     {% set is_flat_team = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}

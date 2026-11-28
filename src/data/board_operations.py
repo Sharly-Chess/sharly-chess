@@ -355,14 +355,19 @@ class BoardOperations:
             for board in boards_to_delete:
                 self._delete_board(board, database)
             database.delete_stored_team_board(stb_id)
-            for team_id in (
-                team_board.stored_team_board.team_a_id,
-                team_board.stored_team_board.team_b_id,
-            ):
-                if team_id is not None:
-                    tournament.point_adjustments.set_manual(
-                        team_id, round_, 0.0, 0.0, None, database
-                    )
+            team_ids = [
+                team_id
+                for team_id in (
+                    team_board.stored_team_board.team_a_id,
+                    team_board.stored_team_board.team_b_id,
+                )
+                if team_id is not None
+            ]
+            for team_id in team_ids:
+                tournament.point_adjustments.set_manual(
+                    team_id, round_, 0.0, 0.0, None, database
+                )
+            tournament.forget_extra_game_results(round_, database, team_ids)
             round_list = tournament.stored_tournament.stored_team_boards_by_round.get(
                 round_, []
             )
@@ -396,6 +401,7 @@ class BoardOperations:
             if tournament.event.is_team_event:
                 manual_bye_types = TeamByeType.manual_bye_types()
                 for round_ in rounds:
+                    tournament.forget_extra_game_results(round_, database)
                     round_list = (
                         tournament.stored_tournament.stored_team_boards_by_round.get(
                             round_, []

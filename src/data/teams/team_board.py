@@ -4,6 +4,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from database.sqlite.event.event_database import EventDatabase
+from data.teams.extra_game import ExtraGame
 from database.sqlite.event.event_store import StoredTeamBoard
 from utils.date_time import format_datetime
 from utils.enum import TeamByeType, Result, ScoreType
@@ -112,6 +113,35 @@ class TeamBoard:
             key=lambda board: board.index,
         )
 
+    @property
+    def extra_games(self) -> list[ExtraGame]:
+        """The games the rule set has this match count beyond its boards."""
+        if self.stored_team_board.team_b_id is None:
+            return []
+        rule_set = self.tournament.rule_set
+        if rule_set is None:
+            return []
+        return [ExtraGame(self, seat) for seat in rule_set.extra_game_seats(self)]
+
+    def extra_game(self, key: str) -> ExtraGame | None:
+        return next(
+            (extra_game for extra_game in self.extra_games if extra_game.key == key),
+            None,
+        )
+
+    def board_game_points(self, board_index: int) -> dict[Result, float]:
+        """The game points a result brings a team on the board at
+        ``board_index`` of this match."""
+        tournament = self.tournament
+        rule_set = tournament.rule_set
+        if rule_set is None:
+            return tournament.team_game_points
+        return rule_set.board_game_points(
+            board_index,
+            tournament.team_player_count or len(self.boards),
+            tournament.team_game_points,
+        )
+
     def board_team_ids(self, board: Board) -> tuple[int | None, int | None]:
         """The ``(white_team_id, black_team_id)`` for ``board`` within
         this match. A forfeited side is a hole — no player, hence no
@@ -143,16 +173,19 @@ class TeamBoard:
         (individual scoring) stays at FIDE defaults."""
         a, b = 0.0, 0.0
         team_a_id = self.stored_team_board.team_a_id
-        team_game_points = self.tournament.team_game_points
+        team_b_id = self.stored_team_board.team_b_id
         for board in self.boards:
+            board_game_points = self.board_game_points(board.index)
             white_team_id, _black_team_id = self.board_team_ids(board)
             white_pairing = board.optional_white_pairing
             white_pts = (
-                white_pairing.result.points(team_game_points) if white_pairing else 0.0
+                white_pairing.result.points(board_game_points) if white_pairing else 0.0
             )
             black_tp = board.black_tournament_player
             black_pts = (
-                board.black_pairing.result.points(team_game_points) if black_tp else 0.0
+                board.black_pairing.result.points(board_game_points)
+                if black_tp
+                else 0.0
             )
             if white_team_id == team_a_id:
                 a += white_pts
@@ -160,6 +193,10 @@ class TeamBoard:
             else:
                 a += black_pts
                 b += white_pts
+        if team_b_id is not None:
+            for extra_game in self.extra_games:
+                a += extra_game.team_points(team_a_id)
+                b += extra_game.team_points(team_b_id)
         return a, b
 
     @property
@@ -197,12 +234,16 @@ class TeamBoard:
     @property
     def no_games_played(self) -> bool:
         """Returns True if no game of the team board is already played."""
-        return all(board.no_result for board in self.boards)
+        return all(board.no_result for board in self.boards) and all(
+            extra_game.no_result for extra_game in self.extra_games
+        )
 
     @property
     def all_games_played(self) -> bool:
         """Returns True if all the games of the team board have been played."""
-        return not any(board.no_result for board in self.boards)
+        return not any(board.no_result for board in self.boards) and not any(
+            extra_game.pending for extra_game in self.extra_games
+        )
 
     def team_all_forfeit(self, team_id: int) -> bool:
         """True when every board this team is on was forfeited — its player
@@ -233,6 +274,10 @@ class TeamBoard:
         a side left empty or a forfeit result — so the match itself was not
         played. False while any board holds a game, played or still to
         come."""
+        if any(
+            extra_game.played or extra_game.pending for extra_game in self.extra_games
+        ):
+            return False
         saw_board = False
         for board in self.boards:
             saw_board = True
@@ -261,6 +306,11 @@ class TeamBoard:
         if a_gp != b_gp:
             return False
         results = [board.result for board in self.boards if not board.no_result]
+        results.extend(
+            extra_game.result
+            for extra_game in self.extra_games
+            if not extra_game.no_result
+        )
         return bool(results) and all(
             result in _RESULTS_LOST_BY_BOTH for result in results
         )

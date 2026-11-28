@@ -90,6 +90,10 @@ from plugins.ffe.ffe_entity import (
     FfeLeagueTournamentCriterion,
     FfeLeagueIndividualTeamType,
 )
+from plugins.ffe.ffe_interclubs_jeunes_rule_sets import (
+    InterclubsJeunesNationale3RuleSet,
+    InterclubsJeunesRuleSet,
+)
 from plugins.ffe.ffe_rule_sets import (
     ChampionnatFemininN1N2RuleSet,
     CoupeDeLaPariteRuleSet,
@@ -1169,6 +1173,7 @@ class FfePlugin(Plugin):
         tie_break_types.append(ffe_tie_breaks.GamePointsDifferentialTieBreak)
         tie_break_types.append(ffe_tie_breaks.GamePointsForTieBreak)
         tie_break_types.append(ffe_tie_breaks.BoardDifferentialTieBreak)
+        tie_break_types.append(ffe_tie_breaks.MutualResultsTieBreak)
         tie_break_types.append(ffe_tie_breaks.LowestOwnAverageRatingTieBreak)
 
     @hookimpl
@@ -1182,6 +1187,8 @@ class FfePlugin(Plugin):
         rule_sets.append(CoupeJeanClaudeLoubatiereRuleSet)
         rule_sets.append(CoupeDeLaPariteRuleSet)
         rule_sets.append(ChampionnatFemininN1N2RuleSet)
+        rule_sets.append(InterclubsJeunesRuleSet)
+        rule_sets.append(InterclubsJeunesNationale3RuleSet)
 
     @hookimpl
     def insert_swiss_system_tie_break_sets(

@@ -4,12 +4,14 @@ from itertools import product
 from typing import TYPE_CHECKING, Any, Literal
 
 from utils.entity import IdentifiableEntity
-from utils.enum import EventType
+from utils.enum import EventType, Result
 
 if TYPE_CHECKING:
     from data.pairings.fixed_table import FixedPairingTable
     from data.player import Player
+    from data.teams.extra_game import ExtraGameSeat
     from data.teams.team import Team
+    from data.teams.team_board import TeamBoard
     from database.sqlite.event.event_store import StoredTournament
 
 
@@ -306,9 +308,60 @@ class RuleSet(IdentifiableEntity, ABC):
         """The rule set's ranking criteria for a pairing system, in order."""
         return self.tie_break_overrides_by_pairing.get(pairing_id, [])
 
+    @property
+    def imposes_tie_breaks(self) -> bool:
+        """Whether the ranking criteria of the rule set are the only ones
+        its tournaments may use, as against those it starts them with and
+        leaves the arbiter to change. Default: True."""
+        return True
+
     def team_point_adjustment(self, team: Team, round_: int) -> PointAdjustment | None:
         """Bonus / penalty points this rule set assigns to ``team`` for
         ``round_``, with a human-readable explanation. Returns ``None``
         when the rule set imposes no adjustment (the default). Added on
         top of any manual adjustment the arbiter enters."""
         return None
+
+    @property
+    def required_pairing_system_id(self) -> str | None:
+        """The id of the only pairing system the competition is played
+        with, which the tournament form then asks for. ``None`` (default)
+        leaves the arbiter the choice."""
+        return None
+
+    @property
+    def forbids_exports(self) -> bool:
+        """Whether the tournament holds what no export format and no
+        results site can carry, so that it is neither exported nor
+        published. Default: False."""
+        return False
+
+    @property
+    def locked_once_paired(self) -> bool:
+        """Whether the tournament keeps this rule set once it is paired,
+        for a rule set whose results another one would not read. Default:
+        False."""
+        return False
+
+    def board_game_points(
+        self,
+        board_index: int,
+        board_count: int,
+        team_game_points: dict[Result, float],
+    ) -> dict[Result, float]:
+        """The game points a result brings a team on the board at
+        ``board_index`` (from 0) of a team match of ``board_count`` boards,
+        for a competition whose boards are not all worth the same. Default:
+        ``team_game_points``,
+        the scale of the tournament. Only read for the matches of a system
+        that pairs teams."""
+        return team_game_points
+
+    def extra_game_seats(self, team_board: TeamBoard) -> list[ExtraGameSeat]:
+        """The games ``team_board`` counts beyond its boards, in the order
+        they are shown: a second game between players already seated, for
+        instance. Their results are entered like those of the boards and
+        count towards the score of the match, the score of the board each
+        side plays them for, and the end of the round. Default: none. Only
+        read for the matches of a system that pairs teams."""
+        return []

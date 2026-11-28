@@ -1063,6 +1063,160 @@ class BoardDifferentialTieBreak(TeamTieBreak):
         return tuple(totals)
 
 
+class MutualResultsTieBreak(TeamTieBreak):
+    """FFE *Résultats réalisés entre elles par les équipes à départager*
+    (Championnat de France Interclubs Jeunes, règlement J02 §4.4; the
+    Championnat de France des Clubs, A02 §4.4, words it the same).
+
+    The first step of the departage after match points: the tied teams
+    are compared on the matches they played against one another alone —
+    their match points there, then their differential, then their points
+    "pour". The three are read in that order in a single pass: teams the
+    matches between them leave level go on to the criteria that follow,
+    over the whole competition. Tied teams that have not all met one
+    another are left level too.
+
+    This compares tied teams against one another rather than producing a
+    scalar, so the value is a within-group rank delta (0 = worst of the
+    group, larger = better), as for Extended Direct Encounter.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-MUTUAL-RESULTS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Results between the tied teams')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'rEnt'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_MUTUAL_RESULTS'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        return False
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Compares the tied teams on the matches they played against one '
+            'another: their match points there, then their differential, '
+            'then their points for (FFE rules §4.4). Not applied to teams '
+            'that have not all met one another.'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    @property
+    def is_computed_per_team(self) -> bool:
+        return False
+
+    @property
+    def display_rank_delta(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        return 0.0
+
+    def compute_all_team_values(
+        self,
+        tied_groups: list[list[TeamRecord]],
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> dict[int, float]:
+        values: dict[int, float] = {}
+        for group in tied_groups:
+            group_ids = {record.team_id for record in group}
+            if not self._have_all_met(group, group_ids, after_round):
+                values.update(dict.fromkeys(group_ids, 0.0))
+                continue
+            results = {
+                record.team_id: self._mutual_results(
+                    record, group_ids, all_records, after_round
+                )
+                for record in group
+            }
+            ordered = sorted(group, key=lambda record: results[record.team_id])
+            rank = 0
+            previous: tuple[float, float, float] | None = None
+            for index, record in enumerate(ordered):
+                current = results[record.team_id]
+                if previous is not None and current != previous:
+                    rank = index
+                values[record.team_id] = float(rank)
+                previous = current
+        return values
+
+    @staticmethod
+    def _have_all_met(
+        group: list[TeamRecord], group_ids: set[int], after_round: int
+    ) -> bool:
+        """Whether each team of the group has met every other one. Where
+        some have not, as in a Swiss, the matches between them compare
+        teams on unequal terms, and the criterion leaves the group as it
+        is."""
+        return all(
+            group_ids - {record.team_id}
+            <= {
+                match.opponent_id
+                for match in record.matches
+                if match.round_ <= after_round
+            }
+            for record in group
+        )
+
+    @staticmethod
+    def _mutual_results(
+        team_record: TeamRecord,
+        group_ids: set[int],
+        all_records: dict[int, TeamRecord],
+        after_round: int,
+    ) -> tuple[float, float, float]:
+        """The match points, the differential and the points for of the
+        team in its matches against the teams of ``group_ids``, each match
+        score floored at 0 as for the differential of the whole
+        competition."""
+        match_points = differential = points_for = 0.0
+        for match in team_record.matches:
+            if match.round_ > after_round or match.opponent_id not in group_ids:
+                continue
+            opponent_gp = 0.0
+            opponent = all_records.get(match.opponent_id)
+            if opponent is not None:
+                opponent_match = opponent.match_at(match.round_)
+                if opponent_match is not None:
+                    opponent_gp = opponent_match.own_gp
+            own_gp = max(0.0, match.own_gp)
+            match_points += match.own_mp
+            differential += own_gp - max(0.0, opponent_gp)
+            points_for += own_gp
+        return match_points, differential, points_for
+
+
 class LowestOwnAverageRatingTieBreak(TeamTieBreak):
     """FFE *Moyenne des derniers Elo diffusés (au prorata des
     participations), la plus basse* (Règlement Coupe Loubatière /

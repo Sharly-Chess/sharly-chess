@@ -164,6 +164,7 @@ class CRBackgroundUploader:
             tournament
             for tournament in tournaments
             if CRUtils.get_tournament_plugin_data(tournament).tnr
+            and not tournament.exports_forbidden_message
             and cls.tournament_result_id(tournament) not in cls.ongoing_result_ids
         ]
         if not eligible:
@@ -210,6 +211,8 @@ class CRBackgroundUploader:
     @classmethod
     def schedule_upload(cls, tournament: Tournament, force: bool = False) -> None:
         """Schedule the upload of a tournament that has been modified."""
+        if tournament.exports_forbidden_message:
+            return
         cr_last_upload = cls.chess_results_last_upload(tournament)
         delay = CHESS_RESULTS_UPLOAD_DELAY
         wait_time = 0.1

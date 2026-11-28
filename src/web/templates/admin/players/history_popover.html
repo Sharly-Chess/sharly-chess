@@ -64,6 +64,22 @@
                     </td>
                 {% endif %}
             </tr>
+            {% for extra_game in player.single_tournament_player.extra_games_in(round) %}
+                {% set extra_opponent = extra_game.opponent_of(player.single_tournament_player.id) %}
+                <tr>
+                    <th class="round text-center fw-normal text-nowrap" title="{{ extra_game.description }}">{{ extra_game.label }}</th>
+                    <td>{{ extra_game.color_of(player.single_tournament_player.id).to_crosstable }}</td>
+                    <td class="text-center">{{ extra_game.points_str_of(player.single_tournament_player.id) }}</td>
+                    {% if extra_opponent %}
+                        <td class="text-center">{{ extra_opponent.rank }}</td>
+                        <td class="text-nowrap">{{ extra_opponent.display_title }} {{ extra_opponent.full_name }}</td>
+                        <td>{{ extra_opponent.rating_str }}</td>
+                        <td>{{ extra_opponent.category_name }}</td>
+                        <td>{{ extra_opponent.federation }}</td>
+                    {% endif %}
+                    <td colspan="1000"></td>
+                </tr>
+            {% endfor %}
         {% endfor %}
     </tbody>
 </table>

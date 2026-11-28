@@ -267,6 +267,19 @@ class StoredRatingCorrection:
 
 
 @dataclass
+class StoredExtraGame:
+    """The result of a game a team match counts beyond its boards, known
+    by its round and its two players; ``result`` is that of white."""
+
+    id: int | None
+    tournament_id: int
+    round_: int
+    white_player_id: int
+    black_player_id: int
+    result: int
+
+
+@dataclass
 class StoredPlayerPointAdjustment:
     """Manual per-player, per-round bonus / penalty points for individual
     tournaments. A single ``delta`` (which may be negative) because those
@@ -473,6 +486,9 @@ class StoredTournament:
     )
     stored_player_point_adjustments: list[StoredPlayerPointAdjustment] = field(
         default_factory=list[StoredPlayerPointAdjustment]
+    )
+    stored_extra_games: list[StoredExtraGame] = field(
+        default_factory=list[StoredExtraGame]
     )
     stored_pibes: list[StoredPibe] = field(default_factory=list[StoredPibe])
     stored_rating_corrections: list[StoredRatingCorrection] = field(

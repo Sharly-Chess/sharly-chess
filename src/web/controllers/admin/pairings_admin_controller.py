@@ -38,6 +38,11 @@ from data.player import TournamentPlayer
 from data.snapshot import SnapshotReason
 from data.snapshot_worker import SnapshotScheduler
 from data.event import Event
+from data.teams.extra_game import (
+    EXTRA_GAME_RESULTS,
+    ExtraGame,
+    parse_extra_game_row_id,
+)
 from data.teams.team import Team
 from data.teams.team_board import TeamBoard
 from data.print_documents.documents import (
@@ -96,6 +101,7 @@ from web.controllers.base_controller import WebContext
 from web.guards import (
     EventGuard,
     TournamentActionGuard,
+    SetExtraGameResultGuard,
     SetResultGuard,
 )
 from web.messages import Message
@@ -1504,6 +1510,222 @@ class PairingsAdminController(BaseEventAdminController):
             trigger_event='close_modal',
         )
 
+    @get(
+        path='/event/{event_uniq_id:str}/extra-game/{tournament_id:int}/{round:int}'
+        '/{team_board_id:int}/{extra_game_key:str}',
+        name='admin-event-extra-game-modal',
+    )
+    async def htmx_admin_extra_game_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_board_id: FromPath[int],
+        extra_game_key: FromPath[str],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'extra-game',
+                'extra_game': self._extra_game(
+                    web_context.get_admin_tournament(), team_board_id, extra_game_key
+                ),
+                'unlock_results': request.query_params.get('unlock') == '1',
+            },
+        )
+
+    @staticmethod
+    def _extra_game(
+        tournament: Tournament, team_board_id: int, extra_game_key: str
+    ) -> ExtraGame:
+        team_board = tournament.team_boards_by_id.get(team_board_id)
+        extra_game = team_board.extra_game(extra_game_key) if team_board else None
+        if extra_game is None:
+            raise NotFoundException(
+                f'Extra game [{extra_game_key}] of team board [{team_board_id}] '
+                f'not found.'
+            )
+        return extra_game
+
+    async def _admin_update_extra_game_result(
+        self,
+        request: HTMXRequest,
+        channels: ChannelsPlugin,
+        tournament_id: int,
+        round_: int,
+        team_board_id: int,
+        extra_game_key: str,
+        white_result: Result,
+        trigger_event: str | None = None,
+        validate_result: bool = False,
+    ) -> Template:
+        """Record the result of a game a team match counts beyond its
+        boards, or check the one it holds when *validate_result*, and put
+        its row and the header of the match in place."""
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round_,
+            action=None if validate_result else PairingAction.RESULT_UPDATE,
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        extra_game = self._extra_game(tournament, team_board_id, extra_game_key)
+        if white_result not in EXTRA_GAME_RESULTS:
+            raise ClientException(f'Invalid result [{white_result}].')
+        if not extra_game.has_both_players:
+            raise ClientException(
+                f'The extra game [{extra_game.key}] has a player missing, '
+                f'it cannot take a result.'
+            )
+        if tournament.round_is_locked(round_):
+            raise ClientException(f'Round [{round_}] is locked.')
+
+        context = web_context.template_context
+        highlighted_row_id: str | None = None
+        if validate_result:
+            if extra_game.stored_result != white_result:
+                trigger_event = 'highlight_board_with_warning'
+                highlighted_row_id = extra_game.row_id
+        else:
+            unlocked = request.query_params.get('unlock') == '1'
+            if tournament.awaits_publication(round_) and not unlocked:
+                return self._admin_event_pairings_render(
+                    web_context,
+                    {
+                        'modal': 'extra-game',
+                        'extra_game': extra_game,
+                        'unlock_results': False,
+                    },
+                )
+            await web_context.snapshot_before_breach(
+                SnapshotReason.BEFORE_RESULT_CHANGE
+            )
+            tournament.set_extra_game_result(extra_game, white_result)
+            self.publish_new_user_results(
+                channels,
+                event.uniq_id,
+                tournament.id,
+                round_,
+                extra_game.team_board.boards,
+            )
+            context = web_context.template_context
+
+        if web_context.requires_refresh:
+            return self._admin_event_pairings_render(web_context)
+        return HTMXTemplate(
+            template_name='/admin/pairings/extra_game_row_and_controls.html',
+            context=context
+            | {
+                'messages': Message.messages(web_context.request),
+                'team_board': extra_game.team_board,
+                'highlighted_row_id': highlighted_row_id,
+            },
+            re_target='#round-next-button',
+            re_swap='outerHTML',
+            trigger_event=trigger_event,
+            after='receive',
+            params={'board_id': highlighted_row_id},
+        )
+
+    @put(
+        path='/pairing/set-extra-game-result/{event_uniq_id:str}/{tournament_id:int}'
+        '/{round:int}/{team_board_id:int}/{extra_game_key:str}/{result:int}',
+        name='admin-pairings-set-extra-game-result',
+        guards=[SetExtraGameResultGuard()],
+    )
+    async def htmx_admin_set_extra_game_result(
+        self,
+        request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_board_id: FromPath[int],
+        extra_game_key: FromPath[str],
+        result: FromPath[int],
+    ) -> Template:
+        return await self._admin_update_extra_game_result(
+            request,
+            channels,
+            tournament_id=tournament_id,
+            round_=round,
+            team_board_id=team_board_id,
+            extra_game_key=extra_game_key,
+            white_result=Result(result),
+            trigger_event='close_modal',
+        )
+
+    async def _admin_set_extra_game_result_hotkey(
+        self,
+        request: HTMXRequest,
+        channels: ChannelsPlugin,
+        tournament_id: int,
+        round_: int,
+        team_board_id: int,
+        extra_game_key: str,
+        key: str,
+        validate_result: bool,
+    ) -> Template:
+        """The keys of a board, for a game a team match counts beyond its
+        boards: team A is on the left whatever its colour."""
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round_
+        )
+        tournament = web_context.get_admin_tournament()
+        extra_game = self._extra_game(tournament, team_board_id, extra_game_key)
+        left_is_white = extra_game.team_a_is_white
+        match key:
+            case 'Digit0' | 'Numpad0':
+                result = Result.NO_RESULT
+            case 'Digit1' | 'Numpad1':
+                result = Result.WIN if left_is_white else Result.LOSS
+            case 'Digit2' | 'Numpad2':
+                result = Result.LOSS if left_is_white else Result.WIN
+            case 'Digit3' | 'Numpad3':
+                result = Result.DRAW
+            case _:
+                return HTMXTemplate(
+                    template_name='/common/empty.html',
+                    re_swap='none',
+                )
+        if not validate_result:
+            permission_handler = tournament.pairing_system.permission_handler
+            if PairingAction.RESULT_UPDATE in (
+                permission_handler.existing_actions(web_context.round_status)
+            ) and PairingAction.RESULT_UPDATE not in (
+                permission_handler.allowed_actions(
+                    web_context.round_status,
+                    web_context.unlocked_level,
+                    tournament.fide_mode,
+                )
+            ):
+                return self._warning_modal_render(
+                    web_context,
+                    PairingAction.RESULT_UPDATE,
+                    'PUT',
+                    request.app.route_reverse(
+                        'admin-pairings-set-extra-game-result',
+                        event_uniq_id=web_context.get_admin_event().uniq_id,
+                        tournament_id=tournament_id,
+                        round=round_,
+                        team_board_id=team_board_id,
+                        extra_game_key=extra_game_key,
+                        result=result.value,
+                    ),
+                    {'overwrite_mode': True},
+                )
+        return await self._admin_update_extra_game_result(
+            request,
+            channels,
+            tournament_id=tournament_id,
+            round_=round_,
+            team_board_id=team_board_id,
+            extra_game_key=extra_game_key,
+            white_result=result,
+            validate_result=validate_result,
+        )
+
     @delete(
         path='/pairing/unpair/'
         '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}',
@@ -1680,8 +1902,18 @@ class PairingsAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        board_id: int = int(data['board_id'])
         key: str = data['key']
+        if extra_game_row := parse_extra_game_row_id(data['board_id']):
+            return await self._admin_set_extra_game_result_hotkey(
+                request,
+                channels,
+                tournament_id,
+                round,
+                *extra_game_row,
+                key,
+                data['validate_result'] == 'true',
+            )
+        board_id: int = int(data['board_id'])
         # Team rows use team_a/team_b order; stored results are white-relative.
         event = BaseEventAdminWebContext(request).get_admin_event()
         left_is_white = True

@@ -12,8 +12,8 @@
         {{ components.menu_item(
             _('Upload to Chess-Results.com'),
             icon='bi-cloud-arrow-up-fill',
-            allowed=client.can_publish_results,
-            reason=_('You are not allowed to publish results.'),
+            allowed=client.can_publish_results and not tournament.exports_forbidden_message,
+            reason=tournament.exports_forbidden_message or _('You are not allowed to publish results.'),
             attrs={
                 'hx-post': url_for(
                     'chess-results-upload-tournament-from-card',

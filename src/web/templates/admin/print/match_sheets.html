@@ -285,6 +285,42 @@
                             </td>
                         </tr>
                     {% endfor %}
+                    {% for extra_game in team_board.extra_games %}
+                        {% set team_a_is_white = extra_game.team_a_is_white %}
+                        {% if team_a_is_white %}
+                            {% set team_a_player = extra_game.white_tournament_player %}
+                            {% set team_b_player = extra_game.black_tournament_player %}
+                        {% else %}
+                            {% set team_a_player = extra_game.black_tournament_player %}
+                            {% set team_b_player = extra_game.white_tournament_player %}
+                        {% endif %}
+                        {% set parts = extra_game.display_result_str.split('-') %}
+                        <tr>
+                            <td class="col-bd">
+                                <div class="board-number">{{ extra_game.label }}</div>
+                            </td>
+                            <td class="col-name left">
+                                {% if team_a_player %}
+                                    <div class="player-name">
+                                        <span class="color-chip {% if not team_a_is_white %}black{% endif %}"></span>{{ team_a_player.full_name }}
+                                    </div>
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </td>
+                            <td class="col-result">{{ parts[0] if parts|length == 2 else '' }}</td>
+                            <td class="col-result">{{ parts[1] if parts|length == 2 else '' }}</td>
+                            <td class="col-name right">
+                                {% if team_b_player %}
+                                    <div class="player-name">
+                                        <span class="color-chip {% if team_a_is_white %}black{% endif %}"></span>{{ team_b_player.full_name }}
+                                    </div>
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
             <div class="result-legend">

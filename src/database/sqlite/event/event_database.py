@@ -42,6 +42,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
     StoredBoard,
+    StoredExtraGame,
     StoredAccount,
     StoredRotatingScreen,
     StoredPermission,
@@ -266,7 +267,7 @@ class EventDatabase(MigrationDatabase):
     # the screens of the event are then drawn again: what is not listed here is
     # never missed, at worst drawn again for nothing.
     TABLES_FOLLOWED_BY_TOURNAMENTS: ClassVar[frozenset[str]] = frozenset(
-        {'pairing', 'player', 'tournament_player'}
+        {'pairing', 'player', 'tournament_player', 'extra_game'}
     )
     TABLES_OFF_SCREENS: ClassVar[frozenset[str]] = frozenset(
         {'metadata', 'plugin_metadata', 'journal'}
@@ -1105,6 +1106,9 @@ class EventDatabase(MigrationDatabase):
             stored_tournament.stored_player_point_adjustments = (
                 self.load_tournament_stored_player_point_adjustments(id_)
             )
+            stored_tournament.stored_extra_games = (
+                self.load_tournament_stored_extra_games(id_)
+            )
             stored_tournament.stored_prohibited_pairing_groups = (
                 self.load_tournament_stored_prohibited_pairing_groups(id_)
             )
@@ -1919,6 +1923,10 @@ class EventDatabase(MigrationDatabase):
             'DELETE FROM `pairing` WHERE `tournament_id` = ? and `round` > ?',
             (tournament_id, round_),
         )
+        self.execute(
+            'DELETE FROM `extra_game` WHERE `tournament_id` = ? and `round` > ?',
+            (tournament_id, round_),
+        )
 
     def delete_all_stored_pairings(self) -> None:
         """Undo every round: the pairings and the boards they were played
@@ -1930,6 +1938,7 @@ class EventDatabase(MigrationDatabase):
         self.execute('DELETE FROM `board`')
         self.execute('DELETE FROM `team_board`')
         self.execute('DELETE FROM `team_round_lineup`')
+        self.execute('DELETE FROM `extra_game`')
         self.execute('DELETE FROM `player_point_adjustment`')
         self.execute('DELETE FROM `team_point_adjustment`')
         self.execute('DELETE FROM `pibe`')
@@ -2864,6 +2873,84 @@ class EventDatabase(MigrationDatabase):
             'AND `white_player_id` IN (?, ?) AND `black_player_id` IN (?, ?)',
             (tournament_id, round_, *player_ids, *player_ids),
         )
+
+    # ---------------------------------------------------------------------------------
+    # StoredExtraGame
+    # ---------------------------------------------------------------------------------
+
+    def load_tournament_stored_extra_games(
+        self, tournament_id: int
+    ) -> list[StoredExtraGame]:
+        self.execute(
+            'SELECT * FROM `extra_game` WHERE `tournament_id` = ? '
+            'ORDER BY `round`, `id`',
+            (tournament_id,),
+        )
+        return [
+            StoredExtraGame(
+                id=row['id'],
+                tournament_id=row['tournament_id'],
+                round_=row['round'],
+                white_player_id=row['white_player_id'],
+                black_player_id=row['black_player_id'],
+                result=row['result'],
+            )
+            for row in self.fetchall()
+        ]
+
+    def set_stored_extra_game(self, stored_extra_game: StoredExtraGame) -> None:
+        """Record the result of the game its round and players name,
+        replacing the one it had."""
+        self.execute(
+            'INSERT INTO `extra_game` (`tournament_id`, `round`, '
+            '`white_player_id`, `black_player_id`, `result`) '
+            'VALUES (?, ?, ?, ?, ?) '
+            'ON CONFLICT(`tournament_id`, `round`, `white_player_id`, '
+            '`black_player_id`) DO UPDATE SET `result` = excluded.`result`',
+            (
+                stored_extra_game.tournament_id,
+                stored_extra_game.round_,
+                stored_extra_game.white_player_id,
+                stored_extra_game.black_player_id,
+                stored_extra_game.result,
+            ),
+        )
+
+    def delete_stored_extra_game(
+        self,
+        tournament_id: int,
+        round_: int,
+        white_player_id: int,
+        black_player_id: int,
+    ) -> None:
+        self.execute(
+            'DELETE FROM `extra_game` '
+            'WHERE `tournament_id` = ? AND `round` = ? '
+            'AND `white_player_id` = ? AND `black_player_id` = ?',
+            (tournament_id, round_, white_player_id, black_player_id),
+        )
+
+    def delete_stored_extra_games_of_round(
+        self,
+        tournament_id: int,
+        round_: int,
+        player_ids: Collection[int] | None = None,
+    ) -> None:
+        """Forget the results of the extra games of a round: all of them,
+        or those any of *player_ids* plays in."""
+        if player_ids is None:
+            self.execute(
+                'DELETE FROM `extra_game` WHERE `tournament_id` = ? AND `round` = ?',
+                (tournament_id, round_),
+            )
+            return
+        for player_id in player_ids:
+            self.execute(
+                'DELETE FROM `extra_game` '
+                'WHERE `tournament_id` = ? AND `round` = ? '
+                'AND (`white_player_id` = ? OR `black_player_id` = ?)',
+                (tournament_id, round_, player_id, player_id),
+            )
 
     def set_tournament_manual_pairing(
         self,

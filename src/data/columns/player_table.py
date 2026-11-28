@@ -428,6 +428,10 @@ class RoundColumn(TournamentPlayerTableColumn):
             content += (
                 str(opponent.rank).rjust(3, '\u00a0') + pairing.color.to_crosstable
             )
+        for extra_game in tournament_player.extra_games_in(self.round):
+            content += (
+                '\u00a0' + extra_game.result_of(tournament_player.id).to_crosstable
+            )
         return content
 
     @property

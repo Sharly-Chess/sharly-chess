@@ -9,7 +9,7 @@
     {% set hide_player_points = admin_tournament.hide_pairing_points %}
     {% set board_header = _(
         'Board (%(remaining)d)',
-        remaining=admin_tournament.boards_without_result(admin_round)|length
+        remaining=admin_tournament.games_without_result_count(admin_round)
     ) %}
     <tr>
         <th class="text-nowrap">

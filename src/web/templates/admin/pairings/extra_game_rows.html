@@ -1,0 +1,13 @@
+{# The rows of the games a team match counts beyond its boards, and the
+   header of the match, swapped out of band where the page shows them.
+   Requires: team_board. #}
+{% with swap_oob=True %}
+    <template>
+        {% include '/admin/pairings/team_block_header.html' %}
+    </template>
+    {% for extra_game in team_board.extra_games %}
+        <template>
+            {% include '/admin/pairings/team_block_extra_row.html' %}
+        </template>
+    {% endfor %}
+{% endwith %}

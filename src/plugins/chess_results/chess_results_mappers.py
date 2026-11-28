@@ -223,6 +223,7 @@ class ChessResultsTieBreak:
                 ffe_tb.GamePointsDifferentialTieBreak
                 | ffe_tb.LowestOwnAverageRatingTieBreak
                 | ffe_tb.BoardDifferentialTieBreak
+                | ffe_tb.MutualResultsTieBreak
             ):
                 # No Chess-Results codes for these; ``5`` (manual /
                 # informative) keeps the export valid with our values.

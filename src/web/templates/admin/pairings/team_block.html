@@ -12,5 +12,10 @@
                 {% endwith %}
             {% endif %}
         {% endfor %}
+        {% for extra_game in team_board.extra_games %}
+            {% if not show_without_results or extra_game.pending %}
+                {% include '/admin/pairings/team_block_extra_row.html' %}
+            {% endif %}
+        {% endfor %}
     {% endif %}
 </tbody>

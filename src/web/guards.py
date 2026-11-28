@@ -151,6 +151,33 @@ class SetResultGuard(BaseGuard):
             )
 
 
+class SetExtraGameResultGuard(BaseGuard):
+    """Guard validating if a client can set the result of a game a team
+    match counts beyond its boards.
+    requires: event_uniq_id, tournament_id, team_board_id, extra_game_key,
+    result."""
+
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
+        extra_game = RequestUtils.get_extra_game(request)
+        result = RequestUtils.get_result(request)
+        self._authorize_tournament_action(AuthAction.ENTER_RESULTS, client, request)
+        # A result entered from a screen that showed another one is not
+        # recorded but answered with what the game now holds, which a client
+        # only allowed to enter results is entitled to be told.
+        shown = request.query_params.get('shown')
+        if not extra_game.pending and shown in (
+            None,
+            str(extra_game.stored_result.value),
+        ):
+            self._authorize_tournament_action(
+                AuthAction.UPDATE_RESULTS, client, request
+            )
+        if result.is_forfeit:
+            self._authorize_tournament_action(
+                AuthAction.SET_SPECIAL_RESULTS, client, request
+            )
+
+
 class SetByeGuard(BaseGuard):
     """Guard validating if a client can set a bye for a player.
     requires: event_uniq_id, result."""

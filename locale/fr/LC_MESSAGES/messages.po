@@ -701,6 +701,9 @@ msgstr "Un nombre fixe de pages"
 msgid "A fixed number of rows on each page"
 msgstr "Un nombre fixe de lignes sur chaque page"
 
+msgid "A game played beyond the boards of the match: it counts for the team, not towards the points of the player."
+msgstr "Partie jouée en plus des échiquiers du match : elle compte pour l'équipe, pas pour les points du·de la joueur·euse."
+
 msgid "A half point to one side only, or nothing to either."
 msgstr "Un demi-point à un seul des deux camps, ou rien à aucun."
 
@@ -7357,6 +7360,12 @@ msgstr "Non attribué"
 msgid "Not available"
 msgstr "Indisponibles"
 
+msgid "Not available with the rule set of this tournament, whose games this format cannot hold."
+msgstr "Indisponible avec le jeu de règles de ce tournoi, dont ce format ne peut pas contenir toutes les parties."
+
+msgid "Not available: this tournament holds games of a rule set that is no longer there, which this format cannot hold."
+msgstr "Indisponible : ce tournoi contient des parties d'un jeu de règles qui n'est plus disponible, que ce format ne peut pas contenir."
+
 msgid "Not checked in yet"
 msgstr "Pas encore pointé·e"
 
@@ -12148,6 +12157,13 @@ msgstr "La règle a été supprimée."
 msgid "The rule has been saved."
 msgstr "La règle a été enregistrée."
 
+#, python-brace-format
+msgid "The rule set [{rule_set}] is played with the pairing system [{pairing_system}]."
+msgstr "Le jeu de règles [{rule_set}] se joue avec le système d'appariement [{pairing_system}]."
+
+msgid "The rule set cannot be changed once the tournament is paired."
+msgstr "Le jeu de règles ne peut plus être modifié une fois le tournoi apparié."
+
 msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
 
@@ -12476,6 +12492,9 @@ msgstr "Cette sauvegarde a été effectuée par une autre version de l'applicati
 
 msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
 msgstr "Cet échiquier est marqué comme absent (forfait) dans la composition. Utilisez la liste déroulante de composition pour remettre unÏe joueur·euse à cette place."
+
+msgid "This cannot be changed once the tournament is paired."
+msgstr "Ce réglage ne peut plus être modifié une fois le tournoi apparié."
 
 #, python-brace-format
 msgid "This channel is currently showing {name}."

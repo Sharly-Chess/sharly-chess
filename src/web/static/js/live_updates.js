@@ -149,11 +149,13 @@ function disposeTooltipsOf(node) {
 // What a row shows, without what the browser added to it since it came in.
 function liveRowSignature(row) {
     const copy = row.cloneNode(true);
+    copy.querySelectorAll('.select2-container').forEach((element) => element.remove());
     [copy, ...copy.querySelectorAll('*')].forEach((element) => {
-        ['aria-describedby', 'aria-label', 'data-bs-original-title'].forEach(
-            (name) => element.removeAttribute(name)
-        );
-        element.classList.remove('live-updated');
+        [
+            'aria-describedby', 'aria-label', 'data-bs-original-title',
+            'data-select2-id', 'tabindex', 'aria-hidden',
+        ].forEach((name) => element.removeAttribute(name));
+        element.classList.remove('live-updated', 'select2-hidden-accessible');
         if (element.getAttribute('class') === '') {
             element.removeAttribute('class');
         }
@@ -311,7 +313,9 @@ liveUpdateAppliers.players = async (source, changes) => {
 // longer keeps are taken away. When the change cannot be put in place, the
 // tab is loaded again where it stood.
 liveUpdateAppliers.pairings = async (source, changes) => {
-    const boardRows = () => [...document.querySelectorAll('#main-wrapper tr[data-board-id]')];
+    const boardRows = () => [
+        ...document.querySelectorAll('#main-wrapper tr[data-board-id]:not([data-extra-game])'),
+    ];
     const shownIds = boardRows().map((row) => Number(row.dataset.boardId));
     const fresh = await fetchLiveUpdate(source, {
         shown_board_ids: shownIds,

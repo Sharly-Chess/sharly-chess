@@ -18,6 +18,7 @@ from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.board import Board
 from data.screens.screen import Screen
+from data.teams.extra_game import EXTRA_GAME_RESULTS
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
@@ -30,6 +31,7 @@ from web.guards import (
     EventGuard,
     ViewScreenGuard,
     TournamentActionGuard,
+    SetExtraGameResultGuard,
     SetResultGuard,
     ViewDisplayControllerGuard,
 )
@@ -120,6 +122,20 @@ class ResultUserWebContext(UserInputWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'board': self.board,
+        }
+
+
+class ExtraGameUserWebContext(UserInputWebContext):
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
+        self.extra_game = RequestUtils.get_extra_game(request)
+        self.round = self.extra_game.round
+        self.result = RequestUtils.get_result(request)
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return super().template_context | {
+            'extra_game': self.extra_game,
         }
 
 
@@ -426,6 +442,93 @@ class InputUserController(BaseScreenUserController):
                 expiration=time.time() + 20,
             )
         )
+        return self._user_screen_render(
+            web_context,
+            template_name='user/screen/content_update.html',
+            trigger_event='close_modal',
+        )
+
+    @get(
+        path=[
+            '/view/extra-game-result-modal/{is_screen:int}/{event_uniq_id:str}/'
+            '{screen_uniq_id:str}/{tournament_id:int}/{team_board_id:int}/'
+            '{extra_game_key:str}',
+            '/view/extra-game-result-modal/0/{event_uniq_id:str}/'
+            '{display_controller_id:int}/{tournament_id:int}/{team_board_id:int}/'
+            '{extra_game_key:str}',
+        ],
+        name='user-extra-game-result-modal',
+        guards=[TournamentActionGuard(AuthAction.ENTER_RESULTS)],
+    )
+    async def htmx_user_extra_game_result_modal(self, request: HTMXRequest) -> Template:
+        web_context = ExtraGameUserWebContext(request)
+        web_context.require_input(results=True)
+        return HTMXTemplate(
+            template_name='user/modals/extra_game_results_modal.html',
+            context=web_context.template_context,
+            re_target='#modal-wrapper',
+            trigger_event='modal_opened',
+            after='settle',
+        )
+
+    @put(
+        path=[
+            '/view/update-extra-game-result/{is_screen:int}/{event_uniq_id:str}/'
+            '{screen_uniq_id:str}/{tournament_id:int}/{team_board_id:int}/'
+            '{extra_game_key:str}/{result:int}',
+            '/view/update-extra-game-result/0/{event_uniq_id:str}/'
+            '{display_controller_id:int}/{tournament_id:int}/{team_board_id:int}/'
+            '{extra_game_key:str}/{result:int}',
+        ],
+        name='user-update-extra-game-result',
+        guards=[SetExtraGameResultGuard()],
+    )
+    async def htmx_user_update_extra_game_result(
+        self,
+        request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
+    ) -> Template:
+        web_context = ExtraGameUserWebContext(request)
+        web_context.require_input(results=True)
+        event = web_context.user_event
+        tournament = web_context.tournament
+        round_ = web_context.round
+        extra_game = web_context.extra_game
+        result = web_context.result
+        if result not in EXTRA_GAME_RESULTS or not extra_game.has_both_players:
+            raise ClientException(
+                f'The extra game [{extra_game.key}] cannot take the result [{result}].'
+            )
+        if tournament.awaits_publication(round_):
+            raise ClientException(
+                f'Round [{round_}] of tournament [{tournament.id}] is not published.'
+            )
+        held = extra_game.stored_result
+        shown_result = self._shown_value(request)
+        if shown_result is not None and held not in (shown_result, result):
+            Message.warning(
+                request,
+                (
+                    _(
+                        'The result of board {board} was cleared by someone else '
+                        'in the meantime: nothing was recorded.'
+                    )
+                    if held == Result.NO_RESULT
+                    else _(
+                        'The result of board {board} was changed to {result} by '
+                        'someone else in the meantime: nothing was recorded.'
+                    )
+                ).format(board=extra_game.label, result=str(held)),
+            )
+        elif shown_result is None or held == shown_result:
+            tournament.set_extra_game_result(extra_game, result)
+            PairingsAdminController.publish_new_user_results(
+                channels,
+                event.uniq_id,
+                tournament.id,
+                round_,
+                extra_game.team_board.boards,
+            )
         return self._user_screen_render(
             web_context,
             template_name='user/screen/content_update.html',

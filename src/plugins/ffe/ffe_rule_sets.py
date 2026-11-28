@@ -201,6 +201,13 @@ class FfeTeamCompetitionRuleSet(RuleSet, ABC):
         ``None`` when the rule set cannot tell."""
         return None
 
+    def administrative_forfeits(self, team_board: TeamBoard) -> dict[int, int]:
+        """For each team that loses boards of the match by administrative
+        forfeit, the index of the first of them: that board and the
+        following ones are lost whatever was played, which the site records
+        beside the result of the game. Default: none."""
+        return {}
+
 
 class _FfeTeamCupRuleSet(FfeTeamCompetitionRuleSet, ABC):
     """Shared scaffold for the two FFE team cups. Both share the

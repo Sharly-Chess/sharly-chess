@@ -661,7 +661,11 @@ class TournamentAdminController(BaseEventAdminController):
         rule_set_config_fields: dict[str, list[dict[str, Any]]] = {}
         for rs in rule_sets:
             rule_set_options[rs.id] = rs.name
-            rule_set_managed_fields[rs.id] = sorted(rs.managed_fields)
+            required_system_id = rs.required_pairing_system_id
+            rule_set_managed_fields[rs.id] = sorted(
+                rs.managed_fields
+                | ({'pairing_system'} if required_system_id else set())
+            )
             rule_set_config_fields[rs.id] = [
                 {
                     'id': config_field.id,
@@ -691,6 +695,9 @@ class TournamentAdminController(BaseEventAdminController):
                         defaults_by_pairing[variation_id] = dict(
                             configured.form_defaults(system.id, variation_id)
                         )
+                if required_system_id:
+                    for defaults in defaults_by_pairing.values():
+                        defaults['pairing_system'] = required_system_id
                 defaults_by_config[rule_set_config_key(config)] = defaults_by_pairing
             rule_set_defaults[rs.id] = defaults_by_config
             rule_set_prefills[rs.id] = dict(rs.form_prefills())
@@ -708,6 +715,11 @@ class TournamentAdminController(BaseEventAdminController):
                 'rule_set_defaults': rule_set_defaults,
                 'rule_set_prefills': rule_set_prefills,
                 'rule_set_lock_titles': rule_set_lock_titles,
+                'rule_set_locked': (
+                    action == 'update'
+                    and web_context.admin_tournament is not None
+                    and web_context.admin_tournament.rule_set_is_locked
+                ),
                 'rule_set_config_fields': rule_set_config_fields,
                 'plugin_form_fields_templates': plugin_form_fields_templates,
                 'admin_tournament': None
@@ -1011,9 +1023,15 @@ class TournamentAdminController(BaseEventAdminController):
             secondary_score_for_colours = WebContext.form_data_to_bool(
                 data, 'secondary_score_for_colours'
             )
-            team_player_count = WebContext.form_data_to_int(
-                data, field := 'team_player_count'
-            )
+            field = 'team_player_count'
+            if (
+                action == 'update'
+                and tournament is not None
+                and tournament.rule_set_is_locked
+            ):
+                team_player_count = tournament.team_player_count
+            else:
+                team_player_count = WebContext.form_data_to_int(data, field)
             if team_player_count is None or team_player_count < 1:
                 errors[field] = _('A positive integer is expected.')
 
@@ -1136,6 +1154,37 @@ class TournamentAdminController(BaseEventAdminController):
             if rule_set_type is not None
             else {}
         )
+        if rule_set_type is not None:
+            required_system_id = rule_set_type(
+                rule_set_config
+            ).required_pairing_system_id
+            if required_system_id and pairing_system.id != required_system_id:
+                errors['pairing_system'] = _(
+                    'The rule set [{rule_set}] is played with the pairing '
+                    'system [{pairing_system}].'
+                ).format(
+                    rule_set=rule_set_type.static_name(),
+                    pairing_system=PairingSystemManager(event)
+                    .get_object(required_system_id)
+                    .name,
+                )
+        if (
+            action == 'update'
+            and tournament is not None
+            and tournament.rule_set_is_locked
+            and tournament.rule_set is not None
+        ):
+            stored_config = dict(tournament.stored_tournament.rule_set_config or {})
+            if rule_set_id != tournament.rule_set_id:
+                rule_set_id = tournament.rule_set_id
+                rule_set_type = type(tournament.rule_set)
+                rule_set_config = stored_config
+            else:
+                for config_field in tournament.rule_set.config_fields:
+                    if config_field.locked_once_paired:
+                        rule_set_config[config_field.id] = (
+                            tournament.rule_set.config_value(config_field.id)
+                        )
         if not pairing:
             if rule_set_type is not None:
                 # "Automatic": the rule set picks the variation from the
@@ -1608,12 +1657,18 @@ class TournamentAdminController(BaseEventAdminController):
         database: EventDatabase,
         event: Event,
         stored_tournament: StoredTournament,
+        previous: StoredTournament | None = None,
     ) -> None:
         """Replace the tournament's stored tie-breaks with the rule
         set's canonical list for the current pairing system. No-op
         when the tournament has no rule set, or its rule set defines
         no overrides for the chosen pairing system. Called after every
-        tournament save."""
+        tournament save, with the tournament as it was before for one
+        that existed.
+
+        A rule set that only starts its tournaments with its criteria
+        has them written when it or the pairing system is chosen, and
+        leaves alone what the arbiter made of them since."""
         rule_set_id = stored_tournament.rule_set
         if not rule_set_id or stored_tournament.id is None:
             return
@@ -1630,6 +1685,13 @@ class TournamentAdminController(BaseEventAdminController):
             return
         overrides = rule_set.tie_breaks_for_pairing(system_id)
         if not overrides:
+            return
+        if (
+            not rule_set.imposes_tie_breaks
+            and previous is not None
+            and previous.rule_set == rule_set_id
+            and cls._resolve_pairing_system_id(event, previous.pairing) == system_id
+        ):
             return
         existing = [
             (stored_tie_break.type, stored_tie_break.options)
@@ -2111,7 +2173,9 @@ class TournamentAdminController(BaseEventAdminController):
                     database.set_tournament_round_robin_schedule(
                         stored_tournament.id, None, None
                     )
-                self._apply_rule_set_tie_breaks(database, event, stored_tournament)
+                self._apply_rule_set_tie_breaks(
+                    database, event, stored_tournament, tournament.stored_tournament
+                )
                 self._record_tournament_changes(tournament, stored_tournament)
                 success_message = _(
                     'Tournament [{tournament}] has been updated.'
@@ -2459,9 +2523,18 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, tournament_id, exporter_id=exporter_id
         )
+        self._check_export_available(web_context)
         return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament-export-data-loss'}
         )
+
+    @staticmethod
+    def _check_export_available(web_context: TournamentAdminWebContext) -> None:
+        unavailable = web_context.get_admin_exporter().unavailable_message(
+            web_context.get_admin_tournament()
+        )
+        if unavailable:
+            raise ClientException(unavailable)
 
     @get(
         path='/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
@@ -2477,6 +2550,7 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, tournament_id, exporter_id=exporter_id
         )
+        self._check_export_available(web_context)
         tournament = web_context.get_admin_tournament()
         exporter = web_context.get_admin_exporter()
         # A period is exported as the tournament FIDE receives it; without
