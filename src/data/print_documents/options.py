@@ -841,6 +841,25 @@ class ShowWarningsPrintOption(PrintOption[bool]):
         return True
 
 
+class ShowTiedPlayersPrintOption(PrintOption[bool]):
+    """On the prize assignment document: also list, in each category, the
+    players without any prize who are tied with the last prize winner of the
+    category (same points, or same performance for a performance-based
+    category)."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'show-tied-players'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
 class KnockoutSchedulePrintOption(PrintOption[bool]):
     """On the knock-out bracket document: show the chronological schedule
     (matches round by round) instead of the bracket diagram."""

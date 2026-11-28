@@ -9,6 +9,8 @@
     .prize-table td.prize { font-weight: bold; }
     .prize-table td.not-assigned { font-style: italic; color: #444444; }
     .prize-table tr.warning td { color: #B00000; white-space: normal; border-bottom: 0; }
+    .prize-table tr.tied td { color: #444444; }
+    .prize-table tr.tied td.no-prize { font-style: italic; }
 {% endblock %}
 
 {% block content %}
@@ -17,7 +19,13 @@
             <div class="tournament-title">{{ tournament.name }}</div>
             {% for prize_group in tournament.sorted_prize_groups %}
                 {% set assigned_prizes_by_category_id = prize_group.get_assigned_prizes_by_category_id() %}
+                {% if show_tied_players %}
+                    {% set tied_players_by_category_id = prize_group.get_tied_players_without_prize_by_category_id(assigned_prizes_by_category_id) %}
+                {% else %}
+                    {% set tied_players_by_category_id = {} %}
+                {% endif %}
                 {% for prize_category in prize_group.sorted_categories %}
+                    {% set category_tied_players = tied_players_by_category_id.get(prize_category.id, []) %}
                     <div class="prize-category">
                         <div class="section-title">
                             {{ prize_category.name }}
@@ -73,6 +81,21 @@
                                             </td>
                                         </tr>
                                     {% endif %}
+                                {% endfor %}
+                                {% for tournament_player in category_tied_players %}
+                                    <tr class="tied">
+                                        <td></td>
+                                        {% for column in player_columns %}
+                                            <td class="{{ column.get_cell_classes(tournament_player) }}">
+                                                {% if column.cell_template %}
+                                                    {% include column.cell_template %}
+                                                {% else %}
+                                                    {{ macros.column_cell(column, tournament_player) }}
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                        <td class="no-prize">{{ _('No prize') }}</td>
+                                    </tr>
                                 {% endfor %}
                             </tbody>
                         </table>

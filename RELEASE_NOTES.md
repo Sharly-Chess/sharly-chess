@@ -50,6 +50,7 @@
 - The round-robin grid is listed among the documents before the tournament is paired, so arbiters can see it is there, and both it and the round-robin pairings explain, when asked for too early, that they cannot be printed until the tournament is paired, rather than the grid being missing from the list and the pairings printing a draw the pairing can still change (5.3.0)
 - The document printing every round of a round robin at once, now named Round-robin pairings, lays each round out like the per-round pairings, with the table numbers, the players with their title and rating (the teams for a team tournament) and the result once it is known, rather than a plain list of names; the per-round document is named Pairings by round, and the round robin's own pairings are edited from a Manual pairing button on the pairings tab (5.3.0)
 - The list of players and the players check-in list let the arbiter choose which columns to print, each document keeping its own choice: the rating, category, gender, federation and club are shown by default, as is a column a plugin adds such as the FFE league, while the pairing number, the FIDE ID and the national ID are offered and left out unless turned on (5.3.0)
+- The prize assignment document can list, in each prize category, the players who won no prize but are tied with the last prize winner of the category (same number of points, or same performance for a category ranked by performance), so they can be mentioned at the prize-giving; the option is off by default (5.3.2)
 
 ## _Sharly-Chess.com_
 

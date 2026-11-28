@@ -75,6 +75,7 @@ from data.print_documents.options import (
     TeamGridSortPrintOption,
     ListPlayerSortPrintOption,
     ShowWarningsPrintOption,
+    ShowTiedPlayersPrintOption,
     KnockoutSchedulePrintOption,
     NonMonetaryPrintOption,
     FederationPrintOption,
@@ -2236,7 +2237,11 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentsPrintOption, ShowWarningsPrintOption]
+        return [
+            TournamentsPrintOption,
+            ShowWarningsPrintOption,
+            ShowTiedPlayersPrintOption,
+        ]
 
     @property
     def title(self) -> str:
@@ -2252,6 +2257,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         return {
             'tournaments': self.tournaments,
             'show_warnings': self._get_option(ShowWarningsPrintOption).value,
+            'show_tied_players': self._get_option(ShowTiedPlayersPrintOption).value,
             'ordinal_integer': ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(

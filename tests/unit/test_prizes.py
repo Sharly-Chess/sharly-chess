@@ -836,6 +836,100 @@ class PrizesTestCase(TestCase):
     # Criteria
     # ---------------------------------------------------------------------------------
 
+    def get_tied_players_without_prize(self, category_id: int = 1) -> list[int]:
+        assert self.tournament is not None
+        prize_group = self.tournament.prize_groups_by_id[1]
+        tied_players_by_category_id = (
+            prize_group.get_tied_players_without_prize_by_category_id(
+                prize_group.get_assigned_prizes_by_category_id()
+            )
+        )
+        return [
+            tournament_player.id
+            for tournament_player in tied_players_by_category_id[category_id]
+        ]
+
+    def test_tied_players_without_prize(self):
+        """Players tied with the last main prize winner but without prize."""
+        prizes = [self.stored_prize(200), self.stored_prize(100)]
+        category = self.stored_category('all', True, NoPrizeSharing(), prizes)
+        p1 = self.player(2000, 5)
+        p2 = self.player(1900, 4)
+        p3 = self.player(1800, 4)
+        p4 = self.player(1700, 4)
+        p5 = self.player(1600, 3)
+        players = [p1, p2, p3, p4, p5]
+
+        prizes = self.assign_prizes([category], players)
+
+        self.assert_has_prize_value(p1, 200, prizes)
+        self.assert_has_prize_value(p2, 100, prizes)
+        self.assertEqual(self.get_tied_players_without_prize(), [p3[0].id, p4[0].id])
+
+    def test_tied_players_with_another_prize_are_not_listed(self):
+        """A tied player who won a prize in another category is not listed."""
+        main_prizes = [self.stored_prize(200), self.stored_prize(100)]
+        main_category = self.stored_category('all', True, NoPrizeSharing(), main_prizes)
+        women_prizes = [self.stored_prize(50)]
+        women_criteria = [
+            self.stored_criterion(
+                GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
+            )
+        ]
+        women_category = self.stored_category(
+            'women', False, NoPrizeSharing(), women_prizes, women_criteria
+        )
+        p1 = self.player(2000, 5)
+        p2 = self.player(1900, 4)
+        p3 = self.player(1800, 4, gender=PlayerGender.WOMAN)
+        p4 = self.player(1700, 4)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes([main_category, women_category], players)
+
+        self.assert_has_prize(p3, women_prizes[0], prizes)
+        self.assertEqual(self.get_tied_players_without_prize(), [p4[0].id])
+
+    def test_tied_players_without_prize_in_a_category(self):
+        """Tied players are also listed in the other categories."""
+        main_prizes = [self.stored_prize(200)]
+        main_category = self.stored_category('all', True, NoPrizeSharing(), main_prizes)
+        women_prizes = [self.stored_prize(50)]
+        women_criteria = [
+            self.stored_criterion(
+                GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
+            )
+        ]
+        women_category = self.stored_category(
+            'women', False, NoPrizeSharing(), women_prizes, women_criteria
+        )
+        p1 = self.player(2000, 5)
+        p2 = self.player(1900, 3, gender=PlayerGender.WOMAN)
+        p3 = self.player(1800, 3, gender=PlayerGender.WOMAN)
+        p4 = self.player(1700, 3)
+        p5 = self.player(1600, 2, gender=PlayerGender.WOMAN)
+        players = [p1, p2, p3, p4, p5]
+
+        prizes = self.assign_prizes([main_category, women_category], players)
+
+        self.assert_has_prize(p2, women_prizes[0], prizes)
+        self.assertEqual(self.get_tied_players_without_prize(1), [])
+        self.assertEqual(self.get_tied_players_without_prize(2), [p3[0].id])
+
+    def test_no_tied_players_without_prize(self):
+        """No player is tied with the last main prize winner."""
+        prizes = [self.stored_prize(200), self.stored_prize(100)]
+        category = self.stored_category('all', True, NoPrizeSharing(), prizes)
+        players = [
+            self.player(2000, 5),
+            self.player(1900, 4),
+            self.player(1800, 3),
+        ]
+
+        self.assign_prizes([category], players)
+
+        self.assertEqual(self.get_tied_players_without_prize(), [])
+
     def test_gender_criterion(self):
         prizes = [
             self.stored_prize(200),
