@@ -25,7 +25,7 @@
                 name="search"
                 class="dropdown form-control"
                 type="search"
-                hx-trigger="keyup changed delay:250ms, data_source_change, filter_change"
+                hx-trigger="input changed delay:250ms, data_source_change, filter_change"
                 hx-target="#search-results"
                 hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='js:{
@@ -33,6 +33,7 @@
                     usage: "{{ usage }}",
                     {% if search_filters %}filters: getFilters(),{% endif %}
                     {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
+                    {% if usage == 'bulk' %}...bulkAddTournamentParam(),{% endif %}
                 }'
                 hx-on::before-request="refreshSearchResultsVisibility();"
                 hx-on::after-request="refreshSearchResultsVisibility();"
@@ -46,9 +47,12 @@
         </div>
         <ul
             id="search-results"
-            class="dropdown-menu position-absolute ms-3 me-3 start-0 end-0 search-results-dropdown"
+            class="{{ 'list-group bulk-add-results overflow-auto mt-2' if usage == 'bulk' else 'dropdown-menu search-results-dropdown position-absolute ms-3 me-3 start-0 end-0' }}"
             hx-on::after-settle="refreshSearchResultsVisibility(); handleInitialQuery(event);"
         >
+            {% if usage == 'bulk' %}
+                {% include '/admin/common/search_results.html' %}
+            {% endif %}
         </ul>
     </div>
     <script>

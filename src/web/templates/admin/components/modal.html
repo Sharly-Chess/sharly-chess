@@ -22,6 +22,9 @@
         modal_close: a close button in the header (default false; the
             footer's Cancel closes the modal).
         modal_scrollable: the body scrolls within the window (default true).
+        modal_full_height: the modal takes the height of the window whatever
+            its content, so it keeps its size as the content changes (default
+            false; the body must scroll).
         modal_class: extra classes of the dialog.
         modal_attrs: extra attributes of the dialog, as a dict (an hx-get that
             refreshes the modal...).
@@ -36,7 +39,7 @@
     class="modal-dialog sc-modal sc-modal-{{ _size }}{% if modal_scrollable | default(true) %} modal-dialog-scrollable{% endif %}{% if modal_class is defined and modal_class %} {{ modal_class }}{% endif %}"
     {{- components.html_attributes(modal_attrs | default({})) }}
 >
-    <div class="modal-content">
+    <div class="modal-content{% if modal_full_height | default(false) %} h-100{% endif %}">
         {% block before_header %}{% endblock %}
         {% set _title %}{% block title %}{% endblock %}{% endset %}
         {% set _subtitle %}{% block subtitle %}{% endblock %}{% endset %}

@@ -63,16 +63,26 @@
                     reason=import_player_error_message,
                     tooltip=_('Import players from a CSV file.'),
                 ) }}
-                {{ components.modal_button(
-                    url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id),
+                {% call components.split_button(
                     _('Add'),
-                    kind='primary',
                     icon='add',
                     allowed=not add_player_error_message,
                     reason=add_player_error_message,
                     tooltip=_('Add a player to the event.'),
+                    url=url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id),
+                    modal=true,
                     attrs={'data-testid': 'add-player-button', 'hx-trigger': 'click, SC_Plus from:body'},
-                ) }}
+                ) %}
+                    {% if not import_player_error_message %}
+                        {{ components.menu_item(
+                            _('Add several players'),
+                            icon='bi-people',
+                            url=url_for('admin-player-bulk-add-modal', event_uniq_id=admin_event.uniq_id),
+                            modal=true,
+                            attrs={'data-testid': 'bulk-add-player-button'},
+                        ) }}
+                    {% endif %}
+                {% endcall %}
             </div>
             <div class="top-nav-collapsible w-100 d-flex flex-wrap gap-2 pt-1">
                 <span class="top-nav-keep" style="width: 400px; max-width: 100%; min-width: 15rem;">

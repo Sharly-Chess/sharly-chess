@@ -267,6 +267,8 @@
     A main action with a menu of other ones beside it, the `menu_item`s
     given in a `{% call %}`; without items it is a plain button. It takes the
     arguments of `button` for the main action (attrs carries its hx-*).
+    url: the URL the main action loads (hx-get), or with modal=true the
+        modal it opens, as for `menu_item`.
 #}
 {% macro split_button(
     label,
@@ -275,6 +277,8 @@
     size=none,
     type='button',
     icon_only=false,
+    url=none,
+    modal=false,
     allowed=true,
     reason=none,
     tooltip=none,
@@ -286,6 +290,12 @@
     {%- set items = caller() -%}
     {%- set tooltip = tooltip or (label if icon_only else none) -%}
     {%- set main_attrs = {'aria-label': label} if icon_only else {} -%}
+    {%- if url -%}
+        {%- do main_attrs.update({'hx-get': url, 'hx-target': 'body', 'hx-indicator': '#please-wait'}) -%}
+        {%- if modal -%}
+            {%- do main_attrs.update({'data-bs-toggle': 'modal', 'data-bs-target': '#modal-wrapper'}) -%}
+        {%- endif -%}
+    {%- endif -%}
     {%- do main_attrs.update(attrs) -%}
     {%- set markup -%}
         {%- if items | trim -%}

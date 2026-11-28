@@ -307,7 +307,7 @@ window.addEventListener('click', function(event) {
 // Close the player search results dropdown when clicking outside of it.
 window.addEventListener('click', function (event) {
     const results = document.getElementById('search-results');
-    if (!results || !$(results).is(':visible')) return;
+    if (!results || !results.classList.contains('dropdown-menu') || !$(results).is(':visible')) return;
     const target = event.target instanceof Element ? event.target : null;
     if (target && target.closest('#player-search-widget')) return;
     $(results).hide();

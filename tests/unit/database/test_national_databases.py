@@ -351,6 +351,14 @@ def test_search_filters(national_database: KnsbDatabase) -> None:
 
 
 @pytest.mark.unit
+def test_a_club_alone_lists_its_players(national_database: KnsbDatabase) -> None:
+    players = national_database.search_player(
+        '', 'NED', 0, None, {'club_filter': 'amster'}
+    )
+    assert [player.club for player in players] == ['Amsterdam', 'Amsterdam']
+
+
+@pytest.mark.unit
 def test_search_ignores_accents_and_case(national_database: KnsbDatabase) -> None:
     for string in ('nyback', 'NYBÄCK', 'Nybäck éva', 'eva'):
         assert [

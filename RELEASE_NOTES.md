@@ -14,6 +14,7 @@
 
 ## Players
 
+- Several players can be added at once, from the new "Add several players" entry of the Add button: the players found in the data sources are picked one click at a time into a list kept across searches, the filters alone list the players they match, such as all the players of a club, the players already entered are marked, and they are all added to the tournament chosen, or to a team in a team event, as if each had been added on their own; those that cannot be are named with the reason (5.4.0)
 - The players tab follows the check-ins and results entered elsewhere, on another computer, a screen or the pairings tab, without being reloaded: the rows that change are updated in place and light up briefly, and a player who no longer matches the filters leaves the table, so that the list of the players not yet checked in shrinks as they arrive. A player checked in from the tab keeps their row while its countdown runs (5.3.0)
 - The rows of the players tab are lighter, so that long lists load faster (5.3.0)
 - The rating check proposes to remove a national rating that no list gave, such as an _FFE_ estimate imported as a national rating, when the national list finds the player and gives them no national rating at that cadence (5.3.0)

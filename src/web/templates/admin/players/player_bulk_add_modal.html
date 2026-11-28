@@ -1,0 +1,186 @@
+{% extends '/admin/components/modal.html' %}
+{% set modal_id = 'player-bulk-add-modal' %}
+{% set modal_size = 'wide' %}
+{% set modal_full_height = true %}
+
+{% block title %}{{ _('Add several players') }}{% endblock %}
+
+{% block body %}
+    <form
+        id="bulk-add-form"
+        hx-post="{{ url_for('admin-player-bulk-add', event_uniq_id=admin_event.uniq_id) }}"
+        hx-on::config-request="if (!$('#team-id').length && $('#tournament-id').val()) { event.detail.path += '/' + $('#tournament-id').val(); }"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-disabled-elt="#bulk-add-submit"
+    >
+        {% if is_team_event %}
+            {{ admin_macros.select_input(
+                name='team_id',
+                label=_('%(string)s:', string=_('Team')),
+                select_options=team_options,
+                data=data, errors=errors
+            ) }}
+        {% else %}
+            {{ admin_macros.select_input(
+                name='tournament_id',
+                label=_('%(string)s:', string=_('Tournament')),
+                select_options=tournament_options,
+                data=data, errors=errors
+            ) }}
+        {% endif %}
+        <div id="bulk-add-inputs"></div>
+    </form>
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+        {{ components.section_heading(pgettext('player search section title', 'Search')) }}
+        {% set selected_label %}<span>{{ pgettext('players ticked', 'Selected') }} (<span class="bulk-add-count">0</span>)</span>{% endset %}
+        {% call components.segmented(_('Players shown'), size='sm') %}
+            {{ components.segment_radio(
+                'bulk_add_view', 'results', _('Search results'), 'bulk-add-view-results',
+                checked=true, attrs={'data-testid': 'bulk-add-view-results'},
+            ) }}
+            {{ components.segment_radio(
+                'bulk_add_view', 'selected', selected_label, 'bulk-add-view-selected',
+                attrs={'data-testid': 'bulk-add-view-selected'},
+            ) }}
+        {% endcall %}
+    </div>
+    {% with usage = 'bulk' %}
+        {% include '/admin/common/search_filter_form.html' %}
+        {% include '/admin/common/player_search.html' %}
+    {% endwith %}
+    <div id="bulk-add-selected" class="d-none mt-2">
+        <ul id="bulk-add-picks" class="list-group" data-testid="bulk-add-picks"></ul>
+        {% call components.empty_state('', class='bulk-add-none') %}
+            <p class="mb-0">{{ _('No players selected yet.') }}</p>
+        {% endcall %}
+    </div>
+    <div class="form-text">
+        {{ _('Tick the players to add; with no words to search, the filters alone list the players they match, such as all the players of a club.') }}
+    </div>
+    <template id="bulk-add-pick-template">
+        <li class="list-group-item list-group-item-action d-flex align-items-center gap-2">
+            <input type="checkbox" class="form-check-input flex-shrink-0 mt-0 bulk-add-pick-check" checked>
+            <span class="bulk-add-pick-content text-truncate flex-grow-1"></span>
+        </li>
+    </template>
+    <script>
+        var bulkAddPicks = new Map();
+
+        function bulkAddKey(pick) {
+            return JSON.stringify([pick[0], pick[1]]);
+        }
+
+        function bulkAddTournamentParam() {
+            const tournamentId = $('#tournament-id').val();
+            return tournamentId ? {tournament_id: tournamentId} : {};
+        }
+
+        function bulkAddRowClicked(event, row) {
+            const box = row.querySelector('.bulk-add-check');
+            if (event.target !== box) {
+                box.checked = !box.checked;
+            }
+            const pick = JSON.parse(row.dataset.pick);
+            if (box.checked) {
+                bulkAddPicks.set(bulkAddKey(pick), {
+                    pick: pick,
+                    content: row.querySelector('.bulk-add-result-content').innerHTML,
+                });
+            } else {
+                bulkAddPicks.delete(bulkAddKey(pick));
+            }
+            renderBulkAddPicks();
+        }
+
+        function markBulkAddResults() {
+            $('#search-results .bulk-add-result').each(function () {
+                this.querySelector('.bulk-add-check').checked = bulkAddPicks.has(
+                    bulkAddKey(JSON.parse(this.dataset.pick))
+                );
+            });
+        }
+
+        function showBulkAddView(view) {
+            $('#search-results').toggleClass('d-none', view !== 'results');
+            $('#bulk-add-selected').toggleClass('d-none', view !== 'selected');
+            $(`#bulk-add-view-${view}`).prop('checked', true);
+        }
+
+        function refreshBulkAddSubmit() {
+            const placed = $('#team-id').length > 0 || Boolean($('#tournament-id').val());
+            $('#bulk-add-submit').prop('disabled', !bulkAddPicks.size || !placed);
+        }
+
+        function renderBulkAddPicks() {
+            const $inputs = $('#bulk-add-inputs').empty();
+            const $picks = $('#bulk-add-picks').empty();
+            for (const [key, entry] of bulkAddPicks) {
+                $inputs.append($('<input type="hidden" name="players">').val(JSON.stringify(entry.pick)));
+                const $pick = $($('#bulk-add-pick-template').prop('content').cloneNode(true)).children();
+                const box = $pick.find('.bulk-add-pick-check').attr('aria-label', entry.pick[2])[0];
+                $pick.find('.bulk-add-pick-content').html(entry.content);
+                $pick.on('click', (event) => {
+                    if (event.target !== box) {
+                        box.checked = false;
+                    }
+                    bulkAddPicks.delete(key);
+                    renderBulkAddPicks();
+                });
+                $picks.append($pick);
+            }
+            $('.bulk-add-count').text(bulkAddPicks.size);
+            $('#bulk-add-selected .bulk-add-none').toggleClass('d-none', bulkAddPicks.size > 0);
+            markBulkAddResults();
+            refreshBulkAddSubmit();
+        }
+
+        $('input[name="bulk_add_view"]').on('change', function () {
+            showBulkAddView(this.value);
+        });
+        // What is typed is searched for: the results show it
+        $('#search-input').on('input', () => showBulkAddView('results'));
+
+        // Escape or a click beside the modal would throw the list away:
+        // only Cancel and the addition close it then
+        var bulkAddClosing = false;
+        $('#modal-wrapper').off('hide.bs.modal.bulkAdd').on('hide.bs.modal.bulkAdd', function (event) {
+            if (!document.getElementById('player-bulk-add-modal')) {
+                $(this).off('hide.bs.modal.bulkAdd');
+            } else if (bulkAddPicks.size && !bulkAddClosing) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }
+        });
+        // Bootstrap closes the modal in the capture phase of the click on
+        // document, so Cancel is seen before, on window
+        if (!window.bulkAddCancelWatched) {
+            window.bulkAddCancelWatched = true;
+            window.addEventListener('click', (event) => {
+                if (event.target.closest('#player-bulk-add-modal [data-bs-dismiss="modal"]')) {
+                    bulkAddClosing = true;
+                }
+            }, true);
+        }
+        $('#bulk-add-form').on('htmx:beforeRequest', () => bulkAddClosing = true);
+
+        $('#player-bulk-add-modal').on('htmx:afterSettle', markBulkAddResults);
+        $('#tournament-id').on('change', () => {
+            refreshBulkAddSubmit();
+            // The players already entered depend on the tournament
+            $('#search-input')[0]?.dispatchEvent(new CustomEvent('filter_change', {bubbles: true, cancelable: true}));
+        });
+        renderBulkAddPicks();
+    </script>
+{% endblock %}
+
+{% block footer %}
+    {{ components.cancel_button() }}
+    {% call components.button(
+        _('Add'),
+        kind='primary',
+        icon='add',
+        type='submit',
+        attrs={'form': 'bulk-add-form', 'id': 'bulk-add-submit', 'data-testid': 'bulk-add-submit'},
+    ) %}<span>{{ _('Add') }} (<span class="bulk-add-count">0</span>)</span>{% endcall %}
+{% endblock %}

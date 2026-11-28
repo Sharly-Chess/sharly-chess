@@ -315,6 +315,18 @@ def test_club_filter(init_mock_FFE_database):
         assert len(result) == expected_result_count
 
 
+def test_a_club_alone_lists_its_players(init_mock_FFE_database):
+    database = init_mock_FFE_database
+    database.database.execute('UPDATE player SET club = ?', ('Club de Lyon',))
+    database.database.execute(
+        'UPDATE player SET club = ? WHERE fide_id = ?', ('Club de Paris', '0000001')
+    )
+    database.database.commit()
+
+    result = database.search_player('', 'FRA', 0, None, {'club_filter': 'paris'})
+    assert [player.first_name for player in result] == ['Alice']
+
+
 def test_search_matches_the_names_cut_or_abbreviated(init_mock_FFE_database):
     database = init_mock_FFE_database
     database.database.executemany(
