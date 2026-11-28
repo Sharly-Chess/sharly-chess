@@ -824,6 +824,31 @@ def test_creating_a_screen_offers_one_or_several_pages_at_the_top(
     assert 'Over several pages' not in menu
 
 
+@pytest.mark.parametrize(
+    'url',
+    [
+        f'/screen-modal/create/{EVENT_ID}/{ScreenType.BOARDS.value}',
+        f'/screen-modal/create/{EVENT_ID}/{ScreenType.IMAGE.value}',
+        f'/family-modal/create/{EVENT_ID}/{ScreenType.BOARDS.value}',
+    ],
+)
+def test_the_designed_for_field_is_in_the_properties(
+    http: TestClient, api: ApiClient, tournament: StoredTournament, url: str
+) -> None:
+    """The Designed for field comes right in the first section of the
+    modals of the screens, before any other heading."""
+    TestUtils.create_display_controller(api, EVENT_ID, 'iPad')
+    modal = http.get(url).text
+    field = modal.index('name="display_controller_ids"')
+    headings = [
+        index
+        for index in range(len(modal))
+        if modal.startswith('class="sc-section-heading', index)
+    ]
+    assert len(headings) >= 2
+    assert headings[0] < field < headings[1]
+
+
 def selected_destinations(html: str) -> list[str]:
     """The feeds selected in the Designed for field of a modal."""
     parser = AdvancedHTMLParser()

@@ -83,6 +83,9 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        {% with destination_field_class='col-12' %}
+                            {% include '/admin/display_controllers/destination_field.html' %}
+                        {% endwith %}
                     </div>
 
                     {% if family_type and family_type.form_template %}
@@ -164,9 +167,6 @@
 
                     {{ components.section_heading(_('Layout')) }}
                     <div class="row gy-2 gx-3">
-                        {% with destination_field_class='col-12' %}
-                            {% include '/admin/display_controllers/destination_field.html' %}
-                        {% endwith %}
                         {% if family_type.multi_column_allowed %}
                             <div class="col-12 col-md-6">
                                 {{ admin_macros.number_input(
