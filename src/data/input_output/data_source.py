@@ -399,6 +399,18 @@ class DataSource(IdentifiableEntity, ABC):
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         """Get the id of the player in the source formatted as a string."""
 
+    async def get_stored_players_by_source_ids(
+        self, player_source_ids: list[str]
+    ) -> dict[str, StoredPlayer]:
+        """The players with the given identifiers in the data source, by
+        identifier; those not found are left out."""
+        stored_players: dict[str, StoredPlayer] = {}
+        for player_source_id in player_source_ids:
+            stored_player = await self.get_stored_player_by_source_id(player_source_id)
+            if stored_player is not None:
+                stored_players[player_source_id] = stored_player
+        return stored_players
+
     async def fetch_player(
         self,
         player_source_id: str,
@@ -407,15 +419,38 @@ class DataSource(IdentifiableEntity, ABC):
     ) -> StoredPlayer | None:
         stored_player = await self.get_stored_player_by_source_id(player_source_id)
         if stored_player:
-            self._adjust_player_from_fide_database(
-                stored_player, k_factor_reference_date
-            )
-            await plugin_manager.ahook.augment_player_after_search(
-                stored_player=stored_player,
-                data_source=self,
-                with_arbiter_title=with_arbiter_title,
+            await self._complete_fetched_player(
+                stored_player, with_arbiter_title, k_factor_reference_date
             )
         return stored_player
+
+    async def fetch_players(
+        self,
+        player_source_ids: list[str],
+        with_arbiter_title: bool,
+        k_factor_reference_date: date,
+    ) -> dict[str, StoredPlayer]:
+        """`fetch_player()` for several players, by identifier; those not
+        found are left out."""
+        stored_players = await self.get_stored_players_by_source_ids(player_source_ids)
+        for stored_player in stored_players.values():
+            await self._complete_fetched_player(
+                stored_player, with_arbiter_title, k_factor_reference_date
+            )
+        return stored_players
+
+    async def _complete_fetched_player(
+        self,
+        stored_player: StoredPlayer,
+        with_arbiter_title: bool,
+        k_factor_reference_date: date,
+    ) -> None:
+        self._adjust_player_from_fide_database(stored_player, k_factor_reference_date)
+        await plugin_manager.ahook.augment_player_after_search(
+            stored_player=stored_player,
+            data_source=self,
+            with_arbiter_title=with_arbiter_title,
+        )
 
     @staticmethod
     def _adjust_player_from_fide_database(

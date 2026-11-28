@@ -1693,3 +1693,7 @@ tr.live-updated > td {
     padding: .1rem .4rem .1rem .55rem;
     border-left: 2px solid var(--bs-primary);
 }
+
+.bulk-add-results {
+    max-height: 60vh;
+}

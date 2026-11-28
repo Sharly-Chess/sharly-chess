@@ -1060,6 +1060,9 @@ msgstr "Ajouter des joueur·euses"
 msgid "Add rule"
 msgstr "Ajouter la règle"
 
+msgid "Add several players"
+msgstr "Ajouter plusieurs joueur·euses"
+
 msgid "Add the first tournament to start building the standings."
 msgstr "Ajoutez le premier tournoi pour commencer à construire le classement."
 
@@ -1077,6 +1080,10 @@ msgstr "Ajouter des tournois"
 
 msgid "Added automatically, on top of any manual points below."
 msgstr "Ajoutés automatiquement, en plus des points manuels ci-dessous."
+
+#, python-brace-format
+msgid "Added but not matching the tournament criteria: {players}."
+msgstr "Ajouté·es mais ne respectant pas les critères du tournoi : {players}."
 
 msgid "Adding a player found in another list, and checking the ratings, read the online database before the installed copy, which stands in when it cannot be reached."
 msgstr "L'ajout d'un·e joueur·euse trouvé·e dans une autre liste et la vérification des classements lisent la base en ligne avant la copie installée, qui prend le relais lorsqu'elle est injoignable."
@@ -1320,6 +1327,9 @@ msgstr "Alphabétique"
 
 msgid "Alphabetical order"
 msgstr "Ordre alphabétique"
+
+msgid "Already entered"
+msgstr "Déjà inscrit·e"
 
 msgid "Already in the timer"
 msgstr "Déjà dans le chronomètre"
@@ -7046,6 +7056,9 @@ msgstr "Aucun·e joueur·euse dans cette équipe pour l'instant."
 msgid "No players matching the criteria."
 msgstr "Aucun·e joueur·euse correspondant aux critères."
 
+msgid "No players selected yet."
+msgstr "Aucun·e joueur·euse choisi·e pour le moment."
+
 msgid "No players to choose from."
 msgstr "Aucun·e joueur·euse à sélectionner."
 
@@ -7350,6 +7363,10 @@ msgstr "N° {first}–{last}"
 #, python-brace-format
 msgid "Not FIDE numbers ({values}), left empty"
 msgstr "Numéros qui ne sont pas des identifiants FIDE ({values}), laissés vides"
+
+#, python-brace-format
+msgid "Not added: {players}."
+msgstr "Non ajouté·es : {players}."
 
 msgid "Not assigned"
 msgstr "Non attribué"
@@ -8553,6 +8570,9 @@ msgstr "Joueur·euses récompensé·es (%%) :"
 
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
+
+msgid "Players shown"
+msgstr "Joueur·euses affiché·es"
 
 msgid "Players successfully distributed among the tournaments."
 msgstr "Les joueur·euses ont été réparti·es dans les tournois."
@@ -10254,6 +10274,9 @@ msgstr "Rechercher des mises à jour"
 msgid "Search players…"
 msgstr "Rechercher des joueur·euses…"
 
+msgid "Search results"
+msgstr "Résultats de la recherche"
+
 msgid "Searching for updates..."
 msgstr "Recherche de mises à jour…"
 
@@ -10385,6 +10408,10 @@ msgstr "Sélectionner cette table vide (forfait pour le·la joueur·euse appari�
 
 msgid "Select to pair (White, then pick the opponent)"
 msgstr "Sélectionner pour apparier (Blanc, puis choisir l'adversaire)"
+
+msgctxt "players ticked"
+msgid "Selected"
+msgstr "Choisi·es"
 
 msgid "Selection"
 msgstr "Sélection"
@@ -12836,6 +12863,9 @@ msgstr "Cela améliorera les performances. Vous devez avoir les droits d'adminis
 msgid "Threshold"
 msgstr "Seuil"
 
+msgid "Tick the players to add; with no words to search, the filters alone list the players they match, such as all the players of a club."
+msgstr "Cocher les joueur·euses à ajouter ; sans mot à chercher, les filtres seuls listent les joueur·euses qui y répondent, comme tou·tes les joueur·euses d'un club."
+
 #, python-format
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr "Le départage [%(tie_break)s] a été créé avec succès !"
@@ -13214,6 +13244,9 @@ msgstr "Type A (préférences simples)"
 
 msgid "Type B (strong + mild preferences)"
 msgstr "Type B (préférences fortes + faibles)"
+
+msgid "Type a name or set a filter to list players."
+msgstr "Saisir un nom ou choisir un filtre pour lister des joueur·euses."
 
 msgid "Type of teams:"
 msgstr "Type d'équipes :"
@@ -14650,6 +14683,9 @@ msgstr "nouveau groupe non cumulable"
 msgid "no"
 msgstr "non"
 
+msgid "no longer found in the data source"
+msgstr "introuvable désormais dans la source de données"
+
 msgid "no reason was given."
 msgstr "aucune raison n'a été donnée."
 
@@ -14799,6 +14835,9 @@ msgstr "appariements du début au n°{last}, sur {parts} pages"
 msgid "pairings on {parts} pages"
 msgstr "appariements sur {parts} pages"
 
+msgid "picked twice"
+msgstr "choisi·e deux fois"
+
 #, python-brace-format
 msgid "place {place}"
 msgstr "place {place}"
@@ -14903,6 +14942,10 @@ msgstr "certain·es se sont déjà rencontré·es"
 msgid "split the players belonging to the same club between the balanced tournaments, as much as possible."
 msgstr "Répartir les joueur·euses appartenant à un même club entre les tournois équilibrés, autant que possible."
 
+#, python-brace-format
+msgid "team [{team}] is full"
+msgstr "l'équipe [{team}] est complète"
+
 msgid "teams"
 msgstr "équipes"
 
@@ -14933,6 +14976,12 @@ msgstr "équipes du début au n°{last}, sur {parts} pages"
 #, python-brace-format
 msgid "teams on {parts} pages"
 msgstr "équipes sur {parts} pages"
+
+msgid "the data source could not be reached"
+msgstr "la source de données n'a pas pu être contactée"
+
+msgid "the data source is not available"
+msgstr "la source de données n'est pas disponible"
 
 msgid "the file does not code it"
 msgstr "le fichier ne le code pas"
@@ -15111,6 +15160,12 @@ msgid "{count} name has no comma between last and first name: it is imported who
 msgid_plural "{count} names have no comma between last and first name: they are imported whole as the last name."
 msgstr[0] "{count} nom n'a pas de virgule entre nom et prénom : il est importé en entier comme nom."
 msgstr[1] "{count} noms n'ont pas de virgule entre nom et prénom : ils sont importés en entier comme nom."
+
+#, python-brace-format
+msgid "{count} player added."
+msgid_plural "{count} players added."
+msgstr[0] "{count} joueur·euse ajouté·e."
+msgstr[1] "{count} joueur·euses ajouté·es."
 
 #, python-brace-format
 msgid "{count} player deleted."

@@ -732,6 +732,9 @@ class FfePlugin(Plugin):
         filters['licence'] = {
             'template_name': '/ffe_search_filter_licence.html',
             'options': licences,
+            # Picking several players, the players no longer licensed are
+            # of no use
+            'bulk_defaults': {'ffe_licence_filter': 'B'},
         }
         filters['league'] = {
             'template_name': '/ffe_search_filter_league.html',

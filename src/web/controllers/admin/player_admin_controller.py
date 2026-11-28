@@ -976,6 +976,192 @@ class PlayerAdminController(BaseEventAdminController):
             return manager.national_source(national_source)
         return manager.national_source_for_federation(event.federation)
 
+    @staticmethod
+    def _team_options(event: Event) -> dict[str, str | dict[str, str]]:
+        """The teams to pick from, grouped by tournament."""
+        team_options: dict[str, str | dict[str, str]] = {'': '-'}
+        if event.is_team_event:
+            # Group teams by tournament so the picker matches the
+            # team-admin layout. Teams not yet attached to a tournament
+            # land under "Unassigned".
+            tournaments_by_id = event.tournaments_by_id
+            unassigned_teams_found: bool = any(
+                team.tournament_id is None
+                or team.tournament_id not in tournaments_by_id
+                for team in event.sorted_teams
+            )
+            multi_labels: bool = len(tournaments_by_id) > 1 or unassigned_teams_found
+            if multi_labels:
+                teams_by_tournament_label: dict[str, dict[str, str]] = {}
+                for team in event.sorted_teams:
+                    if (
+                        team.tournament_id is not None
+                        and team.tournament_id in tournaments_by_id
+                    ):
+                        label = tournaments_by_id[team.tournament_id or 0].name
+                    else:
+                        label = pgettext(
+                            'group of the teams with no tournament', 'Unassigned'
+                        )
+                    teams_by_tournament_label.setdefault(label, {})[str(team.id)] = (
+                        team.name
+                    )
+                # Sorted alphabetically so the order is stable across renders.
+                for label in sorted(teams_by_tournament_label):
+                    team_options[label] = teams_by_tournament_label[label]
+            else:
+                for team in event.sorted_teams:
+                    team_options[str(team.id)] = team.name
+        return team_options
+
+    @classmethod
+    def _initial_form_data(
+        cls,
+        web_context: PlayerAdminWebContext,
+        action: FormAction,
+        search_stored_player: StoredPlayer | None = None,
+        carry_over_data: dict[str, str] | None = None,
+        redirect_to: str | None = None,
+        tournament_id: int | None = None,
+        team_id: int | None = None,
+    ) -> dict[str, str]:
+        """The form data the player modal opens with: the player found by a
+        search, else the player edited; *tournament_id* and *team_id* place
+        a created player elsewhere than the default."""
+        event = web_context.get_admin_event()
+        admin_player = web_context.admin_player
+        first_name: str | None = None
+        last_name: str | None = None
+        date_of_birth: str | None = None
+        gender = PlayerGender.NONE.value
+        ratings: dict[Cadence, PlayerRating] = {tr: PlayerRating() for tr in Cadence}
+        title = PlayerTitle.NONE.value
+        women_title = PlayerTitle.NONE.value
+        federation = event.federation
+        club: str | None = None
+        fide_id: int | None = None
+        national_id: str | None = None
+        national_source: str | None = None
+        mail: str | None = None
+        phone: str | None = None
+        comment: str | None = None
+        owed: float = 0.0
+        paid: float = 0.0
+        fixed: int | None = None
+        byes_allowed: bool = True
+        stored_plugin_data: dict[str, dict[str, Any]] = {}
+        stored_player = search_stored_player
+        if not stored_player and admin_player:
+            stored_player = admin_player.stored_player
+        if stored_player:
+            if search_stored_player or action != FormAction.REPLACE:
+                first_name = stored_player.first_name
+                last_name = stored_player.last_name
+                gender = stored_player.gender
+                date_of_birth = WebContext.value_to_date_form_data(
+                    stored_player.date_of_birth
+                )
+                if stored_player.year_of_birth:
+                    date_of_birth = str(stored_player.year_of_birth)
+                # The fields hold the period being played, which is
+                # what an edit records (see
+                # ``_ratings_for_current_period``).
+                ratings |= cls._current_period_ratings(
+                    None if search_stored_player else admin_player, stored_player
+                )
+                title = stored_player.title
+                women_title = stored_player.women_title
+                federation = stored_player.federation
+                club = stored_player.club
+                fide_id = stored_player.fide_id or None
+                national_id = stored_player.national_id or None
+                national_source = stored_player.national_source or None
+            # Fields the data sources do not provide, kept on replace
+            kept_player = admin_player.stored_player if admin_player else None
+            if kept_player is not None:
+                mail = kept_player.mail
+                phone = kept_player.phone
+                comment = kept_player.comment
+                owed = kept_player.owed
+                paid = kept_player.paid
+                fixed = kept_player.fixed
+                byes_allowed = kept_player.byes_allowed
+            stored_plugin_data = stored_player.plugin_data
+        if action == FormAction.CREATE:
+            if (
+                tournament_id is None
+                and len(event.sorted_not_finished_tournaments) == 1
+            ):
+                tournament_id = event.sorted_not_finished_tournaments[0].id
+        else:
+            assert admin_player is not None
+            if event.is_team_event:
+                tournament_id = (
+                    admin_player.team.tournament_id
+                    if admin_player.team is not None
+                    and admin_player.team.tournament_id is not None
+                    else None
+                )
+            else:
+                tournament_id = admin_player.single_tournament.id
+
+        initial_tournament = (
+            event.tournaments_by_id.get(tournament_id) if tournament_id else None
+        )
+        rating_context = cls._rating_form_context(
+            event, ratings, initial_tournament, admin_player
+        )
+        rating_data: dict[str, Any] = {
+            'ratings': cls._dump_form_ratings(ratings),
+            'tournament_rating': rating_context['value'],
+            'rating_pin': rating_context['pinned'],
+            'rating_k': rating_context['k'],
+        }
+
+        plugin_form_data: dict[str, str] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Player.plugin_data_class_by_plugin_id().items():
+            plugin_form_data |= plugin_data_class.from_stored_value(
+                stored_plugin_data.get(plugin_id, {})
+            ).to_form_data(action=action if not search_stored_player else None)
+
+        team_id_value: int | None = team_id
+        if event.is_team_event and team_id_value is None:
+            if admin_player is not None:
+                team_id_value = admin_player.team_id
+            elif action == FormAction.CREATE and len(event.sorted_teams) == 1:
+                team_id_value = event.sorted_teams[0].id
+        return WebContext.values_dict_to_form_data(
+            {
+                'last_name': last_name,
+                'first_name': first_name,
+                'gender': gender,
+                'tournament_id': tournament_id,
+                'team_id': team_id_value or '',
+                'title': title,
+                'women_title': women_title,
+                'federation': federation,
+                'fide_id': fide_id,
+                'national_id': national_id,
+                'national_source': national_source,
+                'club': club,
+                'mail': mail,
+                'phone': phone,
+                'comment': comment,
+                'owed': owed,
+                'paid': paid,
+                'fixed': fixed or None,
+                'byes_allowed': byes_allowed,
+                'date_of_birth': date_of_birth,
+                'redirect_to': redirect_to,
+            }
+            | rating_data
+            | plugin_form_data
+            | (carry_over_data or {})
+        )
+
     @classmethod
     def _render_players_form_modal(
         cls,
@@ -997,136 +1183,12 @@ class PlayerAdminController(BaseEventAdminController):
         allowed_players_by_id = web_context.client.allowed_players_by_id
 
         if data is None:
-            first_name: str | None = None
-            last_name: str | None = None
-            date_of_birth: str | None = None
-            gender = PlayerGender.NONE.value
-            ratings: dict[Cadence, PlayerRating] = {
-                tr: PlayerRating() for tr in Cadence
-            }
-            title = PlayerTitle.NONE.value
-            women_title = PlayerTitle.NONE.value
-            federation = event.federation
-            club: str | None = None
-            fide_id: int | None = None
-            national_id: str | None = None
-            national_source: str | None = None
-            mail: str | None = None
-            phone: str | None = None
-            comment: str | None = None
-            owed: float = 0.0
-            paid: float = 0.0
-            fixed: int | None = None
-            byes_allowed: bool = True
-            stored_plugin_data: dict[str, dict[str, Any]] = {}
-            stored_player = search_stored_player
-            tournament_id: int | None = None
-            if not stored_player and admin_player:
-                stored_player = admin_player.stored_player
-            if stored_player:
-                if search_stored_player or action != FormAction.REPLACE:
-                    first_name = stored_player.first_name
-                    last_name = stored_player.last_name
-                    gender = stored_player.gender
-                    date_of_birth = WebContext.value_to_date_form_data(
-                        stored_player.date_of_birth
-                    )
-                    if stored_player.year_of_birth:
-                        date_of_birth = str(stored_player.year_of_birth)
-                    # The fields hold the period being played, which is
-                    # what an edit records (see
-                    # ``_ratings_for_current_period``).
-                    ratings |= cls._current_period_ratings(
-                        None if search_stored_player else admin_player, stored_player
-                    )
-                    title = stored_player.title
-                    women_title = stored_player.women_title
-                    federation = stored_player.federation
-                    club = stored_player.club
-                    fide_id = stored_player.fide_id or None
-                    national_id = stored_player.national_id or None
-                    national_source = stored_player.national_source or None
-                # Fields the data sources do not provide, kept on replace
-                kept_player = admin_player.stored_player if admin_player else None
-                if kept_player is not None:
-                    mail = kept_player.mail
-                    phone = kept_player.phone
-                    comment = kept_player.comment
-                    owed = kept_player.owed
-                    paid = kept_player.paid
-                    fixed = kept_player.fixed
-                    byes_allowed = kept_player.byes_allowed
-                stored_plugin_data = stored_player.plugin_data
-            if action == FormAction.CREATE:
-                if len(event.sorted_not_finished_tournaments) == 1:
-                    tournament_id = event.sorted_not_finished_tournaments[0].id
-            else:
-                assert admin_player is not None
-                if event.is_team_event:
-                    tournament_id = (
-                        admin_player.team.tournament_id
-                        if admin_player.team is not None
-                        and admin_player.team.tournament_id is not None
-                        else None
-                    )
-                else:
-                    tournament_id = admin_player.single_tournament.id
-
-            initial_tournament = (
-                event.tournaments_by_id.get(tournament_id) if tournament_id else None
-            )
-            rating_context = cls._rating_form_context(
-                event, ratings, initial_tournament, admin_player
-            )
-            rating_data: dict[str, Any] = {
-                'ratings': cls._dump_form_ratings(ratings),
-                'tournament_rating': rating_context['value'],
-                'rating_pin': rating_context['pinned'],
-                'rating_k': rating_context['k'],
-            }
-
-            plugin_form_data: dict[str, str] = {}
-            for (
-                plugin_id,
-                plugin_data_class,
-            ) in Player.plugin_data_class_by_plugin_id().items():
-                plugin_form_data |= plugin_data_class.from_stored_value(
-                    stored_plugin_data.get(plugin_id, {})
-                ).to_form_data(action=action if not search_stored_player else None)
-
-            team_id_value: int | None = None
-            if event.is_team_event:
-                if admin_player is not None:
-                    team_id_value = admin_player.team_id
-                elif action == FormAction.CREATE and len(event.sorted_teams) == 1:
-                    team_id_value = event.sorted_teams[0].id
-            data = WebContext.values_dict_to_form_data(
-                {
-                    'last_name': last_name,
-                    'first_name': first_name,
-                    'gender': gender,
-                    'tournament_id': tournament_id,
-                    'team_id': team_id_value or '',
-                    'title': title,
-                    'women_title': women_title,
-                    'federation': federation,
-                    'fide_id': fide_id,
-                    'national_id': national_id,
-                    'national_source': national_source,
-                    'club': club,
-                    'mail': mail,
-                    'phone': phone,
-                    'comment': comment,
-                    'owed': owed,
-                    'paid': paid,
-                    'fixed': fixed or None,
-                    'byes_allowed': byes_allowed,
-                    'date_of_birth': date_of_birth,
-                    'redirect_to': redirect_to,
-                }
-                | rating_data
-                | plugin_form_data
-                | (carry_over_data or {})
+            data = cls._initial_form_data(
+                web_context,
+                action,
+                search_stored_player,
+                carry_over_data,
+                redirect_to,
             )
         if errors is None:
             errors = {}
@@ -1165,39 +1227,7 @@ class PlayerAdminController(BaseEventAdminController):
             and admin_player.team.has_played_for(admin_player)
         )
 
-        team_options: dict[str, str | dict[str, str]] = {'': '-'}
-        if event.is_team_event:
-            # Group teams by tournament so the picker matches the
-            # team-admin layout. Teams not yet attached to a tournament
-            # land under "Unassigned".
-            tournaments_by_id = event.tournaments_by_id
-            unassigned_teams_found: bool = any(
-                team.tournament_id is None
-                or team.tournament_id not in tournaments_by_id
-                for team in event.sorted_teams
-            )
-            multi_labels: bool = len(tournaments_by_id) > 1 or unassigned_teams_found
-            if multi_labels:
-                teams_by_tournament_label: dict[str, dict[str, str]] = {}
-                for team in event.sorted_teams:
-                    if (
-                        team.tournament_id is not None
-                        and team.tournament_id in tournaments_by_id
-                    ):
-                        label = tournaments_by_id[team.tournament_id or 0].name
-                    else:
-                        label = pgettext(
-                            'group of the teams with no tournament', 'Unassigned'
-                        )
-                    teams_by_tournament_label.setdefault(label, {})[str(team.id)] = (
-                        team.name
-                    )
-                # Sorted alphabetically so the order is stable across renders.
-                for label in sorted(teams_by_tournament_label):
-                    team_options[label] = teams_by_tournament_label[label]
-            else:
-                for team in event.sorted_teams:
-                    team_options[str(team.id)] = team.name
+        team_options = cls._team_options(event)
         plugin_templates_by_section: dict[str, list[str]] = defaultdict(list)
         plugin_manager.hook_for_event(event, 'insert_player_form_fields_template')(
             templates_by_section=plugin_templates_by_section
@@ -3710,6 +3740,253 @@ class PlayerAdminController(BaseEventAdminController):
         }
         return self._admin_base_event_render(template_context)
 
+    # -------------------------------------------------------------------------
+    # Several players at once
+    # -------------------------------------------------------------------------
+
+    @staticmethod
+    def _entered_identity_keys(
+        event: Event, tournament: Tournament | None
+    ) -> set[tuple]:
+        """The identity keys of the players a new player would duplicate:
+        those of *tournament* when a player can enter several tournaments,
+        those of the event otherwise."""
+        players: Iterable[Player] = (
+            tournament.tournament_players
+            if tournament is not None and event.allow_multi_tournament_players
+            else event.players
+        )
+        return {
+            key
+            for player in players
+            for key in event.get_player_identity_keys(player.stored_player)
+        }
+
+    @get(
+        path='/player-bulk-add-modal/{event_uniq_id:str}',
+        name='admin-player-bulk-add-modal',
+    )
+    async def htmx_admin_player_bulk_add_modal(self, request: HTMXRequest) -> Template:
+        web_context = PlayerAdminWebContext(request)
+        event = web_context.get_admin_event()
+        tournaments = web_context.player_addable_tournaments
+        tournament_options: dict[str, str] = {}
+        if len(tournaments) > 1:
+            tournament_options |= {'': '-'}
+        if tournaments:
+            tournament_options |= web_context.get_tournament_options(tournaments)
+        search_filter_manager = SearchFilterManager(event)
+        return self._admin_base_event_render(
+            web_context.template_context
+            | {
+                'modal': 'player-bulk-add',
+                'is_team_event': event.is_team_event,
+                'tournament_options': tournament_options,
+                'team_options': self._team_options(event),
+                'data': {
+                    'tournament_id': (
+                        str(tournaments[0].id) if len(tournaments) == 1 else ''
+                    ),
+                    'team_id': (
+                        str(event.sorted_teams[0].id)
+                        if len(event.sorted_teams) == 1
+                        else ''
+                    ),
+                },
+                'errors': {},
+                'search_filters': search_filter_manager.get_filters(),
+                'filters_by_tournament': (
+                    search_filter_manager.get_filters_by_tournament()
+                ),
+                'enabled_filters_by_datasource': (
+                    search_filter_manager.get_filters_by_datasource()
+                ),
+                'selected_data_source': SessionPlayersActiveDataSource(request).get(),
+                'data_sources': DataSourceManager().active_objects(),
+                # The filters of a single player search are kept apart
+                'search_filters_key': 'bulkAddSearchFilters',
+                'default_search_filters': self._bulk_default_filters(event),
+                'filters_open': True,
+            }
+        )
+
+    @staticmethod
+    def _bulk_picks(data: dict[str, str | list[str]]) -> list[tuple[str, str, str]]:
+        """The players picked in the bulk modal, as (data source, identifier
+        in the data source, name) triplets."""
+        values = data.get('players', [])
+        picks: list[tuple[str, str, str]] = []
+        for value in [values] if isinstance(values, str) else values:
+            try:
+                data_source_id, player_source_id, name = json.loads(value)
+            except ValueError, TypeError:
+                raise ClientException(f'Invalid player [{value}].') from None
+            picks.append((str(data_source_id), str(player_source_id), str(name)))
+        return picks
+
+    @staticmethod
+    def _bulk_duplicate_keys(event: Event, stored_player: StoredPlayer) -> set[tuple]:
+        """What tells two players added together apart: the keys of
+        `Event.get_player_identity_keys()`, and in a team event the name
+        alone, as for a player added on their own."""
+        keys = event.get_player_identity_keys(stored_player)
+        if event.is_team_event:
+            keys.add(
+                (
+                    'team-name',
+                    stored_player.first_name,
+                    normalized_key(stored_player.last_name),
+                )
+            )
+        return keys
+
+    @post(
+        path=[
+            # Team events place their players by team, with no tournament.
+            '/player-bulk-add/{event_uniq_id:str}',
+            '/player-bulk-add/{event_uniq_id:str}/{tournament_id:int}',
+        ],
+        name='admin-player-bulk-add',
+        guards=[TournamentActionGuard(AuthAction.ADD_PLAYERS)],
+    )
+    async def htmx_admin_player_bulk_add(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int | None] = None,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
+        event = web_context.get_admin_event()
+        team: Team | None = None
+        tournament: Tournament | None = None
+        if event.is_team_event:
+            team_id = WebContext.form_data_to_int(
+                WebContext.flatten_list_data(data), 'team_id'
+            )
+            team = event.teams_by_id.get(team_id) if team_id else None
+            tournament = team.tournament if team is not None else None
+        else:
+            tournament = web_context.admin_tournament
+            if tournament not in web_context.player_addable_tournaments:
+                raise ClientException(
+                    f'Players cannot be added to tournament [{tournament_id}].'
+                )
+        assert tournament is not None or event.is_team_event
+        k_factor_reference_date = self._k_factor_reference_date(
+            web_context,
+            {'tournament_id': str(tournament.id)} if tournament else None,
+        )
+        picks = self._bulk_picks(data)
+        active_data_sources = {
+            data_source.id: data_source
+            for data_source in DataSourceManager().active_objects()
+            if data_source.is_available
+        }
+        # Each data source is read once for all the players picked in it
+        fetched: dict[str, dict[str, StoredPlayer] | None] = {}
+        for data_source_id in {pick[0] for pick in picks}:
+            data_source = active_data_sources.get(data_source_id)
+            if data_source is None:
+                continue
+            try:
+                fetched[data_source_id] = await data_source.fetch_players(
+                    [pick[1] for pick in picks if pick[0] == data_source_id],
+                    False,
+                    k_factor_reference_date,
+                )
+            except SharlyChessException as error:
+                logger.warning('%s: %s', data_source.name, error)
+                fetched[data_source_id] = None
+        room: int | None = None
+        if team is not None and team.roster_max_size is not None:
+            room = max(team.roster_max_size - len(team.players), 0)
+        accepted: list[StoredPlayer] = []
+        accepted_keys: set[tuple] = set()
+        not_added: list[str] = []
+        for data_source_id, player_source_id, name in picks:
+            reason: str | None = None
+            stored_player: StoredPlayer | None = None
+            if data_source_id not in fetched:
+                reason = _('the data source is not available')
+            elif (found := fetched[data_source_id]) is None:
+                reason = _('the data source could not be reached')
+            elif (stored_player := found.get(player_source_id)) is None:
+                reason = _('no longer found in the data source')
+            else:
+                # The same player picked twice is read twice
+                stored_player = replace(stored_player)
+            if stored_player is not None:
+                form_data = self._initial_form_data(
+                    web_context,
+                    FormAction.CREATE,
+                    stored_player,
+                    tournament_id=tournament.id if tournament else None,
+                    team_id=team.id if team else None,
+                )
+                new_player, errors = self._read_player_form_data(
+                    web_context, FormAction.CREATE, form_data
+                )
+                if new_player is None:
+                    reason = errors.get('alert') or next(iter(errors.values()))
+                else:
+                    keys = self._bulk_duplicate_keys(event, new_player)
+                    if keys & accepted_keys:
+                        reason = _('picked twice')
+                    elif room is not None and len(accepted) >= room:
+                        assert team is not None
+                        reason = _('team [{team}] is full').format(team=team.name)
+                    else:
+                        accepted.append(new_player)
+                        accepted_keys |= keys
+            if reason is not None:
+                not_added.append(f'{name} ({reason})')
+
+        player_ids = event.add_players(
+            accepted, [tournament] if tournament and not team else []
+        )
+        if team is not None and player_ids:
+            with EventDatabase(event.uniq_id, True) as database:
+                for player_id in player_ids:
+                    team.add_player(event.players_by_id[player_id], database)
+                if team.tournament is not None:
+                    team.tournament.resort_teams(database)
+        failing_criteria: list[str] = []
+        if tournament is not None and not team:
+            failing_criteria = [
+                player.full_name
+                for player_id in player_ids
+                if not (
+                    player := tournament.tournament_players_by_id[player_id]
+                ).matches_tournament_criteria
+            ]
+        messages: list[str] = []
+        if player_ids:
+            messages.append(
+                ngettext(
+                    '{count} player added.',
+                    '{count} players added.',
+                    len(player_ids),
+                ).format(count=len(player_ids))
+            )
+        if not_added:
+            messages.append(
+                _('Not added: {players}.').format(players='; '.join(not_added))
+            )
+        if failing_criteria:
+            messages.append(
+                _('Added but not matching the tournament criteria: {players}.').format(
+                    players=', '.join(failing_criteria)
+                )
+            )
+        if not_added or failing_criteria:
+            Message.warning(request, messages)
+        elif messages:
+            Message.success(request, messages)
+        return self._render_players_tab(web_context)
+
     @get(
         path=[
             '/search-player/{event_uniq_id:str}',
@@ -3727,26 +4004,34 @@ class PlayerAdminController(BaseEventAdminController):
         usage: FromQuery[str] = 'player',
         filters: FromQuery[str] = '{}',
         players_before: FromQuery[int | None] = None,
+        tournament_id: FromQuery[int | None] = None,
     ) -> Template:
         """With *players_before*, the rest of the page whose first players
-        were shown."""
+        were shown. Picking several players (*usage* 'bulk'), the filters
+        alone list their players without words to search, and the players
+        already entered in *tournament_id*, or in the event, are marked."""
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
         )
+        event = web_context.get_admin_event()
         data_source = web_context.get_admin_data_source()
         players: list[Player] = []
         has_more_results: bool = False
         rest_from: int | None = None
         connection_error: str | None = None
         search = search.strip()
-        if search:
+        search_filters = self._convert_filters(event, filters)
+        searched = bool(search) or (
+            usage == 'bulk' and self._filters_narrow(event, data_source, search_filters)
+        )
+        if searched:
             try:
                 search_args = (
                     search,
-                    web_context.get_admin_event().federation,
+                    event.federation,
                     page,
                     DataSource.SEARCH_LIMIT,
-                    self._convert_filters(web_context.get_admin_event(), filters),
+                    search_filters,
                 )
                 stored_players: list[StoredPlayer] | None = None
                 if players_before is None:
@@ -3764,16 +4049,28 @@ class PlayerAdminController(BaseEventAdminController):
                     stored_players = stored_players[players_before or 0 :]
                 for stored_player in stored_players:
                     stored_player.id = 0
-                    players.append(Player(web_context.get_admin_event(), stored_player))
+                    players.append(Player(event, stored_player))
             except SharlyChessException as e:
                 connection_error = str(e)
             SessionPlayersActiveDataSource(request).set(data_source.id)
+        entered_indexes: set[int] = set()
+        if usage == 'bulk' and players:
+            entered_keys = self._entered_identity_keys(
+                event, event.tournaments_by_id.get(tournament_id or 0)
+            )
+            entered_indexes = {
+                index
+                for index, player in enumerate(players)
+                if event.get_player_identity_keys(player.stored_player) & entered_keys
+            }
         return HTMXTemplate(
             template_name='admin/common/search_results.html',
             context=web_context.template_context
             | {
                 'usage': usage,
                 'search': search,
+                'searched': searched,
+                'entered_indexes': entered_indexes,
                 'search_results': players,
                 'filters': filters,
                 'has_more_results': has_more_results,
@@ -3783,6 +4080,36 @@ class PlayerAdminController(BaseEventAdminController):
                 'data_source': data_source,
                 'connection_error': connection_error,
             },
+        )
+
+    @staticmethod
+    def _bulk_default_filters(event: Event) -> dict[str, Any]:
+        """The values the filters take when several players are picked
+        until they are changed, as the filters declare them."""
+        return {
+            filter_id: value
+            for search_filter in SearchFilterManager(event).get_filters().values()
+            for filter_id, value in search_filter.get('bulk_defaults', {}).items()
+        }
+
+    @classmethod
+    def _filters_narrow(
+        cls, event: Event, data_source: DataSource, search_filters: dict
+    ) -> bool:
+        """Whether a filter *data_source* filters its players by is set,
+        other than to its default: the filters of the other data sources are
+        sent too."""
+        supported = (
+            SearchFilterManager(event)
+            .get_filters_by_datasource()
+            .get(data_source.id, [])
+        )
+        defaults = cls._bulk_default_filters(event)
+        return any(
+            (value.strip() if isinstance(value, str) else value)
+            and value != defaults.get(filter_id)
+            for filter_id, value in search_filters.items()
+            if filter_id in supported
         )
 
     @staticmethod

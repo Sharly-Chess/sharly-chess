@@ -1,5 +1,5 @@
 <div>
-    <div id="search-criteria-collapse" class="collapse filter-collapsable-container my-2 p-2">
+    <div id="search-criteria-collapse" class="collapse{% if filters_open %} show{% endif %} filter-collapsable-container my-2 p-2">
         <div>
             <form id="filter-form" class="row gy-2 gx-3">
                 {% for search_filter in search_filters %}

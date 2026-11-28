@@ -1060,6 +1060,9 @@ msgstr ""
 msgid "Add rule"
 msgstr ""
 
+msgid "Add several players"
+msgstr ""
+
 msgid "Add the first tournament to start building the standings."
 msgstr ""
 
@@ -1076,6 +1079,10 @@ msgid "Add tournaments"
 msgstr ""
 
 msgid "Added automatically, on top of any manual points below."
+msgstr ""
+
+#, python-brace-format
+msgid "Added but not matching the tournament criteria: {players}."
 msgstr ""
 
 msgid "Adding a player found in another list, and checking the ratings, read the online database before the installed copy, which stands in when it cannot be reached."
@@ -1319,6 +1326,9 @@ msgid "Alphabetical"
 msgstr ""
 
 msgid "Alphabetical order"
+msgstr ""
+
+msgid "Already entered"
 msgstr ""
 
 msgid "Already in the timer"
@@ -7046,6 +7056,9 @@ msgstr ""
 msgid "No players matching the criteria."
 msgstr ""
 
+msgid "No players selected yet."
+msgstr ""
+
 msgid "No players to choose from."
 msgstr ""
 
@@ -7349,6 +7362,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Not FIDE numbers ({values}), left empty"
+msgstr ""
+
+#, python-brace-format
+msgid "Not added: {players}."
 msgstr ""
 
 msgid "Not assigned"
@@ -8550,6 +8567,9 @@ msgid "Players rewarded (%%):"
 msgstr ""
 
 msgid "Players screens show pairings by alphabetical order."
+msgstr ""
+
+msgid "Players shown"
 msgstr ""
 
 msgid "Players successfully distributed among the tournaments."
@@ -10252,6 +10272,9 @@ msgstr ""
 msgid "Search players…"
 msgstr ""
 
+msgid "Search results"
+msgstr ""
+
 msgid "Searching for updates..."
 msgstr ""
 
@@ -10382,6 +10405,10 @@ msgid "Select this empty table (forfeit for the paired player)"
 msgstr ""
 
 msgid "Select to pair (White, then pick the opponent)"
+msgstr ""
+
+msgctxt "players ticked"
+msgid "Selected"
 msgstr ""
 
 msgid "Selection"
@@ -12834,6 +12861,9 @@ msgstr ""
 msgid "Threshold"
 msgstr ""
 
+msgid "Tick the players to add; with no words to search, the filters alone list the players they match, such as all the players of a club."
+msgstr ""
+
 #, python-format
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
@@ -13211,6 +13241,9 @@ msgid "Type A (simple preferences)"
 msgstr ""
 
 msgid "Type B (strong + mild preferences)"
+msgstr ""
+
+msgid "Type a name or set a filter to list players."
 msgstr ""
 
 msgid "Type of teams:"
@@ -14648,6 +14681,9 @@ msgstr ""
 msgid "no"
 msgstr ""
 
+msgid "no longer found in the data source"
+msgstr ""
+
 msgid "no reason was given."
 msgstr ""
 
@@ -14797,6 +14833,9 @@ msgstr ""
 msgid "pairings on {parts} pages"
 msgstr ""
 
+msgid "picked twice"
+msgstr ""
+
 #, python-brace-format
 msgid "place {place}"
 msgstr ""
@@ -14901,6 +14940,10 @@ msgstr ""
 msgid "split the players belonging to the same club between the balanced tournaments, as much as possible."
 msgstr ""
 
+#, python-brace-format
+msgid "team [{team}] is full"
+msgstr ""
+
 msgid "teams"
 msgstr ""
 
@@ -14930,6 +14973,12 @@ msgstr ""
 
 #, python-brace-format
 msgid "teams on {parts} pages"
+msgstr ""
+
+msgid "the data source could not be reached"
+msgstr ""
+
+msgid "the data source is not available"
 msgstr ""
 
 msgid "the file does not code it"
@@ -15107,6 +15156,12 @@ msgstr[1] ""
 #, python-brace-format
 msgid "{count} name has no comma between last and first name: it is imported whole as the last name."
 msgid_plural "{count} names have no comma between last and first name: they are imported whole as the last name."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{count} player added."
+msgid_plural "{count} players added."
 msgstr[0] ""
 msgstr[1] ""
 

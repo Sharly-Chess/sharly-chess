@@ -28,7 +28,7 @@
     data-bs-toggle="collapse"
     data-bs-target="#search-criteria-collapse"
     aria-controls="search-criteria-collapse"
-    aria-expanded="false"
+    aria-expanded="{{ 'true' if filters_open else 'false' }}"
 >
     <i class="bi bi-funnel funnel-outline"></i>
     <i class="bi bi-funnel-fill funnel-filled"></i>

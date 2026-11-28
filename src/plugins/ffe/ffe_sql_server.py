@@ -1,6 +1,5 @@
 import asyncio
 import itertools
-import re
 from collections import OrderedDict
 from collections.abc import Awaitable, Callable
 from contextlib import suppress
@@ -54,13 +53,15 @@ class _NameSearch:
     # Every word matches the player
     condition: str
     params: list[Any]
-    # The number of points of the player, the lower the better
+    # The number of points of the player, the lower the better; empty
+    # without words
     rank: str
     rank_params: list[str]
 
     @property
     def order_by(self) -> str:
-        return f'{self.rank}, joueur.Nom, joueur.Prenom, joueur.Ref'
+        names = 'joueur.Nom, joueur.Prenom, joueur.Ref'
+        return f'{self.rank}, {names}' if self.rank else names
 
 
 class FFESqlServer(SqlServer):
@@ -141,9 +142,9 @@ class FFESqlServer(SqlServer):
     )
 
     @staticmethod
-    def _read_name(name: str) -> str:
-        # A few names hold their apostrophes doubled
-        return name.replace("''", "'").rstrip()
+    def _read_name(name: str | None) -> str:
+        # A few names hold their apostrophes doubled, and a few are missing
+        return (name or '').replace("''", "'").rstrip()
 
     @staticmethod
     def _held_names(name: str) -> list[str]:
@@ -286,6 +287,8 @@ class FFESqlServer(SqlServer):
         if not limit:
             return await self._scan(search)
         offset = page * limit
+        if not search.tokens:
+            return await self._scan(search, offset, limit)
         # The whole search scans the 1.3 million players, which takes about a
         # second. Only a word that starts the last name ranks 0, the others
         # rank 1 or more: the players ranked below the number of words, which
@@ -332,6 +335,8 @@ class FFESqlServer(SqlServer):
         ):
             return None
         search = self._name_search(string, federation, filters)
+        if not search.tokens:
+            return None
         offset = page * limit
         first_players_count = self._first_players_count(search)
         if first_players_count is not None and offset >= first_players_count:
@@ -409,9 +414,7 @@ class FFESqlServer(SqlServer):
     def _name_search(
         self, string: str, federation: str, filters: dict | None
     ) -> _NameSearch:
-        tokens: list[str] = [
-            unicode_normalize(token) for token in re.split(r'\s+', string)
-        ]
+        tokens: list[str] = [unicode_normalize(token) for token in string.split()]
         name_fields: tuple[str, ...] = ('joueur.Nom', 'joueur.Prenom')
         # The other words of the search tell apart the players a single letter
         # left of a cut word would not
@@ -452,6 +455,10 @@ class FFESqlServer(SqlServer):
                 ' OR '.join(token_expressions),
             ]
             params += token_params
+        if not tokens:
+            # The words leave out the players with no name, a filter alone
+            # does not
+            conditions.append('joueur.Nom IS NOT NULL')
         condition: str = ' AND '.join(f'({c})' for c in conditions)
 
         # We build one CASE block that sorts best → worst
@@ -536,6 +543,20 @@ class FFESqlServer(SqlServer):
         return await self._get_stored_player_by_condition(
             'joueur.Ref = %s', [player_ffe_id]
         )
+
+    # SQL Server binds at most 2100 parameters to a query
+    FFE_IDS_PAGE_SIZE = 500
+
+    async def get_stored_players_by_ffe_ids(
+        self, player_ffe_ids: list[int]
+    ) -> list[StoredPlayer]:
+        stored_players: list[StoredPlayer] = []
+        for start in range(0, len(player_ffe_ids), self.FFE_IDS_PAGE_SIZE):
+            page = player_ffe_ids[start : start + self.FFE_IDS_PAGE_SIZE]
+            stored_players += await self._get_stored_players_by_condition(
+                f'joueur.Ref IN ({", ".join(["%s"] * len(page))})', list(page)
+            )
+        return stored_players
 
     async def get_stored_player_by_fide_id(
         self,

@@ -551,6 +551,19 @@ class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
                 int(player_source_id)
             )
 
+    async def get_stored_players_by_source_ids(
+        self, player_source_ids: list[str]
+    ) -> dict[str, StoredPlayer]:
+        ffe_ids = [int(id_) for id_ in player_source_ids if id_.isdigit()]
+        if not ffe_ids:
+            return {}
+        async with FFESqlServer() as ffe_sql_server:
+            stored_players = await ffe_sql_server.get_stored_players_by_ffe_ids(ffe_ids)
+        return {
+            self.get_player_source_id(stored_player): stored_player
+            for stored_player in stored_players
+        }
+
     async def _search_player(
         self,
         string: str,

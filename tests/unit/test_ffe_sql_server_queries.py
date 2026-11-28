@@ -165,3 +165,55 @@ def test_name_keys_bind_both_ways_of_holding_an_apostrophe() -> None:
     assert query % tuple(f'@P{i}' for i in range(len(params)))
     assert abbreviation_params == ["O'NEILL", "O'N%"]
     assert abbreviation_query % tuple(f'@P{i}' for i in range(len(abbreviation_params)))
+
+
+def test_a_club_alone_is_scanned_by_name() -> None:
+    """Without words, the club lists its players in a single scan, in the
+    order of their names."""
+    server = _QueryCapture()
+    _run(server.search_player('', 'FRA', 1, 20, {'club_filter': 'Echiquier'}))
+    [(query, params)] = server.queries
+    assert 'club.Nom LIKE' in query
+    assert 'joueur.Nom IS NOT NULL' in query
+    assert 'CASE' not in query
+    assert query.endswith('ORDER BY joueur.Nom, joueur.Prenom, joueur.Ref')
+    assert params[0] == '%Echiquier%'
+    assert query % tuple(f'@P{i}' for i in range(len(params)))
+
+
+def test_a_club_alone_has_no_first_players() -> None:
+    server = _QueryCapture()
+    result: list[Any] = []
+
+    async def search() -> None:
+        result.append(
+            await server.search_first_players(
+                '', 'FRA', 0, 20, {'club_filter': 'Echiquier'}
+            )
+        )
+
+    _run(search())
+    assert result == [None]
+    assert not server.queries
+
+
+def test_a_missing_name_is_read_as_empty() -> None:
+    assert FFESqlServer._read_name(None) == ''
+
+
+def test_players_are_read_by_ffe_id_in_pages_that_bind_every_parameter() -> None:
+    server = _QueryCapture()
+    ffe_ids = list(range(1, FFESqlServer.FFE_IDS_PAGE_SIZE + 2))
+    _run(server.get_stored_players_by_ffe_ids(ffe_ids))
+    assert [len(params) for __, params in server.queries] == [
+        FFESqlServer.FFE_IDS_PAGE_SIZE,
+        1,
+    ]
+    for query, params in server.queries:
+        assert query % tuple(f'@P{i}' for i in range(len(params)))
+
+
+def test_no_ffe_id_reads_nothing() -> None:
+    server = _QueryCapture()
+    _run(server.get_stored_players_by_ffe_ids([]))
+    assert not server.queries

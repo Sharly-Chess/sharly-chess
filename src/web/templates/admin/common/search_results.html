@@ -1,11 +1,12 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/components/macros.j2' as components with context %}
 
 {% if connection_error %}
     <li class="dropdown-item no-hover text-nowrap">
         <i class="{{ data_source.search_error_icon }} text-danger pe-1"></i>
         <span class="fst-italic">{{ connection_error }}</span>
     </li>
-{% elif search %}
+{% elif searched %}
     {% with message, is_warning = data_source.info_or_warning_message %}
         {% if message and page == 0 and players_before is none %}
             <li class="dropdown-item no-hover text-nowrap">
@@ -20,7 +21,18 @@
     {% endwith %}
     {% if search_results or rest_from is not none %}
         {% for player in search_results %}
-            <li class="dropdown-item text-nowrap btn"
+            {% set bulk = usage == 'bulk' %}
+            {% set entered = bulk and loop.index0 in entered_indexes %}
+            <li class="{% if bulk %}list-group-item d-flex align-items-center gap-2 {{ 'text-body-secondary' if entered else 'list-group-item-action bulk-add-result' }}{% else %}dropdown-item text-nowrap btn{% endif %}"
+            {% if entered %}
+            {% elif bulk %}
+                data-pick="{{ [
+                    data_source.id,
+                    data_source.get_player_source_id(player.stored_player),
+                    player.full_name,
+                ]|tojson|forceescape }}"
+                onclick="bulkAddRowClicked(event, this)"
+            {% else %}
                 hx-post="{{ url_for(
                     'player-modal-from-search' if usage == 'player' else 'account-modal-from-search',
                     event_uniq_id=admin_event.uniq_id,
@@ -37,8 +49,22 @@
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
+            {% endif %}
             >
-                {% include data_source.player_search_result_template %}
+                {% if bulk %}
+                    <input
+                        type="checkbox"
+                        class="form-check-input flex-shrink-0 mt-0 bulk-add-check"
+                        aria-label="{{ player.full_name }}"
+                        {% if entered %}disabled{% endif %}
+                    >
+                    <span class="bulk-add-result-content text-truncate flex-grow-1">{% include data_source.player_search_result_template %}</span>
+                    {% if entered %}
+                        {{ components.badge('neutral', _('Already entered')) }}
+                    {% endif %}
+                {% else %}
+                    {% include data_source.player_search_result_template %}
+                {% endif %}
             </li>
             {% if loop.last and has_more_results %}
                 <li
@@ -54,6 +80,7 @@
                         "filters": {{ filters|tojson }},
                         "usage": "{{ usage }}",
                         {% if admin_player %}"player_id": {{ admin_player.id }},{% endif %}
+                        {% if usage == 'bulk' %}...bulkAddTournamentParam(),{% endif %}
                     }'
                     hx-target="this"
                     hx-swap="afterend"
@@ -80,6 +107,7 @@
                     "usage": "{{ usage }}",
                     "players_before": {{ rest_from }},
                     {% if admin_player %}"player_id": {{ admin_player.id }},{% endif %}
+                    {% if usage == 'bulk' %}...bulkAddTournamentParam(),{% endif %}
                 }'
                 hx-target="this"
                 hx-swap="afterend"
@@ -111,4 +139,10 @@
             }
         }
     </style>
+{% elif usage == 'bulk' %}
+    <li class="list-group-item border-0">
+        {% call components.empty_state('') %}
+            <p class="mb-0">{{ _('Type a name or set a filter to list players.') }}</p>
+        {% endcall %}
+    </li>
 {% endif %}

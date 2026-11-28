@@ -3,13 +3,17 @@ var filters = {};
 var filterRefreshTimer;
 var ENABLED_FILTERS_BY_DATASOURCE = {{ enabled_filters_by_datasource|tojson }};
 var FILTERS_BY_TOURNAMENT = {{ filters_by_tournament|tojson }};
+// Where the filters are remembered, and what they are before ever being set
+var SEARCH_FILTERS_KEY = {{ (search_filters_key or 'searchFilters')|tojson }};
+var DEFAULT_SEARCH_FILTERS = {{ (default_search_filters or {})|tojson }};
 var enabledFilters;
 
 
 function filterInit() {
     filtersInitialized = false;
     let filterNames = $.map($("#filter-form select, #filter-form input[type='text']"), (x)=> x.name)
-    let storedFilters = JSON.parse(localStorage.getItem("searchFilters")) || {};
+    let stored = localStorage.getItem(SEARCH_FILTERS_KEY);
+    let storedFilters = (stored === null ? DEFAULT_SEARCH_FILTERS : JSON.parse(stored)) || {};
 
     for (let filterName of filterNames) {
         filters[filterName] = storedFilters[filterName];
@@ -41,7 +45,7 @@ function onFilterChange(elem) { // save filters into browser storage and refresh
     if (!filtersInitialized){return}
     filters[elem.name] = $(elem).val();
     $('#search-input')[0].dispatchEvent(new CustomEvent('filter_change', {bubbles: true, cancelable: true}));
-    localStorage.setItem("searchFilters", JSON.stringify(filters));
+    localStorage.setItem(SEARCH_FILTERS_KEY, JSON.stringify(filters));
     updateFilterCount();
 }
 
@@ -63,13 +67,13 @@ function loadFiltersFromTournament(tournamentId) {
         filters[filter[0]] = filter[1];
     }
 
-    localStorage.setItem("searchFilters", JSON.stringify(filters));
+    localStorage.setItem(SEARCH_FILTERS_KEY, JSON.stringify(filters));
     filterInit()
 
 }
 
 function clearFilters() {
-    localStorage.setItem("searchFilters", "{}");
+    localStorage.setItem(SEARCH_FILTERS_KEY, "{}");
     filterInit();
 }
 

@@ -2,8 +2,10 @@ var resultList = [];
 var selectedIndex;
 
 function handleInitialQuery(event) {
-    resultList = $('#search-results>li.btn');
-    selectedIndex = 0;
+    resultList = $('#search-results>li.btn, #search-results>li.bulk-add-result');
+    // A list of players to tick stays clear until the arrows are used: its
+    // first row is no likelier choice than the others
+    selectedIndex = $('#search-results').hasClass('bulk-add-results') ? -1 : 0;
 
     let searchInput = document.getElementById("search-input");
     let eventListeners = $._data(searchInput, "events")
@@ -33,13 +35,14 @@ function handleListExtension(event) {
     event.target.remove();
 
     let hadResults = resultList.length > 0;
-    resultList = $('#search-results>li.btn');
+    resultList = $('#search-results>li.btn, #search-results>li.bulk-add-result');
     if (!hadResults) {
         refreshStyle(resultList, selectedIndex);
         return;
     }
 
     let element = resultList[selectedIndex];
+    if (!element) return;
     let parent = element.parentElement;
 
     let elementPosition = element.getBoundingClientRect();
@@ -56,7 +59,7 @@ function refreshStyle(resultList, selectedIndex) {
     resultList.removeClass("selected-result");
     if (resultList[selectedIndex]) {
         resultList[selectedIndex].scrollIntoView(
-            {"block": "center", "behavior": "smooth"}
+            {"block": "nearest", "behavior": "smooth"}
         );
         $(resultList[selectedIndex]).addClass("selected-result");
     }

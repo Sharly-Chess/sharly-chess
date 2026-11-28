@@ -688,40 +688,71 @@ class Event:
         tournament given from the round *replaced_from_round* on."""
         assert replaced_player_id is None or len(tournaments) == 1
         with EventDatabase(self.uniq_id, True) as database:
-            stored_player.id = database.add_stored_player(stored_player)
-            self.stored_event.stored_players.append(stored_player)
-            self.clear_player_cache()
-            for tournament in tournaments:
-                tournament.add_player_to_tournament(
-                    stored_player,
-                    database,
-                    replaced_player_id=replaced_player_id,
-                    replaced_from_round=replaced_from_round,
-                )
-            name = Player.player_full_name(
-                stored_player.first_name, stored_player.last_name
+            player_id = self._insert_player(
+                database,
+                stored_player,
+                tournaments,
+                replaced_player_id=replaced_player_id,
+                replaced_from_round=replaced_from_round,
             )
-            if replaced_player_id is not None:
-                [tournament] = tournaments
-                replaced = tournament.tournament_players_by_id[replaced_player_id]
-                journal.record(
-                    self.uniq_id,
-                    JournalAction.PLAYER_REPLACED,
-                    tournament=tournament,
-                    round_=replaced_from_round,
-                    player_id=stored_player.id,
-                    data={'player': name, 'replaced': replaced.full_name},
-                )
-            else:
-                journal.record(
-                    self.uniq_id,
-                    JournalAction.PLAYER_ADDED,
-                    tournament=tournaments[0] if len(tournaments) == 1 else None,
-                    player_id=stored_player.id,
-                    data={'player': name},
-                )
         for tournament in tournaments:
             tournament.pairing_system.players_joined(tournament)
+        return player_id
+
+    def add_players(
+        self, stored_players: list[StoredPlayer], tournaments: list[Tournament]
+    ) -> list[int]:
+        """Add *stored_players* to the event and to *tournaments* at once."""
+        with EventDatabase(self.uniq_id, True) as database:
+            player_ids = [
+                self._insert_player(database, stored_player, tournaments)
+                for stored_player in stored_players
+            ]
+        if player_ids:
+            for tournament in tournaments:
+                tournament.pairing_system.players_joined(tournament)
+        return player_ids
+
+    def _insert_player(
+        self,
+        database: EventDatabase,
+        stored_player: StoredPlayer,
+        tournaments: list[Tournament],
+        replaced_player_id: int | None = None,
+        replaced_from_round: int | None = None,
+    ) -> int:
+        stored_player.id = database.add_stored_player(stored_player)
+        self.stored_event.stored_players.append(stored_player)
+        self.clear_player_cache()
+        for tournament in tournaments:
+            tournament.add_player_to_tournament(
+                stored_player,
+                database,
+                replaced_player_id=replaced_player_id,
+                replaced_from_round=replaced_from_round,
+            )
+        name = Player.player_full_name(
+            stored_player.first_name, stored_player.last_name
+        )
+        if replaced_player_id is not None:
+            [tournament] = tournaments
+            replaced = tournament.tournament_players_by_id[replaced_player_id]
+            journal.record(
+                self.uniq_id,
+                JournalAction.PLAYER_REPLACED,
+                tournament=tournament,
+                round_=replaced_from_round,
+                player_id=stored_player.id,
+                data={'player': name, 'replaced': replaced.full_name},
+            )
+        else:
+            journal.record(
+                self.uniq_id,
+                JournalAction.PLAYER_ADDED,
+                tournament=tournaments[0] if len(tournaments) == 1 else None,
+                player_id=stored_player.id,
+                data={'player': name},
+            )
         assert stored_player.id is not None
         return stored_player.id
 
