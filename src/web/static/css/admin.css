@@ -995,6 +995,20 @@
     padding-left: 1.25rem;
 }
 
+/* The columns and the font size of the screen forms, set with the same
+   controls as on the screens themselves. */
+.screen-form-columns-value {
+    width: 4rem;
+    flex: none;
+    font-variant-numeric: tabular-nums;
+}
+
+.screen-form-font-size-value {
+    min-width: 3.5rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
 .screens-bulk-mixed {
     flex-wrap: wrap;
 }

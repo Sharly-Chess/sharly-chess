@@ -4767,10 +4767,6 @@ msgstr ""
 msgid "Font size"
 msgstr ""
 
-#, python-format
-msgid "Font size adjustment (%%):"
-msgstr ""
-
 msgid "For best results, make the groups equal in size — ideally a power-of-two number of players each (2, 4, 8, 16…) — so the bracket needs no byes."
 msgstr ""
 

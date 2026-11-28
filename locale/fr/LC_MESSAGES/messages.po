@@ -4767,10 +4767,6 @@ msgstr "Police"
 msgid "Font size"
 msgstr "Taille de police"
 
-#, python-format
-msgid "Font size adjustment (%%):"
-msgstr "Ajustement de la taille de police (%%) :"
-
 msgid "For best results, make the groups equal in size — ideally a power-of-two number of players each (2, 4, 8, 16…) — so the bracket needs no byes."
 msgstr "Pour un résultat optimal, faites des groupes de taille égale — idéalement une puissance de deux joueur·euses chacun (2, 4, 8, 16…) — pour que le tableau n'ait besoin d'aucun exempt."
 

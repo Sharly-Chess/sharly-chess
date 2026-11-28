@@ -234,3 +234,29 @@ def test_the_image_fields_have_a_section_of_their_own(
     ]
     assert [text for _, text in headings] == ['Properties', 'Layout']
     assert headings[1][0] < modal.text.index('name="background_image"')
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('modal', ['screen', 'family'])
+def test_the_edit_forms_use_the_controls_of_the_screens(
+    http: TestClient, event: Fixtures, modal: str
+):
+    """The columns are set with - and + buttons and the font size with a
+    slider and its reset button, as on the screens themselves."""
+    screen = event.screen
+    item_id = screen.id if modal == 'screen' else event.family_id
+    page = http.get(f'/{modal}-modal/update/{EVENT_ID}/{item_id}')
+    assert page.status_code == 200
+    columns = re.search(r'<input[^>]*name="columns"[^>]*>', page.text)
+    font_size = re.search(r'<input[^>]*name="font_size"[^>]*>', page.text)
+    assert columns is not None and 'readonly' in columns.group(0)
+    assert font_size is not None and 'type="range"' in font_size.group(0)
+    for marker in (
+        'bi-dash-circle',
+        'bi-plus-circle',
+        'bi-arrow-counterclockwise',
+        'data-font-size-reset',
+    ):
+        assert marker in page.text, marker
+    assert 'Font size:' in page.text
+    assert 'Font size adjustment' not in page.text

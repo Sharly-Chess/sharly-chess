@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block body %}
+{% import '/admin/screens/screen_form_controls.j2' as screen_form_controls with context %}
             {% with screen_kind_type=family_type, screen_kind_paged=true %}
                 {% include '/admin/screens/screen_kind_switch.html' %}
             {% endwith %}
@@ -169,22 +170,16 @@
                     <div class="row gy-2 gx-3">
                         {% if family_type.multi_column_allowed %}
                             <div class="col-12 col-md-6">
-                                {{ admin_macros.number_input(
-                                    name='columns',
+                                {{ screen_form_controls.columns_input(
                                     label=_('%(string)s:', string=_('Columns')),
-                                    placeholder=_('E.g.: %(num)d', num=2),
                                     tooltip_text=_('The number of columns used to display data.'),
-                                    min=Screen.COLUMNS_MIN, max=Screen.COLUMNS_MAX, step=1,
                                     data=data, errors=errors
                                 ) }}
                             </div>
                         {% endif %}
                         <div class="col-12 col-md-6">
-                            {{ admin_macros.number_input(
-                                name='font_size',
-                                label=_('Font size adjustment (%%):'),
-                                placeholder=100,
-                                min=Screen.FONT_SIZE_MIN, max=Screen.FONT_SIZE_MAX, step=Screen.FONT_SIZE_STEP,
+                            {{ screen_form_controls.font_size_input(
+                                label=_('%(string)s:', string=_('Font size')),
                                 data=data, errors=errors
                             ) }}
                         </div>
