@@ -5898,7 +5898,7 @@ msgid "Latvia"
 msgstr "Lettonie"
 
 msgid "Layout"
-msgstr "Présentation"
+msgstr "Mise en page"
 
 msgctxt "event tag name"
 msgid "League"
