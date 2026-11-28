@@ -9,7 +9,7 @@ from litestar.exceptions import NotFoundException, ClientException
 from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import ClientRefresh, HTMXRequest
 from litestar.response import Template
-from litestar.status_codes import HTTP_200_OK
+from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from litestar_htmx import HTMXTemplate
 
 from common import REQUEST_TIMEOUT
@@ -37,6 +37,7 @@ from web.controllers.admin.base_event_admin_controller import (
 from litestar.response import Redirect
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
+from web.utils import RequestUtils
 from web.messages import Message
 from web.session import (
     SessionScreensShowDetails,
@@ -566,9 +567,27 @@ class ScreenAdminController(ScreenAdminRenderer):
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 public = WebContext.form_data_to_bool(data, 'public')
                 field = 'columns'
-                columns = WebContext.read_int_field(data, field, errors, minimum=1)
+                columns = WebContext.read_int_field(
+                    data,
+                    field,
+                    errors,
+                    minimum=Screen.COLUMNS_MIN,
+                    maximum=Screen.COLUMNS_MAX,
+                    message=_('An integer between {min} and {max} is expected.').format(
+                        min=Screen.COLUMNS_MIN, max=Screen.COLUMNS_MAX
+                    ),
+                )
                 field = 'font_size'
-                font_size = WebContext.read_int_field(data, field, errors, minimum=1)
+                font_size = WebContext.read_int_field(
+                    data,
+                    field,
+                    errors,
+                    minimum=Screen.FONT_SIZE_MIN,
+                    maximum=Screen.FONT_SIZE_MAX,
+                    message=_('An integer between {min} and {max} is expected.').format(
+                        min=Screen.FONT_SIZE_MIN, max=Screen.FONT_SIZE_MAX
+                    ),
+                )
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 field = 'timer_id'
                 timer_id = WebContext.read_int_field(data, field, errors)
@@ -1144,6 +1163,137 @@ class ScreenAdminController(ScreenAdminRenderer):
             re_swap='innerHTML',
             re_target='.sc-modal-subtitle',
         )
+
+    @patch(
+        path='/screen-font-size/{event_uniq_id:str}/{screen_uniq_id:str}',
+        name='admin-screen-font-size-update',
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
+        status_code=HTTP_204_NO_CONTENT,
+    )
+    async def htmx_admin_screen_font_size_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> None:
+        """Sets the font size of a screen from the slider shown on the screen
+        itself. The screen of a family takes its font size from the family,
+        which is changed then for all its screens. The screens showing it are
+        drawn again once the change is announced."""
+        screen = RequestUtils.get_screen(request)
+        if not screen.screen_type.font_size_adjustable:
+            raise ClientException(
+                f'The font size of screen [{screen.uniq_id}] cannot be set.'
+            )
+        errors: dict[str, str] = {}
+        font_size = WebContext.read_int_field(
+            data,
+            'font_size',
+            errors,
+            minimum=Screen.FONT_SIZE_MIN,
+            maximum=Screen.FONT_SIZE_MAX,
+        )
+        if errors or font_size is None:
+            raise ClientException(
+                f'Invalid font size [{data.get("font_size")}] '
+                f'(expected {Screen.FONT_SIZE_MIN}-{Screen.FONT_SIZE_MAX}).'
+            )
+        event_uniq_id = screen.event.uniq_id
+        if screen.stored_screen is not None:
+            stored_screen = screen.stored_screen
+            stored_screen.font_size = font_size
+            with EventDatabase(event_uniq_id, True) as database:
+                database.update_stored_screen(stored_screen)
+        else:
+            family = screen.family
+            assert family is not None
+            stored_family = family.stored_family
+            stored_family.font_size = font_size
+            with EventDatabase(event_uniq_id, True) as database:
+                database.update_stored_family(stored_family)
+
+    @patch(
+        path='/screen-timer/{event_uniq_id:str}/{screen_uniq_id:str}',
+        name='admin-screen-timer-update',
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
+        status_code=HTTP_204_NO_CONTENT,
+    )
+    async def htmx_admin_screen_timer_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> None:
+        """Sets the timer a screen shows (none when empty) from the control
+        shown on the screen itself. The screen of a family takes its timer
+        from the family, which is changed then for all its screens. The
+        screens showing it are drawn again once the change is announced."""
+        screen = RequestUtils.get_screen(request)
+        event = screen.event
+        errors: dict[str, str] = {}
+        timer_id = WebContext.read_int_field(data, 'timer_id', errors, minimum=1)
+        if errors or (timer_id is not None and timer_id not in event.timers_by_id):
+            raise ClientException(f'Invalid timer [{data.get("timer_id")}].')
+        if screen.stored_screen is not None:
+            screen.set_timer(timer_id)
+        else:
+            family = screen.family
+            assert family is not None
+            family.set_timer(timer_id)
+
+    @patch(
+        path='/screen-columns/{event_uniq_id:str}/{screen_uniq_id:str}',
+        name='admin-screen-columns-update',
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
+        status_code=HTTP_204_NO_CONTENT,
+    )
+    async def htmx_admin_screen_columns_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> None:
+        """Sets the number of columns of a screen from the control shown on
+        the screen itself. The screen of a family takes its columns from the
+        family, which is changed then for all its screens. The screens showing
+        it are drawn again once the change is announced."""
+        screen = RequestUtils.get_screen(request)
+        if not screen.screen_type.columns_adjustable:
+            raise ClientException(
+                f'The columns of screen [{screen.uniq_id}] cannot be set.'
+            )
+        errors: dict[str, str] = {}
+        columns = WebContext.read_int_field(
+            data,
+            'columns',
+            errors,
+            minimum=Screen.COLUMNS_MIN,
+            maximum=Screen.COLUMNS_MAX,
+        )
+        if errors or columns is None:
+            raise ClientException(
+                f'Invalid columns [{data.get("columns")}] '
+                f'(expected {Screen.COLUMNS_MIN}-{Screen.COLUMNS_MAX}).'
+            )
+        event_uniq_id = screen.event.uniq_id
+        if screen.stored_screen is not None:
+            stored_screen = screen.stored_screen
+            stored_screen.columns = columns
+            with EventDatabase(event_uniq_id, True) as database:
+                database.update_stored_screen(stored_screen)
+        else:
+            family = screen.family
+            assert family is not None
+            stored_family = family.stored_family
+            stored_family.columns = columns
+            with EventDatabase(event_uniq_id, True) as database:
+                database.update_stored_family(stored_family)
 
     @delete(
         path='/screen-delete/{event_uniq_id:str}/{screen_id:int}',

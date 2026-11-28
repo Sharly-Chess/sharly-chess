@@ -1339,6 +1339,10 @@ msgstr "Une erreur découverte après la fin de la ronde suivante n'est corrigé
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
+#, python-brace-format
+msgid "An integer between {min} and {max} is expected."
+msgstr "Un entier entre {min} et {max} est attendu."
+
 msgid "An integer greater than 1 is expected."
 msgstr "Un entier supérieur à 1 est attendu."
 
@@ -4625,6 +4629,9 @@ msgstr "Fédérations non reconnues ({values}), laissées vides"
 msgid "Fetch from a data source"
 msgstr "Récupérer depuis une source de données"
 
+msgid "Fewer columns"
+msgstr "Moins de colonnes"
+
 #, python-brace-format
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tournament}]."
@@ -4756,6 +4763,9 @@ msgstr "Miroir (recto-verso)"
 
 msgid "Font"
 msgstr "Police"
+
+msgid "Font size"
+msgstr "Taille de police"
 
 #, python-format
 msgid "Font size adjustment (%%):"
@@ -6542,6 +6552,9 @@ msgstr "Monténégro"
 
 msgid "More"
 msgstr "Plus"
+
+msgid "More columns"
+msgstr "Plus de colonnes"
 
 msgid "Morocco"
 msgstr "Maroc"
@@ -9514,6 +9527,9 @@ msgstr "Réinitialiser le statut absent·e/présent·e de tou·tes les joueur·e
 msgid "Reset the absent/present status of all the teams."
 msgstr "Réinitialiser le statut absente/présente de toutes les équipes."
 
+msgid "Reset the font size"
+msgstr "Réinitialiser la taille de police"
+
 msgid "Reset zoom"
 msgstr "Réinitialiser le zoom"
 
@@ -10191,6 +10207,9 @@ msgstr "Écran [{screen}]"
 
 msgid "Screen configuration has been updated."
 msgstr "La configuration des écrans a été mise à jour."
+
+msgid "Screen controls"
+msgstr "Contrôles de l'écran"
 
 msgid "Screen settings"
 msgstr "Paramètres des écrans"

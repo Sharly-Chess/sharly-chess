@@ -12,6 +12,7 @@ from litestar_htmx import HTMXTemplate
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
+from data.screens.screen import Screen
 from data.screens.family import Family
 from utils import Utils
 from utils.enum import BoardSelectionMode
@@ -149,9 +150,27 @@ class FamilyAdminController(BaseEventAdminController):
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 field = 'columns'
-                columns = WebContext.read_int_field(data, field, errors, minimum=1)
+                columns = WebContext.read_int_field(
+                    data,
+                    field,
+                    errors,
+                    minimum=Screen.COLUMNS_MIN,
+                    maximum=Screen.COLUMNS_MAX,
+                    message=_('An integer between {min} and {max} is expected.').format(
+                        min=Screen.COLUMNS_MIN, max=Screen.COLUMNS_MAX
+                    ),
+                )
                 field = 'font_size'
-                font_size = WebContext.read_int_field(data, field, errors, minimum=1)
+                font_size = WebContext.read_int_field(
+                    data,
+                    field,
+                    errors,
+                    minimum=Screen.FONT_SIZE_MIN,
+                    maximum=Screen.FONT_SIZE_MAX,
+                    message=_('An integer between {min} and {max} is expected.').format(
+                        min=Screen.FONT_SIZE_MIN, max=Screen.FONT_SIZE_MAX
+                    ),
+                )
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 field = 'timer_id'
                 timer_id = WebContext.read_int_field(data, field, errors)

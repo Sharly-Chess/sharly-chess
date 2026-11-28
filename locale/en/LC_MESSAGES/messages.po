@@ -1339,6 +1339,10 @@ msgstr ""
 msgid "An error occurred. Consult the logs for more details."
 msgstr ""
 
+#, python-brace-format
+msgid "An integer between {min} and {max} is expected."
+msgstr ""
+
 msgid "An integer greater than 1 is expected."
 msgstr ""
 
@@ -4625,6 +4629,9 @@ msgstr ""
 msgid "Fetch from a data source"
 msgstr ""
 
+msgid "Fewer columns"
+msgstr ""
+
 #, python-brace-format
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
@@ -4755,6 +4762,9 @@ msgid "Foldable (mirrored top)"
 msgstr ""
 
 msgid "Font"
+msgstr ""
+
+msgid "Font size"
 msgstr ""
 
 #, python-format
@@ -6541,6 +6551,9 @@ msgid "Montenegro"
 msgstr ""
 
 msgid "More"
+msgstr ""
+
+msgid "More columns"
 msgstr ""
 
 msgid "Morocco"
@@ -9512,6 +9525,9 @@ msgstr ""
 msgid "Reset the absent/present status of all the teams."
 msgstr ""
 
+msgid "Reset the font size"
+msgstr ""
+
 msgid "Reset zoom"
 msgstr ""
 
@@ -10188,6 +10204,9 @@ msgid "Screen [{screen}]"
 msgstr ""
 
 msgid "Screen configuration has been updated."
+msgstr ""
+
+msgid "Screen controls"
 msgstr ""
 
 msgid "Screen settings"

@@ -130,6 +130,7 @@
                                         label=_('%(string)s:', string=_('Columns')),
                                         placeholder=_('E.g.: %(num)d', num=2),
                                         tooltip_text=_('The number of columns used to display data.'),
+                                        min=Screen.COLUMNS_MIN, max=Screen.COLUMNS_MAX, step=1,
                                         data=data, errors=errors
                                     ) }}
                                 </div>
@@ -139,6 +140,7 @@
                                     name='font_size',
                                     label=_('Font size adjustment (%%):'),
                                     placeholder=100,
+                                    min=Screen.FONT_SIZE_MIN, max=Screen.FONT_SIZE_MAX, step=Screen.FONT_SIZE_STEP,
                                     data=data, errors=errors
                                 ) }}
                             </div>

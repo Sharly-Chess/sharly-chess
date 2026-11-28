@@ -591,6 +591,19 @@ class ScreenType(IdentifiableEntity, ABC):
         return False
 
     @property
+    def font_size_adjustable(self) -> bool:
+        """Whether the managers of the screens can set the font size of a
+        screen of this type live, from the screen itself."""
+        return True
+
+    @property
+    def columns_adjustable(self) -> bool:
+        """Whether the managers of the screens can set the number of columns
+        of a screen of this type live, from the screen itself: when the
+        edit form offers it."""
+        return self.has_config_fields and self.multi_column_allowed
+
+    @property
     def allows_check_in(self) -> bool:
         """Whether a screen of this type that accepts input lets people check
         players/teams in or out."""
@@ -3093,6 +3106,12 @@ class ImageScreenType(ScreenType):
     @property
     def icon_str(self) -> str:
         return 'bi-image'
+
+    @property
+    @override
+    def font_size_adjustable(self) -> bool:
+        # An image screen shows no text.
+        return False
 
     @property
     def tooltip_text(self) -> str:

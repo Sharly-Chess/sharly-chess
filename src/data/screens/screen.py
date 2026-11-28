@@ -29,6 +29,17 @@ logger = get_logger()
 class Screen:
     """A data wrapper around a stored screen."""
 
+    # The bounds and the step of the font size (a percentage) that the
+    # managers of the screens can set live from the screen itself, and in
+    # the edit forms of the screens and the families.
+    FONT_SIZE_MIN: int = 50
+    FONT_SIZE_MAX: int = 300
+    FONT_SIZE_STEP: int = 1
+    # The bounds of the number of columns they can set the same way. These
+    # bounds also apply to the edit forms of the screens and the families.
+    COLUMNS_MIN: int = 1
+    COLUMNS_MAX: int = 10
+
     def __init__(
         self,
         event: Event,
