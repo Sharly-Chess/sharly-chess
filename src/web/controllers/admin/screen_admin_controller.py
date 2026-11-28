@@ -1,15 +1,20 @@
 import asyncio
+import re
 from typing import Annotated, Any
 
 import requests
 import validators
 from litestar import post, get, delete, patch
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import NotFoundException, ClientException
+from litestar.exceptions import (
+    ClientException,
+    NotFoundException,
+    PermissionDeniedException,
+)
 from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import ClientRefresh, HTMXRequest
 from litestar.response import Template
-from litestar.status_codes import HTTP_200_OK
+from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from litestar_htmx import HTMXTemplate
 
 from common import REQUEST_TIMEOUT
@@ -21,22 +26,37 @@ from common.background import (
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
+from data.event import Event
+from data.screens.live_layout import (
+    LAYOUT_FIELDS,
+    live_key,
+    live_layout,
+    start_live_layout,
+    stop_live_layout,
+    update_live_layout,
+)
 from data.screens.screen import Screen
 from data.screens.screen_set import ScreenSet
 from data.screens.family import Family
 from data.screens.manager import ScreenTypeManager
-from data.screens.screen_types import ScreenType
+from data.screens.screen_types import ImageScreenType, ScreenType
 from utils import Utils
 from utils.enum import BoardSelectionMode
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredScreen, StoredScreenSet
+from database.sqlite.event.event_store import (
+    StoredFamily,
+    StoredScreen,
+    StoredScreenSet,
+)
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
 from litestar.response import Redirect
 from web.controllers.base_controller import WebContext
+from web.channels import notify_changes, publish_ws_event
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
+from web.utils import RequestUtils
 from web.messages import Message
 from web.session import (
     SessionScreensShowDetails,
@@ -124,6 +144,47 @@ class ScreenAdminRenderer(BaseEventAdminController):
         EventGuard(),
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
     ]
+
+    @staticmethod
+    def live_form_overrides(
+        event_uniq_id: str, kind: str, uniq_id: str
+    ) -> dict[str, Any]:
+        """The values the live update of the screen or family (*kind*)
+        *uniq_id* shows, as values of its edit form: a modal opened while it
+        is on shows them rather than the stored ones."""
+        values = live_layout(event_uniq_id, live_key(kind, uniq_id)) or {}
+        overrides: dict[str, Any] = {
+            field: values[field]
+            for field in ('columns', 'font_size', 'timer_id', 'background_blurred')
+            if field in values
+        }
+        if 'background_color' in values:
+            overrides['background_color'] = values['background_color']
+            overrides['background_color_checkbox'] = values['background_color'] is None
+        if 'background_image' in values:
+            image = values['background_image'] or ''
+            uploaded = image.startswith('data:')
+            overrides['background_image'] = '' if uploaded else image
+            overrides['background_image_upload'] = image if uploaded else ''
+        if 'message_default' in values:
+            overrides['message_text_checkbox'] = bool(values['message_default'])
+        if 'message_text' in values:
+            overrides['message_text'] = values['message_text']
+        return overrides
+
+    @staticmethod
+    def live_update_context(
+        kind: str, uniq_id: str, event_uniq_id: str
+    ) -> dict[str, Any]:
+        """What the edit modal of a screen or family needs to show the switch
+        of its live update."""
+        return {
+            'live_update': {
+                'kind': kind,
+                'target': uniq_id,
+                'on': live_layout(event_uniq_id, live_key(kind, uniq_id)) is not None,
+            }
+        }
 
     @staticmethod
     def screen_form_values(screen: Screen) -> dict[str, Any]:
@@ -241,8 +302,11 @@ class ScreenAdminRenderer(BaseEventAdminController):
                     form_values: dict[str, Any]
                     match action:
                         case 'update':
+                            admin_screen = web_context.get_admin_screen()
                             form_values = cls.screen_form_values(
-                                web_context.get_admin_screen()
+                                admin_screen
+                            ) | cls.live_form_overrides(
+                                event.uniq_id, 'screen', admin_screen.uniq_id
                             )
                         case 'clone':
                             screen = web_context.get_admin_screen()
@@ -318,6 +382,10 @@ class ScreenAdminRenderer(BaseEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
+                if action == 'update':
+                    template_context |= cls.live_update_context(
+                        'screen', web_context.get_admin_screen().uniq_id, event.uniq_id
+                    )
             case 'screen_sets':
                 template_context |= {
                     'modal': modal,
@@ -566,9 +634,27 @@ class ScreenAdminController(ScreenAdminRenderer):
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 public = WebContext.form_data_to_bool(data, 'public')
                 field = 'columns'
-                columns = WebContext.read_int_field(data, field, errors, minimum=1)
+                columns = WebContext.read_int_field(
+                    data,
+                    field,
+                    errors,
+                    minimum=Screen.COLUMNS_MIN,
+                    maximum=Screen.COLUMNS_MAX,
+                    message=_('An integer between {min} and {max} is expected.').format(
+                        min=Screen.COLUMNS_MIN, max=Screen.COLUMNS_MAX
+                    ),
+                )
                 field = 'font_size'
-                font_size = WebContext.read_int_field(data, field, errors, minimum=1)
+                font_size = WebContext.read_int_field(
+                    data,
+                    field,
+                    errors,
+                    minimum=Screen.FONT_SIZE_MIN,
+                    maximum=Screen.FONT_SIZE_MAX,
+                    message=_('An integer between {min} and {max} is expected.').format(
+                        min=Screen.FONT_SIZE_MIN, max=Screen.FONT_SIZE_MAX
+                    ),
+                )
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 field = 'timer_id'
                 timer_id = WebContext.read_int_field(data, field, errors)
@@ -1009,6 +1095,9 @@ class ScreenAdminController(ScreenAdminRenderer):
                 case 'update':
                     stored_screen = event_database.update_stored_screen(stored_screen)
                     assert stored_screen.id is not None
+                    self.end_live_layout_on_save(
+                        event_database.uniq_id, 'screen', stored_screen
+                    )
                     event_database.set_stored_screen_display_controllers(
                         stored_screen.id, display_controller_ids
                     )
@@ -1144,6 +1233,268 @@ class ScreenAdminController(ScreenAdminRenderer):
             re_swap='innerHTML',
             re_target='.sc-modal-subtitle',
         )
+
+    # The actions on the live update of a screen that only the clients that
+    # manage the screens make, from the edit modals; the others are made from
+    # the controls shown on the screens, by any client that sees them.
+    LIVE_MANAGER_ACTIONS: tuple[str, ...] = ('start', 'stop', 'cancel')
+    LIVE_ACTIONS: tuple[str, ...] = (*LIVE_MANAGER_ACTIONS, 'update', 'save')
+
+    @staticmethod
+    def _live_target(
+        event: Event, target_kind: str, target_uniq_id: str
+    ) -> Screen | Family:
+        """The screen or the family whose live update is acted on."""
+        try:
+            match target_kind:
+                case 'screen':
+                    screen = event.screens_by_uniq_id[target_uniq_id]
+                    if screen.stored_screen is None:
+                        raise KeyError(target_uniq_id)
+                    return screen
+                case 'family':
+                    return event.families_by_uniq_id[target_uniq_id]
+        except KeyError:
+            pass
+        raise NotFoundException(
+            f'Screen [{target_kind}:{target_uniq_id}] not found.'
+        ) from None
+
+    @staticmethod
+    def read_live_layout_values(
+        target: Screen | Family, data: dict[str, str]
+    ) -> dict[str, Any]:
+        """The layout values given by *data* (the fields of the edit form
+        that the live update shows), checked against what the screen or the
+        family can show. Only the fields present in *data* are read."""
+        screen_type = target.screen_type
+        event = target.event
+        values: dict[str, Any] = {}
+        errors: dict[str, str] = {}
+        if 'columns' in data and screen_type.columns_adjustable:
+            values['columns'] = WebContext.read_int_field(
+                data,
+                'columns',
+                errors,
+                minimum=Screen.COLUMNS_MIN,
+                maximum=Screen.COLUMNS_MAX,
+            )
+        if 'font_size' in data and screen_type.font_size_adjustable:
+            values['font_size'] = WebContext.read_int_field(
+                data,
+                'font_size',
+                errors,
+                minimum=Screen.FONT_SIZE_MIN,
+                maximum=Screen.FONT_SIZE_MAX,
+            )
+        if 'timer_id' in data:
+            timer_id = WebContext.read_int_field(data, 'timer_id', errors, minimum=1)
+            if timer_id is not None and timer_id not in event.timers_by_id:
+                errors['timer_id'] = 'unknown timer'
+            values['timer_id'] = timer_id
+        if isinstance(screen_type, ImageScreenType):
+            if 'background_image' in data:
+                image = (data.get('background_image') or '').strip()
+                if image.startswith('data:'):
+                    if len(
+                        image
+                    ) > MAX_UPLOADED_IMAGE_CHARS or not uploaded_image_is_an_image(
+                        image
+                    ):
+                        errors['background_image'] = 'invalid image'
+                elif image and not validators.url(image):
+                    errors['background_image'] = 'invalid URL'
+                values['background_image'] = image
+            if 'background_blurred' in data:
+                values['background_blurred'] = WebContext.form_data_to_bool(
+                    data, 'background_blurred'
+                )
+            if 'background_color' in data:
+                color = (data.get('background_color') or '').strip()
+                if color and not re.fullmatch(r'#[0-9a-fA-F]{6}', color):
+                    errors['background_color'] = 'invalid colour'
+                values['background_color'] = color or None
+        if 'message_text_checkbox' in data:
+            values['message_default'] = WebContext.form_data_to_bool(
+                data, 'message_text_checkbox'
+            )
+        if 'message_text' in data:
+            values['message_text'] = WebContext.form_data_to_str(data, 'message_text')
+        if errors:
+            raise ClientException(f'Invalid layout values: {errors}.')
+        return values
+
+    @staticmethod
+    def live_layout_form_values(values: dict[str, Any]) -> dict[str, Any]:
+        """The layout *values* as the edit modals show them. An uploaded image
+        is not sent to the pages, only that there is one."""
+        form_values: dict[str, Any] = {}
+        for field, value in values.items():
+            match field:
+                case 'columns' | 'font_size' | 'timer_id':
+                    form_values[field] = '' if value is None else str(value)
+                case 'background_blurred':
+                    form_values[field] = bool(value)
+                case 'message_default':
+                    form_values['message_text_checkbox'] = bool(value)
+                case 'message_text':
+                    form_values[field] = value or ''
+                case 'background_color':
+                    form_values[field] = value or ''
+                case 'background_image':
+                    if value and value.startswith('data:'):
+                        form_values['background_image_uploaded'] = True
+                    else:
+                        form_values[field] = value or ''
+        return form_values
+
+    @staticmethod
+    def stored_layout_values(stored: StoredScreen | StoredFamily) -> dict[str, Any]:
+        """The stored layout values of a screen or a family."""
+        return {
+            field: getattr(stored, field)
+            for field in LAYOUT_FIELDS
+            if hasattr(stored, field)
+        }
+
+    @staticmethod
+    def _stored_target(target: Screen | Family) -> StoredScreen | StoredFamily:
+        if isinstance(target, Family):
+            return target.stored_family
+        assert target.stored_screen is not None
+        return target.stored_screen
+
+    @classmethod
+    def publish_live_layout(
+        cls,
+        event_uniq_id: str,
+        kind: str,
+        target_uniq_id: str,
+        active: bool,
+        values: dict[str, Any] | None = None,
+        origin: str = '',
+    ) -> None:
+        """Tells the pages of the event (the edit modals and the screens)
+        whether the live update of the screen or the family (*kind*) is on,
+        and the layout values they should show."""
+        publish_ws_event(
+            f'screen-live|{event_uniq_id}',
+            {
+                'kind': kind,
+                'target': target_uniq_id,
+                'active': active,
+                'values': cls.live_layout_form_values(values or {}),
+                'origin': origin,
+            },
+            event_uniq_id=event_uniq_id,
+        )
+
+    @classmethod
+    def end_live_layout_on_save(
+        cls, event_uniq_id: str, kind: str, stored: StoredScreen | StoredFamily
+    ) -> None:
+        """Turns off the live update of a screen or a family (*kind*) whose
+        edit form has just been saved: the stored values are now those shown."""
+        if stop_live_layout(event_uniq_id, live_key(kind, stored.uniq_id)) is not None:
+            cls.publish_live_layout(
+                event_uniq_id,
+                kind,
+                stored.uniq_id,
+                False,
+                cls.stored_layout_values(stored),
+            )
+
+    @post(
+        path='/screen-live/{event_uniq_id:str}/{target_kind:str}'
+        '/{target_uniq_id:str}/{live_action:str}',
+        name='admin-screen-live',
+        status_code=HTTP_204_NO_CONTENT,
+    )
+    async def htmx_admin_screen_live(
+        self,
+        request: HTMXRequest,
+        target_kind: FromPath[str],
+        target_uniq_id: FromPath[str],
+        live_action: FromPath[str],
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> None:
+        """Acts on the live update of a screen or of a family (see
+        `data.screens.live_layout`):
+
+        - *start*: turns it on with the layout values of the edit modal;
+        - *update*: changes the values shown, from a modal or from the
+          controls of a screen;
+        - *stop*: turns it off, the screens keeping what they show;
+        - *cancel*: turns it off, the screens showing the stored values again
+          (the modal is closed without saving);
+        - *save*: stores the values shown and turns it off, from the controls
+          of a screen.
+
+        Starting, stopping and cancelling are left to the clients that manage
+        the screens; any client that sees the screen may change the values
+        and save them while the live update is on."""
+        if live_action not in self.LIVE_ACTIONS:
+            raise NotFoundException(f'Unknown live action [{live_action}].')
+        web_context = WebContext(request)
+        if (
+            live_action in self.LIVE_MANAGER_ACTIONS
+            and not web_context.client.can_manage_screens
+        ):
+            raise PermissionDeniedException(
+                f'The live update cannot be [{live_action}] by this client.'
+            )
+        event = RequestUtils.get_event(request)
+        target = self._live_target(event, target_kind, target_uniq_id)
+        event_uniq_id = event.uniq_id
+        origin = data.get('origin', '')
+        values = self.read_live_layout_values(target, data)
+        stored = self._stored_target(target)
+        uniq_id = target.uniq_id
+        key = live_key(target_kind, uniq_id)
+
+        def publish(active: bool, published: dict[str, Any] | None = None) -> None:
+            self.publish_live_layout(
+                event_uniq_id, target_kind, uniq_id, active, published, origin
+            )
+
+        match live_action:
+            case 'start':
+                start_live_layout(
+                    event_uniq_id, key, self.stored_layout_values(stored) | values
+                )
+                notify_changes(event_uniq_id, [], screens=True)
+                publish(True, values)
+            case 'update':
+                if live_layout(event_uniq_id, key) is None:
+                    raise ClientException('The live update is off.')
+                if update_live_layout(event_uniq_id, key, values):
+                    notify_changes(event_uniq_id, [], screens=True)
+                publish(True, values)
+            case 'stop':
+                stop_live_layout(event_uniq_id, key)
+                publish(False)
+            case 'cancel':
+                if stop_live_layout(event_uniq_id, key) is not None:
+                    notify_changes(event_uniq_id, [], screens=True)
+                    publish(False, self.stored_layout_values(stored))
+            case 'save':
+                live_values = live_layout(event_uniq_id, key)
+                if live_values is None:
+                    raise ClientException('The live update is off.')
+                live_values = live_values | values
+                for field, value in live_values.items():
+                    if hasattr(stored, field):
+                        setattr(stored, field, value)
+                stop_live_layout(event_uniq_id, key)
+                with EventDatabase(event_uniq_id, True) as database:
+                    if isinstance(stored, StoredFamily):
+                        database.update_stored_family(stored)
+                    else:
+                        database.update_stored_screen(stored)
+                publish(False, live_values)
 
     @delete(
         path='/screen-delete/{event_uniq_id:str}/{screen_id:int}',

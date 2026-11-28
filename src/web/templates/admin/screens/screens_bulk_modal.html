@@ -16,6 +16,7 @@
 {% endblock %}
 
 {% block body %}
+{% import '/admin/screens/screen_form_controls.j2' as screen_form_controls with context %}
     <ul class="screens-bulk-names" data-testid="screens-bulk-names">
         {% for name in selection.names %}
             <li>{{ name }}</li>
@@ -53,9 +54,9 @@
                         data=data, errors=errors
                     ) }}
                 </div>
-                {% if not screen_type.has_config_fields %}
+                {% with destination_field_class='col-12' %}
                     {% include '/admin/display_controllers/destination_field.html' %}
-                {% endif %}
+                {% endwith %}
             </div>
 
             {% if screen_type.multiple_edit_form_template %}
@@ -79,25 +80,18 @@
             {% if screen_type.has_config_fields %}
                 {{ components.section_heading(_('Layout')) }}
                 <div class="row gy-2 gx-3">
-                    {% with destination_field_class='col-12' %}
-                        {% include '/admin/display_controllers/destination_field.html' %}
-                    {% endwith %}
                     {% if screen_type.multi_column_allowed %}
                         <div class="col-12 col-md-6">
-                            {{ admin_macros.number_input(
-                                name='columns',
+                            {{ screen_form_controls.columns_input(
                                 label=_('%(string)s:', string=_('Columns')),
-                                placeholder=_('E.g.: %(num)d', num=2),
                                 tooltip_text=_('The number of columns used to display data.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
                     {% endif %}
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.number_input(
-                            name='font_size',
-                            label=_('Font size adjustment (%%):'),
-                            placeholder=100,
+                        {{ screen_form_controls.font_size_input(
+                            label=_('%(string)s:', string=_('Font size')),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -198,6 +192,13 @@
                         } else if (input.tagName === 'SELECT') {
                             if (!input.multiple) {
                                 $(input).prepend(new Option(mixedLabel, '', true, true)).trigger('change.select2');
+                            }
+                        } else if (input.type === 'range') {
+                            // A slider always holds a value: the label next to
+                            // it says that the screens differ instead.
+                            const shown = block?.querySelector('.screen-form-font-size-value');
+                            if (shown) {
+                                shown.textContent = mixedLabel;
                             }
                         } else {
                             input.value = '';

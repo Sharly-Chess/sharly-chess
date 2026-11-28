@@ -1339,6 +1339,10 @@ msgstr "Une erreur découverte après la fin de la ronde suivante n'est corrigé
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
+#, python-brace-format
+msgid "An integer between {min} and {max} is expected."
+msgstr "Un entier entre {min} et {max} est attendu."
+
 msgid "An integer greater than 1 is expected."
 msgstr "Un entier supérieur à 1 est attendu."
 
@@ -4625,6 +4629,9 @@ msgstr "Fédérations non reconnues ({values}), laissées vides"
 msgid "Fetch from a data source"
 msgstr "Récupérer depuis une source de données"
 
+msgid "Fewer columns"
+msgstr "Moins de colonnes"
+
 #, python-brace-format
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tournament}]."
@@ -4757,9 +4764,8 @@ msgstr "Miroir (recto-verso)"
 msgid "Font"
 msgstr "Police"
 
-#, python-format
-msgid "Font size adjustment (%%):"
-msgstr "Ajustement de la taille de police (%%) :"
+msgid "Font size"
+msgstr "Taille de police"
 
 msgid "For best results, make the groups equal in size — ideally a power-of-two number of players each (2, 4, 8, 16…) — so the bracket needs no byes."
 msgstr "Pour un résultat optimal, faites des groupes de taille égale — idéalement une puissance de deux joueur·euses chacun (2, 4, 8, 16…) — pour que le tableau n'ait besoin d'aucun exempt."
@@ -5892,7 +5898,7 @@ msgid "Latvia"
 msgstr "Lettonie"
 
 msgid "Layout"
-msgstr "Présentation"
+msgstr "Mise en page"
 
 msgctxt "event tag name"
 msgid "League"
@@ -6014,6 +6020,9 @@ msgstr "Liste les joueur·euses de chaque équipe sous son nom, pour que les cap
 
 msgid "Lithuania"
 msgstr "Lituanie"
+
+msgid "Live update"
+msgstr "Mise à jour en temps réel"
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
@@ -6542,6 +6551,9 @@ msgstr "Monténégro"
 
 msgid "More"
 msgstr "Plus"
+
+msgid "More columns"
+msgstr "Plus de colonnes"
 
 msgid "Morocco"
 msgstr "Maroc"
@@ -9514,6 +9526,9 @@ msgstr "Réinitialiser le statut absent·e/présent·e de tou·tes les joueur·e
 msgid "Reset the absent/present status of all the teams."
 msgstr "Réinitialiser le statut absente/présente de toutes les équipes."
 
+msgid "Reset the font size"
+msgstr "Réinitialiser la taille de police"
+
 msgid "Reset zoom"
 msgstr "Réinitialiser le zoom"
 
@@ -10191,6 +10206,9 @@ msgstr "Écran [{screen}]"
 
 msgid "Screen configuration has been updated."
 msgstr "La configuration des écrans a été mise à jour."
+
+msgid "Screen controls"
+msgstr "Contrôles de l'écran"
 
 msgid "Screen settings"
 msgstr "Paramètres des écrans"
@@ -11537,6 +11555,9 @@ msgstr "L'appareil ouvre Sharly Chess par le même réseau : tapez l'adresse r�
 
 msgid "The devices"
 msgstr "Les appareils"
+
+msgid "The devices currently showing the screen update automatically in real time with your changes. The changes are only final when you click the Save button."
+msgstr "Les appareils qui projettent actuellement l'écran se mettent à jour automatiquement en temps réel avec vos modifications. Les modifications ne sont définitives que lorsque vous cliquez sur le bouton « Enregistrer »."
 
 msgid "The director is the person in charge of the event."
 msgstr "Le·la directeur·ice est la personne responsable de l’événement."
@@ -13535,6 +13556,9 @@ msgstr "Mettre à jour les informations des joueur·euses à partir d'une source
 msgid "Update the ratings"
 msgstr "Mettre à jour les classements"
 
+msgid "Update the screen in real time on the devices currently showing it."
+msgstr "Mettre à jour en temps réel l'écran sur les appareils qui le projettent actuellement."
+
 msgid "Update tournaments"
 msgstr "Modifier les tournois"
 
@@ -14231,6 +14255,9 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
+
+msgid "You can also adjust the layout directly on the devices that show the screen."
+msgstr "Vous pouvez également effectuer les réglages de mise en page directement sur les appareils qui affichent l'écran."
 
 msgid "You can ask the administrator for permission to access the event screens."
 msgstr "Vous pouvez demander à l'administrateur·ice la permission d'accéder aux écrans de l'évènement."

@@ -1,0 +1,143 @@
+{#- The columns and the font size of the edit forms of the screens, set with
+    the same controls as on the screens themselves: - and + buttons around
+    the number of columns, a slider with a reset button for the font size.
+    The fields keep their names and their errors, so the forms read them
+    as before. -#}
+{% import '/admin/components/macros.j2' as components with context %}
+
+{% macro _label(id, label, tooltip_text='') -%}
+    <div class="d-flex align-items-center">
+        <span id="{{ id }}-label" class="form-check-label flex-grow-1">
+            <span id="{{ id }}-label-text">{{- label -}}</span>
+            {%- if tooltip_text -%}
+                <span class="text-nowrap">
+                    <i
+                        class="bi bi-info-circle-fill ms-2"
+                        {{ tooltip_attributes_markup('', tooltip_text, 'top') }}
+                    ></i>
+                </span>
+            {%- endif -%}
+        </span>
+    </div>
+{%- endmacro %}
+
+{% macro _error(id, name, errors) -%}
+    {% if name in errors %}
+        <div id="{{ id }}-error" class="form-text invalid-feedback" style="display:block">
+            {{ errors[name] }}
+        </div>
+    {% endif %}
+{%- endmacro %}
+
+{% macro columns_input(label, tooltip_text='', data={}, errors={}) -%}
+    {% set name = 'columns' %}
+    {% set id = 'columns' %}
+    <div id="{{ id }}-wrapper" class="input-block position-relative screen-form-control">
+        {{ _label(id, label, tooltip_text) }}
+        <div class="d-flex align-items-center gap-2 screen-form-columns">
+            {{ components.button(
+                _('Fewer columns'),
+                kind='outline-secondary',
+                icon='bi-dash-circle',
+                size='sm',
+                icon_only=true,
+                attrs={'data-columns-step': '-1', 'title': _('Fewer columns')},
+            ) }}
+            <input
+                id="{{ id }}"
+                name="{{ name }}"
+                type="number"
+                class="form-control form-control-sm text-center screen-form-columns-value{% if name in errors %} is-invalid{% endif %}"
+                min="{{ Screen.COLUMNS_MIN }}"
+                max="{{ Screen.COLUMNS_MAX }}"
+                step="1"
+                value="{{ data.get(name) or Screen.COLUMNS_MIN }}"
+                readonly
+                aria-labelledby="{{ id }}-label"
+                aria-describedby="{{ id }}-error"
+            >
+            {{ components.button(
+                _('More columns'),
+                kind='outline-secondary',
+                icon='bi-plus-circle',
+                size='sm',
+                icon_only=true,
+                attrs={'data-columns-step': '1', 'title': _('More columns')},
+            ) }}
+        </div>
+        {{ _error(id, name, errors) }}
+    </div>
+    <script>
+        (() => {
+            const block = document.currentScript.previousElementSibling;
+            const input = block.querySelector('input[name="columns"]');
+            const minimum = Number(input.min);
+            const maximum = Number(input.max);
+            block.querySelectorAll('[data-columns-step]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const step = Number(button.dataset.columnsStep);
+                    const current = parseInt(input.value, 10);
+                    // A field left empty (screens that differ) starts from
+                    // the smallest number.
+                    const next = Number.isNaN(current)
+                        ? minimum
+                        : Math.min(maximum, Math.max(minimum, current + step));
+                    if (String(next) === input.value) {
+                        return;
+                    }
+                    input.value = next;
+                    input.dispatchEvent(new Event('input', {bubbles: true}));
+                    input.dispatchEvent(new Event('change', {bubbles: true}));
+                });
+            });
+        })();
+    </script>
+{%- endmacro %}
+
+{% macro font_size_input(label, tooltip_text='', data={}, errors={}) -%}
+    {% set name = 'font_size' %}
+    {% set id = 'font-size' %}
+    {% set font_size = data.get(name) or 100 %}
+    <div id="{{ id }}-wrapper" class="input-block position-relative screen-form-control">
+        {{ _label(id, label, tooltip_text) }}
+        <div class="d-flex align-items-center gap-2 screen-form-font-size">
+            <input
+                id="{{ id }}"
+                name="{{ name }}"
+                type="range"
+                class="form-range flex-grow-1{% if name in errors %} is-invalid{% endif %}"
+                min="{{ Screen.FONT_SIZE_MIN }}"
+                max="{{ Screen.FONT_SIZE_MAX }}"
+                step="{{ Screen.FONT_SIZE_STEP }}"
+                value="{{ font_size }}"
+                aria-labelledby="{{ id }}-label"
+                aria-describedby="{{ id }}-error"
+            >
+            <span class="screen-form-font-size-value">{{ font_size }}%</span>
+            {{ components.button(
+                _('Reset the font size'),
+                kind='outline-secondary',
+                icon='bi-arrow-counterclockwise',
+                size='sm',
+                icon_only=true,
+                attrs={'data-font-size-reset': true, 'title': _('Reset the font size')},
+            ) }}
+        </div>
+        {{ _error(id, name, errors) }}
+    </div>
+    <script>
+        (() => {
+            const block = document.currentScript.previousElementSibling;
+            const slider = block.querySelector('input[name="font_size"]');
+            const value = block.querySelector('.screen-form-font-size-value');
+            slider.addEventListener('input', () => {
+                value.textContent = slider.value + '%';
+            });
+            block.querySelector('[data-font-size-reset]').addEventListener('click', () => {
+                slider.value = 100;
+                slider.dispatchEvent(new Event('input', {bubbles: true}));
+                slider.dispatchEvent(new Event('change', {bubbles: true}));
+            });
+        })();
+    </script>
+{%- endmacro %}

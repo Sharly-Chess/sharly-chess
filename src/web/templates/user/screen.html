@@ -25,6 +25,370 @@
                 <i class="bi-x-circle-fill"></i>
             </button>
         {% endif %}
+        {# The controls of the layout are shown on every device that shows the
+           screen while its live update is on (see data.screens.live_layout). #}
+        {% set live_update_on = screen.live_update_on %}
+        {% set font_size_control = live_update_on and screen.screen_type.font_size_adjustable %}
+        {% set timer_control = live_update_on and user_event.timers %}
+        {% set columns_control = live_update_on and screen.screen_type.columns_adjustable %}
+        {% if (font_size_control or timer_control or columns_control) and not request.query_params.get('preview') %}
+            {% set live_kind, live_target = screen.live_target %}
+            <div
+                id="screen-control-panel"
+                class="screen-control-panel position-fixed bottom-0 start-0 ms-2 mb-2 z-2 d-flex align-items-center gap-2"
+                data-live-url="{{ url_for('admin-screen-live', event_uniq_id=user_event.uniq_id, target_kind=live_kind, target_uniq_id=live_target, live_action='-')[:-1] }}"
+                data-event="{{ user_event.uniq_id }}"
+                data-kind="{{ live_kind }}"
+                data-target="{{ live_target }}"
+            >
+                <button
+                    id="screen-controls-toggle"
+                    type="button"
+                    class="btn btn-secondary"
+                    title="{{ _('Screen controls') }}"
+                    aria-label="{{ _('Screen controls') }}"
+                    aria-controls="screen-controls"
+                >
+                    <i class="bi-gear"></i>
+                </button>
+                <div id="screen-controls" class="screen-controls d-none align-items-center gap-2" data-testid="screen-controls">
+            {% if columns_control %}
+                <div
+                    id="screen-columns-panel"
+                    class="screen-control screen-columns-panel d-flex align-items-stretch"
+                    data-columns="{{ screen.columns }}"
+                    data-max="{{ screen.COLUMNS_MAX }}"
+                    data-testid="screen-columns-panel"
+                >
+                    <button
+                        id="screen-columns-toggle"
+                        type="button"
+                        class="btn btn-secondary"
+                        title="{{ _('Columns') }}"
+                        aria-label="{{ _('Columns') }}"
+                        aria-controls="screen-columns-controls"
+                    >
+                        <i class="bi-layout-three-columns"></i>
+                    </button>
+                    <div id="screen-columns-controls" class="screen-control-items screen-columns-controls d-none align-items-center gap-2">
+                        <button
+                            id="screen-columns-minus"
+                            type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            title="{{ _('Fewer columns') }}"
+                            aria-label="{{ _('Fewer columns') }}"
+                        >
+                            <i class="bi-dash-circle"></i>
+                        </button>
+                        <span id="screen-columns-value" class="screen-columns-value">{{ screen.columns }}</span>
+                        <button
+                            id="screen-columns-plus"
+                            type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            title="{{ _('More columns') }}"
+                            aria-label="{{ _('More columns') }}"
+                        >
+                            <i class="bi-plus-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+            {% if font_size_control %}
+                {% set font_size = screen.font_size or 100 %}
+                <div
+                    id="screen-font-size-panel"
+                    class="screen-control screen-font-size-panel d-flex align-items-stretch"
+                    data-font-size="{{ font_size }}"
+                    data-testid="screen-font-size-panel"
+                >
+                    <button
+                        id="screen-font-size-toggle"
+                        type="button"
+                        class="btn btn-secondary"
+                        title="{{ _('Font size') }}"
+                        aria-label="{{ _('Font size') }}"
+                        aria-controls="screen-font-size-controls"
+                    >
+                        <i class="bi-zoom-in"></i>
+                    </button>
+                    <div id="screen-font-size-controls" class="screen-control-items screen-font-size-controls d-none align-items-center gap-2">
+                        <input
+                            id="screen-font-size-slider"
+                            type="range"
+                            class="form-range"
+                            min="{{ screen.FONT_SIZE_MIN }}"
+                            max="{{ screen.FONT_SIZE_MAX }}"
+                            step="{{ screen.FONT_SIZE_STEP }}"
+                            value="{{ font_size }}"
+                            aria-label="{{ _('Font size') }}"
+                            data-testid="screen-font-size-slider"
+                        >
+                        <span id="screen-font-size-value" class="screen-font-size-value">{{ font_size }}%</span>
+                        <button
+                            id="screen-font-size-reset"
+                            type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            title="{{ _('Reset the font size') }}"
+                            aria-label="{{ _('Reset the font size') }}"
+                        >
+                            <i class="bi-arrow-counterclockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+            {% if timer_control %}
+                {% set current_timer = screen.timer %}
+                <div
+                    id="screen-timer-panel"
+                    class="screen-control screen-timer-panel d-flex align-items-stretch"
+                    data-testid="screen-timer-panel"
+                >
+                    <button
+                        id="screen-timer-toggle"
+                        type="button"
+                        class="btn btn-secondary"
+                        title="{{ _('Timer') }}"
+                        aria-label="{{ _('Timer') }}"
+                        aria-controls="screen-timer-controls"
+                    >
+                        <i class="bi-clock"></i>
+                    </button>
+                    <div id="screen-timer-controls" class="screen-control-items screen-timer-controls d-none align-items-center gap-2">
+                        <select
+                            id="screen-timer-select"
+                            class="form-select form-select-sm"
+                            aria-label="{{ _('Timer') }}"
+                            data-testid="screen-timer-select"
+                        >
+                            <option value=""{% if not current_timer %} selected{% endif %}>{{ _('No timer') }}</option>
+                            {% for timer in user_event.timers|sort(attribute='name') %}
+                                <option value="{{ timer.id }}"{% if current_timer and current_timer.id == timer.id %} selected{% endif %}>{{ timer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            {% endif %}
+                    <button
+                        id="screen-live-save"
+                        type="button"
+                        class="btn btn-primary"
+                        title="{{ _('Save') }}"
+                        aria-label="{{ _('Save') }}"
+                        data-testid="screen-live-save"
+                    >
+                        <i class="bi-floppy-fill"></i>
+                    </button>
+                </div>
+            </div>
+            <script>
+                // Sends a change of the layout to the live update of the
+                // screen: every device showing it, this one included, is then
+                // drawn again with it, and the edit modals open on it show it.
+                window.screenLiveOrigin = window.screenLiveOrigin
+                    || 'screen-' + Math.random().toString(36).slice(2);
+                window.screenLiveSend = (action, values = {}) => {
+                    const panel = document.getElementById('screen-control-panel');
+                    if (!panel) {
+                        return;
+                    }
+                    fetch(panel.dataset.liveUrl + action, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: new URLSearchParams({...values, origin: window.screenLiveOrigin}),
+                    });
+                };
+                // The controls go away as soon as the live update is turned
+                // off; the screen keeps what it shows.
+                function followScreenLiveUpdate(liveEvent) {
+                    const panel = document.getElementById('screen-control-panel');
+                    const detail = liveEvent.detail || {};
+                    if (
+                        panel && !detail.active
+                        && detail.kind === panel.dataset.kind
+                        && detail.target === panel.dataset.target
+                    ) {
+                        panel.remove();
+                    }
+                }
+                // Shows or hides the controls of the screen, hidden at first.
+                // The state lives on window, which the refreshes of the screen
+                // leave alone.
+                function setupScreenControls() {
+                    const controls = document.getElementById('screen-controls');
+                    if (!controls) {
+                        return;
+                    }
+                    const showControls = (open) => {
+                        controls.classList.toggle('d-none', !open);
+                        controls.classList.toggle('d-flex', open);
+                    };
+                    showControls(!!window.screenControlsOpen);
+                    document.getElementById('screen-controls-toggle').onclick = () => {
+                        window.screenControlsOpen = !window.screenControlsOpen;
+                        showControls(window.screenControlsOpen);
+                    };
+                    document.getElementById('screen-live-save').onclick = () => {
+                        window.screenLiveSend('save');
+                    };
+                    const liveEventName = `ws:screen-live|${document.getElementById('screen-control-panel').dataset.event}`;
+                    if (window.screenLiveEventName !== liveEventName) {
+                        if (window.screenLiveEventName) {
+                            document.body.removeEventListener(window.screenLiveEventName, followScreenLiveUpdate);
+                        }
+                        window.screenLiveEventName = liveEventName;
+                        document.body.addEventListener(liveEventName, followScreenLiveUpdate);
+                    }
+                }
+                if (!window.screenControlsListening) {
+                    window.screenControlsListening = true;
+                    document.addEventListener('htmx:afterSettle', setupScreenControls);
+                }
+                setupScreenControls();
+            </script>
+        {% endif %}
+        {% if columns_control and not request.query_params.get('preview') %}
+            <script>
+                // Changes the number of columns of the screen: the screens
+                // showing it, here and elsewhere, are then drawn again with it.
+                function setupScreenColumnsPanel() {
+                    const panel = document.getElementById('screen-columns-panel');
+                    if (!panel) {
+                        return;
+                    }
+                    const controls = document.getElementById('screen-columns-controls');
+                    const value = document.getElementById('screen-columns-value');
+                    const minus = document.getElementById('screen-columns-minus');
+                    const plus = document.getElementById('screen-columns-plus');
+                    const max = parseInt(panel.dataset.max);
+                    const show = (columns) => {
+                        value.textContent = columns;
+                        minus.disabled = columns <= 1;
+                        plus.disabled = columns >= max;
+                    };
+                    const showControls = (open) => {
+                        controls.classList.toggle('d-none', !open);
+                        controls.classList.toggle('d-flex', open);
+                    };
+                    // A refresh drawn before the new number was stored would
+                    // bring the old one back: the pending number is kept until
+                    // it shows.
+                    if (window.screenColumnsPending === panel.dataset.columns) {
+                        window.screenColumnsPending = undefined;
+                    }
+                    let columns = parseInt(window.screenColumnsPending ?? panel.dataset.columns);
+                    show(columns);
+                    showControls(!!window.screenColumnsOpen);
+                    document.getElementById('screen-columns-toggle').onclick = () => {
+                        window.screenColumnsOpen = !window.screenColumnsOpen;
+                        showControls(window.screenColumnsOpen);
+                    };
+                    const change = (delta) => {
+                        columns = Math.min(max, Math.max(1, columns + delta));
+                        show(columns);
+                        window.screenColumnsPending = String(columns);
+                        clearTimeout(window.screenColumnsTimeout);
+                        window.screenColumnsTimeout = setTimeout(() => {
+                            window.screenLiveSend('update', {columns: columns});
+                        }, 300);
+                    };
+                    minus.onclick = () => change(-1);
+                    plus.onclick = () => change(1);
+                }
+                if (!window.screenColumnsListening) {
+                    window.screenColumnsListening = true;
+                    document.addEventListener('htmx:afterSettle', setupScreenColumnsPanel);
+                }
+                setupScreenColumnsPanel();
+            </script>
+        {% endif %}
+        {% if timer_control and not request.query_params.get('preview') %}
+            <script>
+                // Changes the timer the screen shows: the screens showing it,
+                // here and elsewhere, are then drawn again with it.
+                function setupScreenTimerPanel() {
+                    const panel = document.getElementById('screen-timer-panel');
+                    if (!panel) {
+                        return;
+                    }
+                    const controls = document.getElementById('screen-timer-controls');
+                    const select = document.getElementById('screen-timer-select');
+                    const showControls = (open) => {
+                        controls.classList.toggle('d-none', !open);
+                        controls.classList.toggle('d-flex', open);
+                    };
+                    showControls(!!window.screenTimerOpen);
+                    document.getElementById('screen-timer-toggle').onclick = () => {
+                        window.screenTimerOpen = !window.screenTimerOpen;
+                        showControls(window.screenTimerOpen);
+                    };
+                    select.onchange = () => {
+                        window.screenLiveSend('update', {timer_id: select.value});
+                    };
+                }
+                if (!window.screenTimerListening) {
+                    window.screenTimerListening = true;
+                    document.addEventListener('htmx:afterSettle', setupScreenTimerPanel);
+                }
+                setupScreenTimerPanel();
+            </script>
+        {% endif %}
+        {% if font_size_control and not request.query_params.get('preview') %}
+            <script>
+                // Previews the font size at once on this page, then sends it to
+                // the live update when the slider is released: the screens
+                // showing it, here and elsewhere, are then drawn again with it. The state lives on
+                // window, which the refreshes of the screen leave alone.
+                function setupScreenFontSizePanel() {
+                    const panel = document.getElementById('screen-font-size-panel');
+                    if (!panel) {
+                        return;
+                    }
+                    const slider = document.getElementById('screen-font-size-slider');
+                    const value = document.getElementById('screen-font-size-value');
+                    const controls = document.getElementById('screen-font-size-controls');
+                    const preview = (fontSize) => {
+                        slider.value = fontSize;
+                        value.textContent = fontSize + '%';
+                        document.getElementById('user-screen-content')
+                            ?.style.setProperty('--font-size', fontSize);
+                    };
+                    const store = (fontSize) => {
+                        window.screenFontSizePending = String(fontSize);
+                        clearTimeout(window.screenFontSizeTimeout);
+                        window.screenFontSizeTimeout = setTimeout(() => {
+                            window.screenLiveSend('update', {font_size: fontSize});
+                        }, 300);
+                    };
+                    const showControls = (open) => {
+                        controls.classList.toggle('d-none', !open);
+                        controls.classList.toggle('d-flex', open);
+                    };
+                    // A refresh drawn before the new size was stored would bring
+                    // the old one back: the pending size is kept until it shows.
+                    if (window.screenFontSizePending === panel.dataset.fontSize) {
+                        window.screenFontSizePending = undefined;
+                    } else if (window.screenFontSizePending !== undefined) {
+                        preview(window.screenFontSizePending);
+                    }
+                    showControls(!!window.screenFontSizeOpen);
+                    document.getElementById('screen-font-size-toggle').onclick = () => {
+                        window.screenFontSizeOpen = !window.screenFontSizeOpen;
+                        showControls(window.screenFontSizeOpen);
+                    };
+                    slider.oninput = () => preview(slider.value);
+                    slider.onchange = () => store(slider.value);
+                    document.getElementById('screen-font-size-reset').onclick = () => {
+                        preview(100);
+                        store(100);
+                    };
+                }
+                if (!window.screenFontSizeListening) {
+                    window.screenFontSizeListening = true;
+                    document.addEventListener('htmx:afterSettle', setupScreenFontSizePanel);
+                }
+                setupScreenFontSizePanel();
+            </script>
+        {% endif %}
         {% set refresh_conditions = "modalIsClosed()" ~ (" && document.visibilityState === 'visible'" if not DEVEL_ENV else '') %}
         {% set becomes_visible = "visibilitychange[" ~ refresh_conditions ~ "] from:document," if not DEVEL_ENV else '' %}
         {% set reconnected = 'screen-refresh[' ~ refresh_conditions ~ '] from:body, ' %}

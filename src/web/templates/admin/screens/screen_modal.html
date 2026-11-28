@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block body %}
+{% import '/admin/screens/screen_form_controls.j2' as screen_form_controls with context %}
             {% with screen_kind_type=screen_type, screen_kind_paged=false %}
                 {% include '/admin/screens/screen_kind_switch.html' %}
             {% endwith %}
@@ -88,9 +89,9 @@
                                 ) }}
                             </div>
                         {% endif %}
-                        {% if not screen_type.has_config_fields %}
+                        {% with destination_field_class='col-12' %}
                             {% include '/admin/display_controllers/destination_field.html' %}
-                        {% endif %}
+                        {% endwith %}
                     </div>
 
                     {% set timer_field %}
@@ -107,6 +108,16 @@
                         {% endif %}
                     {% endset %}
 
+                    {# The screens without the general configuration fields (the
+                       image screens) show their own fields in a section of
+                       their own. #}
+                    {% if not screen_type.has_config_fields %}
+                        {% if live_update %}
+                            {% include '/admin/screens/live_update_switch.html' %}
+                        {% else %}
+                            {{ components.section_heading(_('Layout')) }}
+                        {% endif %}
+                    {% endif %}
                     {% if screen_type.form_template %}
                         {% include screen_type.form_template %}
                     {% endif %}
@@ -118,27 +129,24 @@
                     {% endif %}
 
                     {% if screen_type.has_config_fields %}
-                        {{ components.section_heading(_('Layout')) }}
+                        {% if live_update %}
+                            {% include '/admin/screens/live_update_switch.html' %}
+                        {% else %}
+                            {{ components.section_heading(_('Layout')) }}
+                        {% endif %}
                         <div class="row gy-2 gx-3">
-                            {% with destination_field_class='col-12' %}
-                                {% include '/admin/display_controllers/destination_field.html' %}
-                            {% endwith %}
                             {% if screen_type.multi_column_allowed %}
                                 <div class="col-12 col-md-6">
-                                    {{ admin_macros.number_input(
-                                        name='columns',
+                                    {{ screen_form_controls.columns_input(
                                         label=_('%(string)s:', string=_('Columns')),
-                                        placeholder=_('E.g.: %(num)d', num=2),
                                         tooltip_text=_('The number of columns used to display data.'),
                                         data=data, errors=errors
                                     ) }}
                                 </div>
                             {% endif %}
                             <div class="col-12 col-md-6">
-                                {{ admin_macros.number_input(
-                                    name='font_size',
-                                    label=_('Font size adjustment (%%):'),
-                                    placeholder=100,
+                                {{ screen_form_controls.font_size_input(
+                                    label=_('%(string)s:', string=_('Font size')),
                                     data=data, errors=errors
                                 ) }}
                             </div>

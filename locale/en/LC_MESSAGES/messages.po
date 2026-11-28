@@ -1339,6 +1339,10 @@ msgstr ""
 msgid "An error occurred. Consult the logs for more details."
 msgstr ""
 
+#, python-brace-format
+msgid "An integer between {min} and {max} is expected."
+msgstr ""
+
 msgid "An integer greater than 1 is expected."
 msgstr ""
 
@@ -4625,6 +4629,9 @@ msgstr ""
 msgid "Fetch from a data source"
 msgstr ""
 
+msgid "Fewer columns"
+msgstr ""
+
 #, python-brace-format
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
@@ -4757,8 +4764,7 @@ msgstr ""
 msgid "Font"
 msgstr ""
 
-#, python-format
-msgid "Font size adjustment (%%):"
+msgid "Font size"
 msgstr ""
 
 msgid "For best results, make the groups equal in size — ideally a power-of-two number of players each (2, 4, 8, 16…) — so the bracket needs no byes."
@@ -6015,6 +6021,9 @@ msgstr ""
 msgid "Lithuania"
 msgstr ""
 
+msgid "Live update"
+msgstr ""
+
 msgid "Loading more results…"
 msgstr ""
 
@@ -6541,6 +6550,9 @@ msgid "Montenegro"
 msgstr ""
 
 msgid "More"
+msgstr ""
+
+msgid "More columns"
 msgstr ""
 
 msgid "Morocco"
@@ -9512,6 +9524,9 @@ msgstr ""
 msgid "Reset the absent/present status of all the teams."
 msgstr ""
 
+msgid "Reset the font size"
+msgstr ""
+
 msgid "Reset zoom"
 msgstr ""
 
@@ -10188,6 +10203,9 @@ msgid "Screen [{screen}]"
 msgstr ""
 
 msgid "Screen configuration has been updated."
+msgstr ""
+
+msgid "Screen controls"
 msgstr ""
 
 msgid "Screen settings"
@@ -11534,6 +11552,9 @@ msgid "The device opens Sharly Chess over the same network: type this computer's
 msgstr ""
 
 msgid "The devices"
+msgstr ""
+
+msgid "The devices currently showing the screen update automatically in real time with your changes. The changes are only final when you click the Save button."
 msgstr ""
 
 msgid "The director is the person in charge of the event."
@@ -13533,6 +13554,9 @@ msgstr ""
 msgid "Update the ratings"
 msgstr ""
 
+msgid "Update the screen in real time on the devices currently showing it."
+msgstr ""
+
 msgid "Update tournaments"
 msgstr ""
 
@@ -14228,6 +14252,9 @@ msgid "You are trying to manually edit the pairings of the current round. Pairin
 msgstr ""
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
+msgstr ""
+
+msgid "You can also adjust the layout directly on the devices that show the screen."
 msgstr ""
 
 msgid "You can ask the administrator for permission to access the event screens."

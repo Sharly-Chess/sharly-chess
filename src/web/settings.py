@@ -42,6 +42,7 @@ from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.exception import DatabaseInaccessibleException
 from common.i18n import gettext, ngettext, npgettext, pgettext
 from common.i18n.utils import ordinal_suffixes
+from data.screens.screen import Screen
 from data.input_output import OnlineDataSourceManager
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 
@@ -361,6 +362,8 @@ class SharlyChessEnvironment(Environment):
         self.filters['compact_html'] = compact_html
         self.globals['tooltip_attributes_markup'] = tooltip_attributes
         self.globals['player_record_marks'] = player_record_marks
+        # The bounds of the font size and of the columns of the screens.
+        self.globals['Screen'] = Screen
 
     def join_path(self, template: str, parent: str) -> str:
         return _joined_template_path(template, parent)

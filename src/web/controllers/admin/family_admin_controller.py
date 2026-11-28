@@ -12,6 +12,7 @@ from litestar_htmx import HTMXTemplate
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
+from data.screens.screen import Screen
 from data.screens.family import Family
 from utils import Utils
 from utils.enum import BoardSelectionMode
@@ -23,7 +24,10 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.admin.screen_admin_controller import ScreenAdminRenderer
+from web.controllers.admin.screen_admin_controller import (
+    ScreenAdminController,
+    ScreenAdminRenderer,
+)
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
 from web.messages import Message
@@ -149,9 +153,27 @@ class FamilyAdminController(BaseEventAdminController):
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 field = 'columns'
-                columns = WebContext.read_int_field(data, field, errors, minimum=1)
+                columns = WebContext.read_int_field(
+                    data,
+                    field,
+                    errors,
+                    minimum=Screen.COLUMNS_MIN,
+                    maximum=Screen.COLUMNS_MAX,
+                    message=_('An integer between {min} and {max} is expected.').format(
+                        min=Screen.COLUMNS_MIN, max=Screen.COLUMNS_MAX
+                    ),
+                )
                 field = 'font_size'
-                font_size = WebContext.read_int_field(data, field, errors, minimum=1)
+                font_size = WebContext.read_int_field(
+                    data,
+                    field,
+                    errors,
+                    minimum=Screen.FONT_SIZE_MIN,
+                    maximum=Screen.FONT_SIZE_MAX,
+                    message=_('An integer between {min} and {max} is expected.').format(
+                        min=Screen.FONT_SIZE_MIN, max=Screen.FONT_SIZE_MAX
+                    ),
+                )
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 field = 'timer_id'
                 timer_id = WebContext.read_int_field(data, field, errors)
@@ -318,8 +340,11 @@ class FamilyAdminController(BaseEventAdminController):
                     form_values: dict[str, Any]
                     match action:
                         case 'update':
+                            admin_family = web_context.get_admin_family()
                             form_values = cls.family_form_values(
-                                web_context.get_admin_family()
+                                admin_family
+                            ) | ScreenAdminRenderer.live_form_overrides(
+                                event.uniq_id, 'family', admin_family.uniq_id
                             )
                         case 'clone':
                             family = web_context.get_admin_family()
@@ -366,6 +391,15 @@ class FamilyAdminController(BaseEventAdminController):
                     'timer_options': cls._get_timer_options(event),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'family_uniq_ids': list(event.families_by_uniq_id.keys()),
+                    **(
+                        ScreenAdminRenderer.live_update_context(
+                            'family',
+                            web_context.get_admin_family().uniq_id,
+                            event.uniq_id,
+                        )
+                        if action == 'update'
+                        else {}
+                    ),
                     **cls._display_controller_destination_context(event),
                     'players_player_format_options': web_context.get_players_screen_player_format_options(),
                     'players_board_format_options': web_context.get_players_screen_board_format_options(),
@@ -498,6 +532,9 @@ class FamilyAdminController(BaseEventAdminController):
                 case 'update':
                     stored_family = event_database.update_stored_family(stored_family)
                     assert stored_family.id is not None
+                    ScreenAdminController.end_live_layout_on_save(
+                        event_database.uniq_id, 'family', stored_family
+                    )
                     event_database.set_stored_family_display_controllers(
                         stored_family.id, display_controller_ids
                     )

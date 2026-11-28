@@ -1,0 +1,200 @@
+{#- The heading of the layout of the edit modal of a screen or of a
+    multi-screen, with the switch of its live update on its right: while it
+    is on, the devices that show the screen show the layout and the alert
+    message of the modal at once, without them being stored, and the controls
+    shown on the screens change the fields of the modal (see
+    data.screens.live_layout). Needs `live_update`, given by the controller
+    to the modals of an update only. -#}
+<div
+    class="screen-live-update"
+    data-url="{{ url_for('admin-screen-live', event_uniq_id=admin_event.uniq_id, target_kind=live_update.kind, target_uniq_id=live_update.target, live_action='-')[:-1] }}"
+    data-event="{{ admin_event.uniq_id }}"
+    data-kind="{{ live_update.kind }}"
+    data-target="{{ live_update.target }}"
+    data-testid="screen-live-update"
+>
+    <div class="sc-section-heading-bar">
+        {{ components.section_heading(_('Layout')) }}
+        {{ admin_macros.switch_input(
+            name='live_update',
+            placeholder=_('Live update'),
+            tooltip_text=_('Update the screen in real time on the devices currently showing it.'),
+            data={'live_update': 'on' if live_update.on else ''},
+        ) }}
+    </div>
+    <div class="screen-live-update-notes mb-3{% if not live_update.on %} d-none{% endif %}">
+        {% call components.note('info', compact=true) %}
+            <p class="mb-1">{{ _('The devices currently showing the screen update automatically in real time with your changes. The changes are only final when you click the Save button.') }}</p>
+            <p class="mb-0">{{ _('You can also adjust the layout directly on the devices that show the screen.') }}</p>
+        {% endcall %}
+    </div>
+</div>
+<script>
+    (() => {
+        const block = document.currentScript.previousElementSibling;
+        const form = block.closest('form');
+        const toggle = block.querySelector('input[name="live_update"]');
+        const notes = block.querySelector('.screen-live-update-notes');
+        const {url, event, kind, target} = block.dataset;
+        // The messages this modal sends come back to it: it knows them by
+        // their origin.
+        const origin = 'modal-' + Math.random().toString(36).slice(2);
+        const LAYOUT_FIELDS = [
+            'columns', 'font_size', 'timer_id', 'background_image',
+            'background_image_upload', 'background_blurred', 'background_color',
+            'background_color_checkbox', 'message_text', 'message_text_checkbox',
+        ];
+        const field = (name) => form.querySelector(`[name="${name}"]`);
+        let applying = false;
+        let submitting = false;
+        let timeout = null;
+
+        // The layout shown by the fields of the modal.
+        const layoutValues = () => {
+            const values = {};
+            for (const name of ['columns', 'font_size', 'timer_id']) {
+                if (field(name)) {
+                    values[name] = field(name).value;
+                }
+            }
+            if (field('background_image')) {
+                values.background_image = field('background_image_upload')?.value
+                    || field('background_image').value.trim();
+            }
+            if (field('background_blurred')) {
+                values.background_blurred = field('background_blurred').checked ? 'on' : '';
+            }
+            if (field('background_color')) {
+                values.background_color = field('background_color_checkbox')?.checked
+                    ? '' : field('background_color').value;
+            }
+            // The text of a default message is kept: it is not shown.
+            if (field('message_text')) {
+                const useDefault = field('message_text_checkbox');
+                values.message_text_checkbox = useDefault?.checked ? 'on' : '';
+                if (!useDefault?.checked) {
+                    values.message_text = field('message_text').value;
+                }
+            }
+            return values;
+        };
+        const send = (action, values = {}) => {
+            const body = new URLSearchParams({...values, origin});
+            return fetch(url + action, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body,
+            });
+        };
+        const showNotes = (on) => notes.classList.toggle('d-none', !on);
+
+        toggle.addEventListener('change', () => {
+            showNotes(toggle.checked);
+            if (toggle.checked) {
+                send('start', layoutValues());
+            } else {
+                send('stop');
+            }
+        });
+
+        // A change of the layout is shown at once on the screens; a URL is
+        // sent once typed, not at each key, and a message after a pause.
+        $(form).on('input change', '[name]', function (changeEvent) {
+            if (!toggle.checked || applying || !LAYOUT_FIELDS.includes(this.name)) {
+                return;
+            }
+            if (this.name === 'background_image' && changeEvent.type === 'input') {
+                return;
+            }
+            const delay = this.name === 'message_text' && changeEvent.type === 'input'
+                ? 600 : 200;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => send('update', layoutValues()), delay);
+        });
+
+        // The layout changed elsewhere (in another modal or with the controls
+        // of a screen) is shown by the fields.
+        const fire = (element, ...types) => types.forEach(
+            (type) => element.dispatchEvent(new Event(type, {bubbles: true}))
+        );
+        const apply = (values) => {
+            if ('columns' in values && field('columns')) {
+                field('columns').value = values.columns || field('columns').min;
+                fire(field('columns'), 'input');
+            }
+            if ('font_size' in values && field('font_size')) {
+                field('font_size').value = values.font_size || 100;
+                fire(field('font_size'), 'input');
+            }
+            if ('timer_id' in values && field('timer_id')) {
+                $(field('timer_id')).val(values.timer_id).trigger('change');
+            }
+            if ('background_image' in values && field('background_image')) {
+                field('background_image').value = values.background_image;
+                if (field('background_image_upload')) {
+                    field('background_image_upload').value = '';
+                    fire(field('background_image_upload'), 'change');
+                }
+                fire(field('background_image'), 'input');
+            }
+            if ('background_blurred' in values && field('background_blurred')) {
+                field('background_blurred').checked = values.background_blurred;
+                fire(field('background_blurred'), 'change');
+            }
+            if ('background_color' in values && field('background_color')) {
+                const useDefault = field('background_color_checkbox');
+                if (useDefault && useDefault.checked !== !values.background_color) {
+                    useDefault.click();
+                }
+                if (values.background_color) {
+                    field('background_color').value = values.background_color;
+                    fire(field('background_color'), 'input');
+                }
+            }
+            if ('message_text_checkbox' in values && field('message_text')) {
+                const useDefault = field('message_text_checkbox');
+                if (useDefault && useDefault.checked !== values.message_text_checkbox) {
+                    useDefault.click();
+                }
+            }
+            if ('message_text' in values && field('message_text')
+                && !field('message_text_checkbox')?.checked) {
+                field('message_text').value = values.message_text;
+            }
+        };
+        const eventName = `ws:screen-live|${event}`;
+        const onLive = (liveEvent) => {
+            if (!document.body.contains(block)) {
+                document.body.removeEventListener(eventName, onLive);
+                return;
+            }
+            const detail = liveEvent.detail || {};
+            if (detail.kind !== kind || detail.target !== target || detail.origin === origin) {
+                return;
+            }
+            applying = true;
+            try {
+                toggle.checked = detail.active;
+                showNotes(detail.active);
+                apply(detail.values || {});
+            } finally {
+                applying = false;
+            }
+        };
+        document.body.addEventListener(eventName, onLive);
+
+        // Saving stores the layout and ends the live update; closing the
+        // modal without saving brings the stored layout back on the screens.
+        form.addEventListener('htmx:beforeRequest', () => {
+            submitting = true;
+        });
+        const cancel = () => {
+            if (toggle.checked && !submitting && document.body.contains(block)) {
+                toggle.checked = false;
+                navigator.sendBeacon(url + 'cancel', new URLSearchParams({origin}));
+            }
+        };
+        $('#modal-wrapper').one('hide.bs.modal', cancel);
+        window.addEventListener('pagehide', cancel, {once: true});
+    })();
+</script>
