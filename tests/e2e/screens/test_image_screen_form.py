@@ -79,10 +79,13 @@ class TestImageScreenFormBackground:
         """A blur carries the image itself, so no colour is chosen and none
         is read from the image."""
         modal = self._open_creation_form(page)
-        modal.locator('[name="background_image"]').fill(IMAGE_URL)
+        TestUtils.fill_and_confirm(
+            modal.locator('[name="background_image"]'), IMAGE_URL
+        )
         use_default = modal.locator('[name="background_color_checkbox"]')
         color = modal.locator('[name="background_color"]')
         from_image = modal.locator('#background-color-from-image')
+        expect(use_default).to_be_enabled()
         use_default.uncheck()
         expect(color).to_be_enabled()
         blurred = modal.locator('[name="background_blurred"]')

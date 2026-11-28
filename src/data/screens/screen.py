@@ -121,6 +121,20 @@ class Screen:
         return self.family.public
 
     @property
+    def remote(self) -> bool:
+        """Whether this screen may be reached from outside the venue.
+
+        Apart from `public`, which says who may look rather than from where: a
+        public screen kept off the internet still asks nothing of whoever opens
+        it on the venue's own network.
+        """
+        if self.stored_screen:
+            return self.stored_screen.remote
+        if self.family is None:
+            raise RuntimeError('Family reference unexpectedly None')
+        return self.family.remote
+
+    @property
     def uniq_id(self) -> str:
         if self.stored_screen:
             return self.stored_screen.uniq_id

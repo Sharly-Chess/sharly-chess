@@ -131,6 +131,7 @@ class FamilyAdminController(BaseEventAdminController):
         type_values: dict[str, Any] = {}
         name = WebContext.form_data_to_str(data, 'name')
         public = WebContext.form_data_to_bool(data, 'public')
+        remote = WebContext.form_data_to_bool(data, 'remote')
         match action:
             case 'create' | 'clone' | 'update':
                 field = 'tournament_id'
@@ -241,6 +242,7 @@ class FamilyAdminController(BaseEventAdminController):
             uniq_id=uniq_id,
             type=type_,
             public=bool(public),
+            remote=bool(remote),
             tournament_id=tournament_id,
             name=name,
             columns=columns,
@@ -265,6 +267,7 @@ class FamilyAdminController(BaseEventAdminController):
         stored_family = family.stored_family
         return {
             'public': stored_family.public,
+            'remote': stored_family.remote,
             'name': stored_family.name,
             'tournament_id': stored_family.tournament_id,
             'columns': stored_family.columns,
@@ -340,6 +343,7 @@ class FamilyAdminController(BaseEventAdminController):
                             type_values = create_type.create_form_data(event)
                             form_values = {
                                 'public': True,
+                                'remote': False,
                                 'tournament_id': next(
                                     iter(event.tournaments_by_id.keys())
                                 ),

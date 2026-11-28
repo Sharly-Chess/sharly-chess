@@ -355,26 +355,35 @@ class Menu:
                     screens.append(screen)
         return screens
 
-    def screens_for(self, include_private: bool) -> list[Screen]:
-        """The screens a viewer can reach through this menu."""
+    def screens_for(self, include_private: bool, *, remote: bool) -> list[Screen]:
+        """The screens a viewer can reach through this menu.
+
+        A viewer from the internet is offered only what is served there: a link
+        that answers nothing reads as a broken tournament rather than as a
+        screen somebody chose to keep on the venue's own network.
+        """
         screens = self.resolved_screens()
-        if include_private:
-            return screens
-        return [screen for screen in screens if screen.public]
+        if not include_private:
+            screens = [screen for screen in screens if screen.public]
+        if remote:
+            screens = [screen for screen in screens if screen.remote]
+        return screens
 
     def nav_entries(
-        self, current_screen: Screen, include_private: bool
+        self, current_screen: Screen, include_private: bool, *, remote: bool
     ) -> list[MenuNavEntry]:
         """The navigation bar, when there is somewhere to go."""
-        screens = self.screens_for(include_private)
+        screens = self.screens_for(include_private, remote=remote)
         if len(screens) < 2:
             return []
         return group_menu_nav_entries(screens, self, current_screen)
 
-    def screen_indexes(self, include_private: bool) -> dict[str, int]:
+    def screen_indexes(self, include_private: bool, *, remote: bool) -> dict[str, int]:
         return {
             screen.uniq_id: index
-            for index, screen in enumerate(self.screens_for(include_private))
+            for index, screen in enumerate(
+                self.screens_for(include_private, remote=remote)
+            )
         }
 
     def _get_menu_items_by_id(self) -> dict[int, MenuItem]:
