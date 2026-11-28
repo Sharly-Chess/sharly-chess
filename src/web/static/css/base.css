@@ -4670,11 +4670,31 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     font-weight: 600;
 }
 
+/* A heading with a control on its right, such as a switch. */
+.sc-section-heading-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1.5rem;
+    row-gap: 0.25rem;
+    margin: 0 0 1rem;
+}
+
+.sc-section-heading-bar > .sc-section-heading {
+    margin: 0;
+}
+
+.sc-section-heading-bar > .input-block {
+    width: auto;
+}
+
 /* Space above a heading that follows content: hidden inputs, scripts and
    styles show nothing, so a heading after them alone opens its container. */
 :is(
     :not(input[type=hidden], script, style) + .sc-section-heading,
     :not(input[type=hidden], script, style) + script + .sc-section-heading,
+    :not(input[type=hidden], script, style) + .screen-live-update,
+    :not(input[type=hidden], script, style) + script + .screen-live-update,
     * + form > .sc-section-heading:first-child
 ) {
     margin-top: 1.5rem;

@@ -112,7 +112,11 @@
                        image screens) show their own fields in a section of
                        their own. #}
                     {% if not screen_type.has_config_fields %}
-                        {{ components.section_heading(_('Layout')) }}
+                        {% if live_update %}
+                            {% include '/admin/screens/live_update_switch.html' %}
+                        {% else %}
+                            {{ components.section_heading(_('Layout')) }}
+                        {% endif %}
                     {% endif %}
                     {% if screen_type.form_template %}
                         {% include screen_type.form_template %}
@@ -125,7 +129,11 @@
                     {% endif %}
 
                     {% if screen_type.has_config_fields %}
-                        {{ components.section_heading(_('Layout')) }}
+                        {% if live_update %}
+                            {% include '/admin/screens/live_update_switch.html' %}
+                        {% else %}
+                            {{ components.section_heading(_('Layout')) }}
+                        {% endif %}
                         <div class="row gy-2 gx-3">
                             {% if screen_type.multi_column_allowed %}
                                 <div class="col-12 col-md-6">

@@ -1,10 +1,6 @@
-"""The control that changes the number of columns of a screen, from the
-screen itself.
-
-It is offered to the clients that manage the screens on the screens whose
-edit form offers the columns (neither the image screens nor the Chess960
-ones), and only they may use it: the columns are stored on the screen, or
-on its family when the screen is part of one.
+"""The columns and the font size of the edit forms of the screens, and the
+screen types whose columns cannot be set (neither the image screens nor
+the Chess960 ones).
 """
 
 import re
@@ -16,7 +12,6 @@ from litestar.testing import TestClient
 
 from data.screens.screen import Screen
 from data.screens.screen_types import ImageScreenType, RoundRobinGridScreenType
-from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen
 from plugins.chess960.screen_type import Chess960ScreenType
 from tests.test_config import ScreenType, TestUtils
@@ -71,96 +66,11 @@ def event(api: ApiClient) -> Iterator[Fixtures]:
     EVENT.delete()
 
 
-def screen_columns(screen_id: int) -> int | None:
-    with EventDatabase(EVENT_ID) as database:
-        return next(
-            stored.columns
-            for stored in database.load_stored_screens()
-            if stored.id == screen_id
-        )
-
-
-def set_columns(client: TestClient, screen_uniq_id: str, columns: object):
-    return client.patch(
-        f'/screen-columns/{EVENT_ID}/{screen_uniq_id}',
-        data={'columns': str(columns)},
-        follow_redirects=False,
-    )
-
-
-def assert_refused(response, status_code: int) -> None:
-    """The application answers an error with a redirection to its page."""
-    assert response.status_code == 302
-    assert response.headers['location'].endswith(f'/error/{status_code}')
-
-
-@pytest.mark.unit
-def test_the_columns_of_a_screen_are_stored_and_shown(
-    http: TestClient, event: Fixtures
-):
-    screen = event.screen
-    assert screen.id is not None
-    page = http.get(f'/view/screen/{EVENT_ID}/{screen.uniq_id}')
-    assert page.status_code == 200
-    assert PANEL in page.text
-    for icon in ('bi-layout-three-columns', 'bi-dash-circle', 'bi-plus-circle'):
-        assert icon in page.text
-
-    assert set_columns(http, screen.uniq_id, 3).status_code == 204
-    assert screen_columns(screen.id) == 3
-    page = http.get(f'/view/screen/{EVENT_ID}/{screen.uniq_id}')
-    assert 'data-columns="3"' in page.text
-
-
-@pytest.mark.unit
-def test_the_columns_of_a_family_screen_are_stored_on_the_family(
-    http: TestClient, event: Fixtures
-):
-    assert set_columns(http, f'{FAMILY_ID}:001', 2).status_code == 204
-    assert EVENT.load().families_by_id[event.family_id].columns == 2
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize('columns', [0, Screen.COLUMNS_MAX + 1, 'abc', ''])
-def test_a_number_of_columns_out_of_bounds_is_refused(
-    http: TestClient, event: Fixtures, columns: object
-):
-    screen = event.screen
-    assert screen.id is not None
-    before = screen_columns(screen.id)
-    assert_refused(set_columns(http, screen.uniq_id, columns), 400)
-    assert screen_columns(screen.id) == before
-
-
-@pytest.mark.unit
-def test_an_image_screen_has_no_columns_control(http: TestClient, event: Fixtures):
-    screen = event.image_screen
-    assert screen.id is not None
-    page = http.get(f'/view/screen/{EVENT_ID}/{screen.uniq_id}')
-    assert page.status_code == 200
-    assert PANEL not in page.text
-    assert_refused(set_columns(http, screen.uniq_id, 2), 400)
-
-
 @pytest.mark.unit
 def test_the_screen_types_without_columns():
     assert not ImageScreenType().columns_adjustable
     assert not Chess960ScreenType().columns_adjustable
     assert not RoundRobinGridScreenType().columns_adjustable
-
-
-@pytest.mark.unit
-def test_a_visitor_is_neither_offered_the_control_nor_allowed_to_use_it(
-    lan: TestClient, event: Fixtures
-):
-    screen = event.screen
-    assert screen.id is not None
-    page = lan.get(f'/view/screen/{EVENT_ID}/{screen.uniq_id}')
-    assert page.status_code == 200
-    assert PANEL not in page.text
-    before = screen_columns(screen.id)
-    assert_refused(set_columns(lan, screen.uniq_id, 4), 403)
-    assert screen_columns(screen.id) == before
 
 
 def field_error(page: str, field_id: str) -> str | None:

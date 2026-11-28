@@ -2,12 +2,13 @@ import weakref
 from collections.abc import Collection
 from datetime import datetime
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from _weakref import ReferenceType
 
 from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
+from data.screens.live_layout import live_key, live_layout, live_value
 from data.screens.screen_set import ScreenSet, format_range
 from data.screens.timer import Timer
 from plugins.utils import PluginData
@@ -177,10 +178,36 @@ class Screen:
             if display_controller.shows_family_page(self.family, self.family_part)
         ]
 
+    def _live(self, field: str, default: Any) -> Any:
+        """The value of *field* shown while the live update of this screen is
+        on, *default* otherwise (see `data.screens.live_layout`)."""
+        assert self.stored_screen is not None
+        return live_value(
+            self.event.uniq_id,
+            live_key('screen', self.stored_screen.uniq_id),
+            field,
+            default,
+        )
+
+    @property
+    def live_target(self) -> tuple[str, str]:
+        """Whose live update this screen follows: its own (``'screen'``), or
+        that of its family (``'family'``), with the uniq ID of either."""
+        if self.stored_screen:
+            return 'screen', self.stored_screen.uniq_id
+        if self.family is None:
+            raise RuntimeError('Family reference unexpectedly None')
+        return 'family', self.family.uniq_id
+
+    @property
+    def live_update_on(self) -> bool:
+        """Whether the live update this screen follows is on."""
+        return live_layout(self.event.uniq_id, live_key(*self.live_target)) is not None
+
     @property
     def columns(self) -> int:
         if self.stored_screen:
-            return self.stored_screen.columns or 1
+            return self._live('columns', self.stored_screen.columns) or 1
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.columns
@@ -188,7 +215,7 @@ class Screen:
     @property
     def font_size(self) -> int | None:
         if self.stored_screen:
-            return self.stored_screen.font_size
+            return self._live('font_size', self.stored_screen.font_size)
         if self.family:
             return self.family.font_size
         return None
@@ -315,13 +342,13 @@ class Screen:
     def timer(self) -> Timer | None:
         timer_id: int | None
         if self.stored_screen:
-            timer_id = self.stored_screen.timer_id
+            timer_id = self._live('timer_id', self.stored_screen.timer_id)
         elif self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         else:
             timer_id = self.family.timer_id
 
-        return self.event.timers_by_id[timer_id] if timer_id else None
+        return self.event.timers_by_id.get(timer_id) if timer_id else None
 
     def set_timer(self, timer_id: int | None) -> None:
         assert self.stored_screen is not None
@@ -392,24 +419,50 @@ class Screen:
 
     @property
     def background_image(self) -> str:
-        if self.stored_screen and self.stored_screen.background_image:
-            return self.stored_screen.background_image
+        if self.stored_screen:
+            return (
+                self._live('background_image', self.stored_screen.background_image)
+                or ''
+            )
         return ''
 
     @cached_property
+    def _stored_background_url(self) -> str:
+        return inline_image_url(
+            self.stored_screen.background_image if self.stored_screen else ''
+        )
+
+    @property
     def background_url(self) -> str:
-        return inline_image_url(self.background_image)
+        if self.stored_screen and self.background_image != (
+            self.stored_screen.background_image or ''
+        ):
+            # An image shown by the live update, not worth caching.
+            return inline_image_url(self.background_image)
+        return self._stored_background_url
 
     @property
     def background_color(self) -> str:
-        if self.stored_screen and self.stored_screen.background_color:
-            return self.stored_screen.background_color
+        if self.stored_screen:
+            color = self._live('background_color', self.stored_screen.background_color)
+            if color:
+                return color
         return self.event.background_color
+
+    @property
+    def background_blurred(self) -> bool:
+        if self.stored_screen:
+            return bool(
+                self._live('background_blurred', self.stored_screen.background_blurred)
+            )
+        return False
 
     @property
     def message_default(self) -> bool:
         if self.stored_screen:
-            return self.stored_screen.message_default
+            return bool(
+                self._live('message_default', self.stored_screen.message_default)
+            )
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.message_default
@@ -419,7 +472,7 @@ class Screen:
         if self.message_default:
             return self.event.message_text
         if self.stored_screen:
-            return self.stored_screen.message_text
+            return self._live('message_text', self.stored_screen.message_text)
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.message_text

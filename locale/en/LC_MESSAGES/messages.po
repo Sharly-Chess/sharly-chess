@@ -6021,6 +6021,9 @@ msgstr ""
 msgid "Lithuania"
 msgstr ""
 
+msgid "Live update"
+msgstr ""
+
 msgid "Loading more results…"
 msgstr ""
 
@@ -11551,6 +11554,9 @@ msgstr ""
 msgid "The devices"
 msgstr ""
 
+msgid "The devices currently showing the screen update automatically in real time with your changes. The changes are only final when you click the Save button."
+msgstr ""
+
 msgid "The director is the person in charge of the event."
 msgstr ""
 
@@ -13548,6 +13554,9 @@ msgstr ""
 msgid "Update the ratings"
 msgstr ""
 
+msgid "Update the screen in real time on the devices currently showing it."
+msgstr ""
+
 msgid "Update tournaments"
 msgstr ""
 
@@ -14243,6 +14252,9 @@ msgid "You are trying to manually edit the pairings of the current round. Pairin
 msgstr ""
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
+msgstr ""
+
+msgid "You can also adjust the layout directly on the devices that show the screen."
 msgstr ""
 
 msgid "You can ask the administrator for permission to access the event screens."

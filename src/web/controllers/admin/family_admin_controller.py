@@ -24,7 +24,10 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.admin.screen_admin_controller import ScreenAdminRenderer
+from web.controllers.admin.screen_admin_controller import (
+    ScreenAdminController,
+    ScreenAdminRenderer,
+)
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
 from web.messages import Message
@@ -337,8 +340,11 @@ class FamilyAdminController(BaseEventAdminController):
                     form_values: dict[str, Any]
                     match action:
                         case 'update':
+                            admin_family = web_context.get_admin_family()
                             form_values = cls.family_form_values(
-                                web_context.get_admin_family()
+                                admin_family
+                            ) | ScreenAdminRenderer.live_form_overrides(
+                                event.uniq_id, 'family', admin_family.uniq_id
                             )
                         case 'clone':
                             family = web_context.get_admin_family()
@@ -385,6 +391,15 @@ class FamilyAdminController(BaseEventAdminController):
                     'timer_options': cls._get_timer_options(event),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'family_uniq_ids': list(event.families_by_uniq_id.keys()),
+                    **(
+                        ScreenAdminRenderer.live_update_context(
+                            'family',
+                            web_context.get_admin_family().uniq_id,
+                            event.uniq_id,
+                        )
+                        if action == 'update'
+                        else {}
+                    ),
                     **cls._display_controller_destination_context(event),
                     'players_player_format_options': web_context.get_players_screen_player_format_options(),
                     'players_board_format_options': web_context.get_players_screen_board_format_options(),
@@ -517,6 +532,9 @@ class FamilyAdminController(BaseEventAdminController):
                 case 'update':
                     stored_family = event_database.update_stored_family(stored_family)
                     assert stored_family.id is not None
+                    ScreenAdminController.end_live_layout_on_save(
+                        event_database.uniq_id, 'family', stored_family
+                    )
                     event_database.set_stored_family_display_controllers(
                         stored_family.id, display_controller_ids
                     )

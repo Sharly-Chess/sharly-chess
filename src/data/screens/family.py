@@ -3,10 +3,11 @@ import weakref
 from datetime import datetime
 from functools import cached_property
 from math import ceil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from _weakref import ReferenceType
 
 from common.i18n import _
+from data.screens.live_layout import live_key, live_value
 from data.screens.screen import Screen
 from data.screens.screen_set import format_range
 
@@ -76,6 +77,13 @@ class Family:
     @property
     def uniq_id(self) -> str:
         return self.stored_family.uniq_id
+
+    def _live(self, field: str, default: Any) -> Any:
+        """The value of *field* shown while the live update of this family
+        is on, *default* otherwise (see `data.screens.live_layout`)."""
+        return live_value(
+            self.event.uniq_id, live_key('family', self.uniq_id), field, default
+        )
 
     @property
     def is_paged(self) -> bool:
@@ -195,11 +203,11 @@ class Family:
 
     @property
     def columns(self) -> int:
-        return self.stored_family.columns or 1
+        return self._live('columns', self.stored_family.columns) or 1
 
     @property
     def font_size(self) -> int:
-        return self.stored_family.font_size or 100
+        return self._live('font_size', self.stored_family.font_size) or 100
 
     @property
     def menu_text(self) -> str:
@@ -207,11 +215,11 @@ class Family:
 
     @property
     def timer_id(self) -> int | None:
-        return self.stored_family.timer_id
+        return self._live('timer_id', self.stored_family.timer_id)
 
     @property
     def timer(self) -> Timer | None:
-        return self.event.timers_by_id[self.timer_id] if self.timer_id else None
+        return self.event.timers_by_id.get(self.timer_id) if self.timer_id else None
 
     def set_timer(self, timer_id: int | None) -> None:
         with EventDatabase(self.event.uniq_id, True) as database:
@@ -277,14 +285,14 @@ class Family:
 
     @property
     def message_default(self) -> bool:
-        return self.stored_family.message_default
+        return bool(self._live('message_default', self.stored_family.message_default))
 
     @property
     def message_text(self) -> str | None:
         return (
             self.event.message_text
             if self.message_default
-            else self.stored_family.message_text
+            else self._live('message_text', self.stored_family.message_text)
         )
 
     @property

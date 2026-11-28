@@ -166,7 +166,11 @@
                         </script>
                     {% endif %}
 
-                    {{ components.section_heading(_('Layout')) }}
+                    {% if live_update %}
+                        {% include '/admin/screens/live_update_switch.html' %}
+                    {% else %}
+                        {{ components.section_heading(_('Layout')) }}
+                    {% endif %}
                     <div class="row gy-2 gx-3">
                         {% if family_type.multi_column_allowed %}
                             <div class="col-12 col-md-6">

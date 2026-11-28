@@ -25,13 +25,21 @@
                 <i class="bi-x-circle-fill"></i>
             </button>
         {% endif %}
-        {% set font_size_control = client.can_manage_screens and screen.screen_type.font_size_adjustable %}
-        {% set timer_control = client.can_manage_screens and user_event.timers %}
-        {% set columns_control = client.can_manage_screens and screen.screen_type.columns_adjustable %}
+        {# The controls of the layout are shown on every device that shows the
+           screen while its live update is on (see data.screens.live_layout). #}
+        {% set live_update_on = screen.live_update_on %}
+        {% set font_size_control = live_update_on and screen.screen_type.font_size_adjustable %}
+        {% set timer_control = live_update_on and user_event.timers %}
+        {% set columns_control = live_update_on and screen.screen_type.columns_adjustable %}
         {% if (font_size_control or timer_control or columns_control) and not request.query_params.get('preview') %}
+            {% set live_kind, live_target = screen.live_target %}
             <div
                 id="screen-control-panel"
                 class="screen-control-panel position-fixed bottom-0 start-0 ms-2 mb-2 z-2 d-flex align-items-center gap-2"
+                data-live-url="{{ url_for('admin-screen-live', event_uniq_id=user_event.uniq_id, target_kind=live_kind, target_uniq_id=live_target, live_action='-')[:-1] }}"
+                data-event="{{ user_event.uniq_id }}"
+                data-kind="{{ live_kind }}"
+                data-target="{{ live_target }}"
             >
                 <button
                     id="screen-controls-toggle"
@@ -48,7 +56,6 @@
                 <div
                     id="screen-columns-panel"
                     class="screen-control screen-columns-panel d-flex align-items-stretch"
-                    data-url="{{ url_for('admin-screen-columns-update', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
                     data-columns="{{ screen.columns }}"
                     data-max="{{ screen.COLUMNS_MAX }}"
                     data-testid="screen-columns-panel"
@@ -91,7 +98,6 @@
                 <div
                     id="screen-font-size-panel"
                     class="screen-control screen-font-size-panel d-flex align-items-stretch"
-                    data-url="{{ url_for('admin-screen-font-size-update', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
                     data-font-size="{{ font_size }}"
                     data-testid="screen-font-size-panel"
                 >
@@ -135,7 +141,6 @@
                 <div
                     id="screen-timer-panel"
                     class="screen-control screen-timer-panel d-flex align-items-stretch"
-                    data-url="{{ url_for('admin-screen-timer-update', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
                     data-testid="screen-timer-panel"
                 >
                     <button
@@ -163,9 +168,48 @@
                     </div>
                 </div>
             {% endif %}
+                    <button
+                        id="screen-live-save"
+                        type="button"
+                        class="btn btn-primary"
+                        title="{{ _('Save') }}"
+                        aria-label="{{ _('Save') }}"
+                        data-testid="screen-live-save"
+                    >
+                        <i class="bi-floppy-fill"></i>
+                    </button>
                 </div>
             </div>
             <script>
+                // Sends a change of the layout to the live update of the
+                // screen: every device showing it, this one included, is then
+                // drawn again with it, and the edit modals open on it show it.
+                window.screenLiveOrigin = window.screenLiveOrigin
+                    || 'screen-' + Math.random().toString(36).slice(2);
+                window.screenLiveSend = (action, values = {}) => {
+                    const panel = document.getElementById('screen-control-panel');
+                    if (!panel) {
+                        return;
+                    }
+                    fetch(panel.dataset.liveUrl + action, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: new URLSearchParams({...values, origin: window.screenLiveOrigin}),
+                    });
+                };
+                // The controls go away as soon as the live update is turned
+                // off; the screen keeps what it shows.
+                function followScreenLiveUpdate(liveEvent) {
+                    const panel = document.getElementById('screen-control-panel');
+                    const detail = liveEvent.detail || {};
+                    if (
+                        panel && !detail.active
+                        && detail.kind === panel.dataset.kind
+                        && detail.target === panel.dataset.target
+                    ) {
+                        panel.remove();
+                    }
+                }
                 // Shows or hides the controls of the screen, hidden at first.
                 // The state lives on window, which the refreshes of the screen
                 // leave alone.
@@ -183,6 +227,17 @@
                         window.screenControlsOpen = !window.screenControlsOpen;
                         showControls(window.screenControlsOpen);
                     };
+                    document.getElementById('screen-live-save').onclick = () => {
+                        window.screenLiveSend('save');
+                    };
+                    const liveEventName = `ws:screen-live|${document.getElementById('screen-control-panel').dataset.event}`;
+                    if (window.screenLiveEventName !== liveEventName) {
+                        if (window.screenLiveEventName) {
+                            document.body.removeEventListener(window.screenLiveEventName, followScreenLiveUpdate);
+                        }
+                        window.screenLiveEventName = liveEventName;
+                        document.body.addEventListener(liveEventName, followScreenLiveUpdate);
+                    }
                 }
                 if (!window.screenControlsListening) {
                     window.screenControlsListening = true;
@@ -233,12 +288,7 @@
                         window.screenColumnsPending = String(columns);
                         clearTimeout(window.screenColumnsTimeout);
                         window.screenColumnsTimeout = setTimeout(() => {
-                            htmx.ajax('PATCH', panel.dataset.url, {
-                                source: panel,
-                                target: panel,
-                                swap: 'none',
-                                values: {columns: columns},
-                            });
+                            window.screenLiveSend('update', {columns: columns});
                         }, 300);
                     };
                     minus.onclick = () => change(-1);
@@ -272,12 +322,7 @@
                         showControls(window.screenTimerOpen);
                     };
                     select.onchange = () => {
-                        htmx.ajax('PATCH', panel.dataset.url, {
-                            source: panel,
-                            target: panel,
-                            swap: 'none',
-                            values: {timer_id: select.value},
-                        });
+                        window.screenLiveSend('update', {timer_id: select.value});
                     };
                 }
                 if (!window.screenTimerListening) {
@@ -289,9 +334,9 @@
         {% endif %}
         {% if font_size_control and not request.query_params.get('preview') %}
             <script>
-                // Previews the font size at once on this page, then stores it
-                // when the slider is released: the screens showing it, here and
-                // elsewhere, are then drawn again with it. The state lives on
+                // Previews the font size at once on this page, then sends it to
+                // the live update when the slider is released: the screens
+                // showing it, here and elsewhere, are then drawn again with it. The state lives on
                 // window, which the refreshes of the screen leave alone.
                 function setupScreenFontSizePanel() {
                     const panel = document.getElementById('screen-font-size-panel');
@@ -311,12 +356,7 @@
                         window.screenFontSizePending = String(fontSize);
                         clearTimeout(window.screenFontSizeTimeout);
                         window.screenFontSizeTimeout = setTimeout(() => {
-                            htmx.ajax('PATCH', panel.dataset.url, {
-                                source: panel,
-                                target: panel,
-                                swap: 'none',
-                                values: {font_size: fontSize},
-                            });
+                            window.screenLiveSend('update', {font_size: fontSize});
                         }, 300);
                     };
                     const showControls = (open) => {

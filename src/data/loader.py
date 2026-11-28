@@ -1,5 +1,6 @@
 from data import journal
 from data.journal import JournalAction
+from data.screens.live_layout import stop_event_live_layouts
 import re
 import shutil
 import sqlite3
@@ -97,6 +98,8 @@ class EventLoader:
             cls._inaccessible_tried_at.pop(uniq_id, None)
             cls._corrupted_uniq_ids.discard(uniq_id)
             cls.load_event_ids()
+        # The live updates of its screens are forgotten with it.
+        stop_event_live_layouts(uniq_id)
 
     @classmethod
     def load_event_ids(cls, uniq_id: str | None = None) -> dict[str, EventMetadata]:
