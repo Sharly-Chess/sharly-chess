@@ -2,7 +2,7 @@ import weakref
 from collections.abc import Collection
 from datetime import datetime
 from functools import cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from _weakref import ReferenceType
 
 from common.background import inline_image_url
@@ -178,7 +178,7 @@ class Screen:
             if display_controller.shows_family_page(self.family, self.family_part)
         ]
 
-    def _live(self, field: str, default: Any) -> Any:
+    def _live[T](self, field: str, default: T) -> T:
         """The value of *field* shown while the live update of this screen is
         on, *default* otherwise (see `data.screens.live_layout`)."""
         assert self.stored_screen is not None

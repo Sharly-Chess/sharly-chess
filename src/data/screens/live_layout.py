@@ -12,7 +12,7 @@ follow it. The live updates are kept under the key of their screen or family
 (see `live_key`).
 """
 
-from typing import Any
+from typing import Any, cast
 
 LAYOUT_FIELDS: tuple[str, ...] = (
     'columns',
@@ -42,13 +42,14 @@ def live_layout(event_uniq_id: str, target_key: str) -> dict[str, Any] | None:
     return _live_layouts.get((event_uniq_id, target_key))
 
 
-def live_value(event_uniq_id: str, target_key: str, field: str, default: Any) -> Any:
+def live_value[T](event_uniq_id: str, target_key: str, field: str, default: T) -> T:
     """The live value of *field* for the screen or family of key *target_key*, or
-    *default* when its live update is off or does not set *field*."""
+    *default* when its live update is off or does not set *field*. The live
+    values are checked when set, and have the type of the stored ones."""
     values = _live_layouts.get((event_uniq_id, target_key))
     if values is None or field not in values:
         return default
-    return values[field]
+    return cast(T, values[field])
 
 
 def start_live_layout(

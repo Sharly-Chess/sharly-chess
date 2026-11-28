@@ -3,7 +3,7 @@ import weakref
 from datetime import datetime
 from functools import cached_property
 from math import ceil
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from _weakref import ReferenceType
 
 from common.i18n import _
@@ -78,7 +78,7 @@ class Family:
     def uniq_id(self) -> str:
         return self.stored_family.uniq_id
 
-    def _live(self, field: str, default: Any) -> Any:
+    def _live[T](self, field: str, default: T) -> T:
         """The value of *field* shown while the live update of this family
         is on, *default* otherwise (see `data.screens.live_layout`)."""
         return live_value(
